@@ -1,0 +1,16 @@
+# Python / Backend
+backend/venv/
+backend/__pycache__/
+backend/.env
+*.pyc
+
+# Flutter / Frontend
+frontend/.dart_tool/
+frontend/build/
+frontend/.flutter-plugins
+frontend/.packages
+frontend/.pub-cache/
+
+# General Secrets
+*.json
+.DS_Store
