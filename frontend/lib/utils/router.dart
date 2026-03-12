@@ -1,18 +1,13 @@
+// Import your screens
 import 'package:go_router/go_router.dart';
-import '../screens/home_screen.dart';
-import '../screens/emotion/emotion_detection_screen.dart';
-import '../screens/music/player_screen.dart';
-// Note: Import other screens here as you build them out.
+import '../screens/splash_screen.dart';
+import '../screens/launch_screen.dart';
 
 final appRouter = GoRouter(
-  initialLocation: '/',
+  initialLocation: '/', // App starts here
   routes: [
-    GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
-    GoRoute(
-      path: '/detect',
-      builder: (context, state) => const EmotionDetectionScreen(),
-    ),
-    GoRoute(path: '/player', builder: (context, state) => const PlayerScreen()),
-    // Add routes for Login, Register, Playlist, etc.
+    GoRoute(path: '/', builder: (context, state) => const SplashScreen()),
+    GoRoute(path: '/launch', builder: (context, state) => const LaunchScreen()),
+    // ... your other routes
   ],
 );

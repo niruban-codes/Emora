@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
-import 'utils/app_theme.dart';
-import 'utils/router.dart';
+import './screens/launch_screen.dart';
+import './screens/splash_screen.dart';
 
-void main() {
-  runApp(const EmoraApp());
-}
+void main() => runApp(const MyApp());
 
-class EmoraApp extends StatelessWidget {
-  const EmoraApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Emora',
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system, // Auto-switches based on device settings
-      routerConfig: appRouter,
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
+      initialRoute: "/", // App starts here
+      routes: {
+        '/': (context) => const SplashScreen(), // 1. Map '/' to SplashScreen
+        '/launch': (context) =>
+            const LaunchScreen(), // 2. Map '/launch' to LaunchScreen
+      },
     );
   }
 }
