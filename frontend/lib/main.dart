@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
-import 'login_page.dart';
+import './screens/launch_screen.dart';
+import './screens/splash_screen.dart';
+import './screens/auth/login_screen.dart';
+import './screens/auth/register_screen.dart';
+import './screens/auth/auth_widget.dart';
 
-void main() => runApp(const EmoraApp());
+void main() => runApp(const MyApp());
 
-class EmoraApp extends StatelessWidget {
-  const EmoraApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark(),
-      home: const LoginPage(),
+      initialRoute: "/",
+      routes: {
+        '/': (context) => const SplashScreen(),
+        '/launch': (context) => const LaunchScreen(),
+      },
     );
   }
 }
