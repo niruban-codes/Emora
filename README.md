@@ -2,13 +2,17 @@
 
 > A smart mobile application that detects your emotions through facial analysis and recommends music that matches your mood.
 
-##  About the Project.
+---
 
-Most music recommendation systems focus on listening history and genre preferences — Emora is different. It's an mobile application that analyzes a user's **emotional state** through facial recognition — either from an uploaded photo or via live camera detection — and generates a personalized playlist that suits or uplifts their mood.
+##  About the Project
 
-## ✨ Features
+Most music recommendation systems focus on listening history and genre preferences — Emora is different. It is a mobile application that analyzes a user's **emotional state** through facial recognition — either from an uploaded photo or via live camera detection — and generates a personalized playlist that suits or uplifts their mood.
 
--  **Photo-Based Emotion Detection** — Upload a photo from your gallery to detect emotions (Happy, Sad, Angry, Neutral, Fearful, Surprised) using AI
+---
+
+##  Features
+
+-  **Photo-Based Emotion Detection** — Upload a photo from your gallery to detect emotions (Happy, Sad, Angry, Neutral) using AI
 -  **Live Camera Detection** — Use your device's camera for real-time emotion detection without needing to upload an image
 -  **Smart Music Recommendations** — Automatically generates playlists matched to your detected mood via Spotify / YouTube API
 -  **Music Player** — Play, pause, skip tracks with volume control and track info display
@@ -17,17 +21,21 @@ Most music recommendation systems focus on listening history and genre preferenc
 -  **Secure Authentication** — User registration, login, and profile management via Firebase
 -  **Admin Dashboard** — Manage users, songs, and music categories
 
-## 🛠️ Tech Stack
+---
 
-| Layer | Technology |
-|---|---|
-| Mobile Frontend | Flutter (Dart) |
-| Backend API | Python / Flask |
-| Emotion Detection AI | DeepFace / OpenCV |
-| Database & Auth | Firebase (Firestore + Firebase Auth) |
-| Music API | Spotify Web API / YouTube API |
-| UI Design | Figma |
-| Version Control | Git & GitHub |
+##  Tech Stack
+
+| Layer              | Technology                           |
+|--------------------|--------------------------------------|
+| Mobile Frontend    | Flutter (Dart)                       |
+| Backend API        | Python / Flask                       |
+| Emotion Detection  | DeepFace / OpenCV                    |
+| Database & Auth    | Firebase (Firestore + Firebase Auth) |
+| Music API          | Spotify Web API / YouTube API        |
+| UI Design          | Figma                                |
+| Version Control    | Git & GitHub                         |
+
+---
 
 ##  System Architecture
 
@@ -40,7 +48,9 @@ The system is composed of six core modules:
 5. **Admin Management Module** — Manage users, songs, and categories
 6. **Analytics & Accuracy Module** — Mood detection stats and system performance insights
 
-## Getting Started
+---
+
+##  Getting Started
 
 ### Prerequisites
 
@@ -50,8 +60,10 @@ The system is composed of six core modules:
 - Spotify Developer account (for API credentials)
 - Android device or emulator (Android 10+, 4GB RAM minimum)
 
+
 ##  Project Structure
 
+```
 emora/
 ├── backend/                  # Flask API
 │   ├── app.py
@@ -71,18 +83,25 @@ emora/
 │   │   └── services/
 │   └── pubspec.yaml
 │
-└── README.me
+└── README.md
+```
 
-## 👥 Team — Group 01 (IS)
+---
 
-22FIS0455  N. Niruban
-22FIS0447  D.G.S. Piyaratne
-22FIS0452  H.H.D.A. Fernando
-22FIS0450  U.L.P. Wathsiluni 
-22FIS0449  M.N.H.F. Hafsa
+##  Team — Group 01 (IS)
+
+| Index No  | Name               | 
+|-----------|--------------------|
+| 22FIS0455 | N. Niruban         | 
+| 22FIS0447 | D.G.S. Piyaratne   | 
+| 22FIS0452 | H.H.D.A. Fernando  | 
+| 22FIS0450 | U.L.P. Wathsiluni  |
+| 22FIS0449 | M.N.H.F. Hafsa     | 
 
 **Internal Supervisor:** Mr. H. M. K. T. Gunawardane — Sabaragamuwa University of Sri Lanka  
 **Mentor:** W. M. P. K. Wijethunga — Arimac Lanka PVT LTD
+
+---
 
 ##  Roadmap
 
@@ -111,3 +130,10 @@ emora/
 - [Flask Documentation](https://flask.palletsprojects.com/)
 - [Flutter Documentation](https://docs.flutter.dev/)
 - [Google ML Kit](https://pub.dev/packages/google_ml_kit)
+
+---
+
+##  License
+
+This project was developed for academic purposes as part of the IS4110 Capstone Project at Sabaragamuwa University of Sri Lanka.
+
