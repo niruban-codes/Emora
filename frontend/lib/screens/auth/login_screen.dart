@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'widgets.dart';
-import 'signup_page.dart';
+import 'register_screen.dart';
 import 'auth_widgets.dart'; 
 
 class LoginPage extends StatelessWidget {
