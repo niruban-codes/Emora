@@ -3,7 +3,7 @@ import './screens/launch_screen.dart';
 import './screens/splash_screen.dart';
 import './screens/auth/login_screen.dart';
 import './screens/auth/register_screen.dart';
-import './screens/auth/auth_widget.dart';
+import './screens/auth/auth_widgets.dart';
 
 void main() => runApp(const MyApp());
 

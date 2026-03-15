@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'register_screen.dart';
 import 'auth_widgets.dart'; 
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+class LoginScreen extends StatelessWidget {
+  const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +101,7 @@ class LoginPage extends StatelessWidget {
                       Center(
                         child: TextButton(
                           onPressed: () => Navigator.push(context,
-                              MaterialPageRoute(builder: (_) => const SignupPage())),
+                              MaterialPageRoute(builder: (_) => const RegisterScreen())),
                           child: RichText(
                             text: const TextSpan(
                               text: "Don't have an Account ? ",

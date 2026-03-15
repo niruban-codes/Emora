@@ -44,6 +44,68 @@ class RegisterScreen extends StatelessWidget {
                   child: Divider(color: Colors.white54, thickness: 1, endIndent: 280),
                 ),
                 const SizedBox(height: 30),
+                const SizedBox(height: 30),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
-                  chil
+                  child: Column(
+                    children: [
+                      socialButton('Continue with Google',
+                          Image.network('https://www.google.com/favicon.ico', width: 20)),
+                      socialButton('Continue with Facebook',
+                          const Icon(Icons.facebook, color: Color(0xFF1877F2), size: 22)),
+                      socialButton('Continue with Apple',
+                          const Icon(Icons.apple, color: Colors.white, size: 22)),
+                      const SizedBox(height: 8),
+                      Row(children: const [
+                        Expanded(child: Divider(color: Colors.white24)),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12),
+                          child: Text('or', style: TextStyle(color: Colors.white38)),
+                        ),
+                        Expanded(child: Divider(color: Colors.white24)),
+                      ]),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF2E3A8C),
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                          ),
+                          onPressed: () {},
+                          child: const Text('Continue with an email',
+                              style: TextStyle(color: Colors.white, fontSize: 15)),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextButton(
+                        onPressed: () => Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (_) => const LoginScreen())),
+                        child: RichText(
+                          text: const TextSpan(
+                            text: 'Already have an account ? ',
+                            style: TextStyle(color: Colors.white54, fontSize: 13),
+                            children: [
+                              TextSpan(
+                                text: 'Sign in',
+                                style: TextStyle(
+                                    color: Colors.white, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
