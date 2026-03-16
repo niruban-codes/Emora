@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import './screens/launch_screen.dart';
-import './screens/splash_screen.dart';
+import 'utils/router.dart'; // 👈 your go_router config
 
 void main() => runApp(const MyApp());
 
@@ -9,14 +8,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
+      // 👈 .router instead of MaterialApp
       debugShowCheckedModeBanner: false,
-      initialRoute: "/", // App starts here
-      routes: {
-        '/': (context) => const SplashScreen(), // 1. Map '/' to SplashScreen
-        '/launch': (context) =>
-            const LaunchScreen(), // 2. Map '/launch' to LaunchScreen
-      },
+      routerConfig: appRouter, // 👈 your GoRouter instance
     );
   }
 }
