@@ -72,7 +72,9 @@ class LaunchScreen extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       // Navigate to Register or Home
-                      context.push('/register');
+                      context.push(
+                        '/register',
+                      ); // Update with your actual route
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(
