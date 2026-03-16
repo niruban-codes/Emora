@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 void main() {
   runApp(const EmoraApp());
@@ -597,7 +598,14 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
         children: List.generate(items.length, (i) {
           final isActive = i == _currentNavIndex;
           return GestureDetector(
-            onTap: () => setState(() => _currentNavIndex = i),
+            onTap: () {
+              setState(() => _currentNavIndex = i);
+              if (i == 1) {
+                context.push(
+                  '/search',
+                ); // 👈 Explore navigates to Search screen
+              }
+            },
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

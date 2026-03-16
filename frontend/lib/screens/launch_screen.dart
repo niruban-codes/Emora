@@ -73,7 +73,7 @@ class LaunchScreen extends StatelessWidget {
                     onPressed: () {
                       // Navigate to Register or Home
                       context.push(
-                        '/register',
+                        '/playlist',
                       ); // Update with your actual route
                     },
                     style: ElevatedButton.styleFrom(
