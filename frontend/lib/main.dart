@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'utils/router.dart'; // 👈 your go_router config
+import './screens/launch_screen.dart';
+import './screens/splash_screen.dart';
+import './screens/auth/login_screen.dart';
+import './screens/auth/register_screen.dart';
+import './screens/auth/auth_widgets.dart';
 
 void main() => runApp(const MyApp());
 
@@ -11,7 +15,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       // 👈 .router instead of MaterialApp
       debugShowCheckedModeBanner: false,
-      routerConfig: appRouter, // 👈 your GoRouter instance
+      initialRoute: "/",
+      routes: {
+        '/': (context) => const SplashScreen(),
+        '/launch': (context) => const LaunchScreen(),
+      },
     );
   }
 }
