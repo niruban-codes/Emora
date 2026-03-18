@@ -1,5 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
+import 'package:frontend/screens/emotion/mood_model.dart';
+
+/// EmotionDetectionScreen
+///
+/// Presents a camera-viewfinder style UI with an "Upload Photo" fallback.
+/// Since camera & ML are backend concerns, this screen simulates the flow:
+///   1. User sees the viewfinder / upload area.
+///   2. They tap "Capture" or "Upload".
+///   3. A loading / "analysing" overlay plays.
+///   4. Navigation pushes to ResultScreen with a detected MoodModel.
+///
+/// TODO (backend integration):
+///   - Replace [_simulateDetection] with actual camera capture via
+///     `camera` package + image upload to your emotion-detection API.
+///   - Replace [_simulateDetection] result with the API response string.
+///   - Pass the real image bytes to ResultScreen if needed.
 
 class EmotionDetectionScreen extends StatefulWidget {
   const EmotionDetectionScreen({super.key});
@@ -8,108 +25,617 @@ class EmotionDetectionScreen extends StatefulWidget {
   State<EmotionDetectionScreen> createState() => _EmotionDetectionScreenState();
 }
 
-class _EmotionDetectionScreenState extends State<EmotionDetectionScreen> {
-  bool _isLoading = false;
+class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
+    with TickerProviderStateMixin {
+  // ── State ──────────────────────────────────────────────────────────────────
+  bool _isAnalysing = false;
+  bool _imageCaptured = false; // true once user taps capture / selects image
+  String? _capturedLabel; // shown in preview after "capture"
 
-  void _analyzeMood() async {
-    setState(() => _isLoading = true);
-    // Simulate API call to Flask backend
-    await Future.delayed(const Duration(seconds: 2));
-    setState(() => _isLoading = false);
+  // ── Animation controllers ──────────────────────────────────────────────────
+  late AnimationController _scanLineCtrl;
+  late Animation<double> _scanLineAnim;
 
-    // Show dummy result dialogue
-    if (mounted) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Mood Detected: Happy 😊'),
-          content: const Text(
-            'We found the perfect playlist to keep those good vibes going!',
-          ),
-          actions: [
-            FilledButton(
-              onPressed: () {
-                Navigator.pop(context);
-                context.push('/player'); // Navigate to player
-              },
-              child: const Text('Get Recommendations'),
-            ),
-          ],
-        ),
-      );
-    }
+  late AnimationController _pulseCtrl;
+  late Animation<double> _pulseAnim;
+
+  late AnimationController _fadeCtrl;
+  late Animation<double> _fadeAnim;
+
+  // ── Scanning line colours cycle ────────────────────────────────────────────
+  final List<Color> _scanColors = const [
+    Color(0xFF8B2D8B),
+    Color(0xFFA7338A),
+    Color(0xFF7C4DFF),
+  ];
+  int _scanColorIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _scanLineCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
+
+    _scanLineAnim = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _scanLineCtrl, curve: Curves.easeInOut));
+
+    _pulseCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat(reverse: true);
+
+    _pulseAnim = Tween<double>(
+      begin: 0.6,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _pulseCtrl, curve: Curves.easeInOut));
+
+    _fadeCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    )..forward();
+
+    _fadeAnim = CurvedAnimation(parent: _fadeCtrl, curve: Curves.easeOut);
+
+    // Cycle scan line colour
+    _scanLineCtrl.addListener(() {
+      if (_scanLineCtrl.value == 0) {
+        setState(() {
+          _scanColorIndex = (_scanColorIndex + 1) % _scanColors.length;
+        });
+      }
+    });
   }
 
   @override
+  void dispose() {
+    _scanLineCtrl.dispose();
+    _pulseCtrl.dispose();
+    _fadeCtrl.dispose();
+    super.dispose();
+  }
+
+  // ── Simulated detection ────────────────────────────────────────────────────
+  /// Replace this method with your real camera-capture + API call.
+  Future<void> _simulateDetection() async {
+    setState(() {
+      _isAnalysing = true;
+      _imageCaptured = true;
+    });
+
+    // Simulate network delay
+    await Future.delayed(const Duration(milliseconds: 2800));
+
+    // Cycle through allMoods for demo — replace with your real API response string.
+    // e.g. final detected = await EmotionApiService.detect(imageBytes);
+    final detected = allMoods[DateTime.now().millisecond % allMoods.length]
+        .label
+        .toLowerCase();
+
+    if (!mounted) return;
+
+    setState(() {
+      _isAnalysing = false;
+      _capturedLabel = detected;
+    });
+
+    // Brief pause so user sees "captured" state, then navigate
+    await Future.delayed(const Duration(milliseconds: 400));
+    if (!mounted) return;
+
+    context.push('/result', extra: MoodModel.fromString(detected));
+  }
+
+  // ── Build ──────────────────────────────────────────────────────────────────
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Detect Emotion')),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
+      backgroundColor: const Color(0xFF0D1135),
+      body: FadeTransition(
+        opacity: _fadeAnim,
+        child: SafeArea(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Image Placeholder
-              Container(
-                height: 300,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: Colors.grey.shade800),
-                ),
-                child: const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.face_retouching_natural,
-                      size: 80,
-                      color: Colors.grey,
-                    ),
-                    SizedBox(height: 16),
-                    Text(
-                      'Upload or capture a photo\nto analyze your mood',
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  OutlinedButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.photo_library),
-                    label: const Text('Gallery'),
+              _buildTopBar(),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 8),
+                      _buildSubtitle(),
+                      const SizedBox(height: 24),
+                      _buildViewfinder(),
+                      const SizedBox(height: 20),
+                      _buildStatusChips(),
+                      const SizedBox(height: 32),
+                      _buildCaptureButton(),
+                      const SizedBox(height: 16),
+                      _buildUploadButton(),
+                      const SizedBox(height: 28),
+                      _buildMoodLegend(),
+                      const SizedBox(height: 20),
+                    ],
                   ),
-                  OutlinedButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.camera_alt),
-                    label: const Text('Camera'),
-                  ),
-                ],
-              ),
-              const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: FilledButton(
-                  onPressed: _isLoading ? null : _analyzeMood,
-                  child: _isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text(
-                          'Analyze Emotion',
-                          style: TextStyle(fontSize: 18),
-                        ),
                 ),
               ),
-              const SizedBox(height: 32),
             ],
           ),
         ),
       ),
     );
   }
+
+  // ── Components ─────────────────────────────────────────────────────────────
+
+  Widget _buildTopBar() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () => context.pop(),
+            child: Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withOpacity(0.1),
+              ),
+              child: const Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Text(
+            'Emotion Scan',
+            style: GoogleFonts.poppins(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const Spacer(),
+          // Flash toggle (visual only — wire up with camera package)
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white.withOpacity(0.1),
+            ),
+            child: const Icon(
+              Icons.flash_off_outlined,
+              color: Colors.white70,
+              size: 20,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSubtitle() {
+    return Text(
+      'Position your face in the frame\nand let the AI read your emotion',
+      textAlign: TextAlign.center,
+      style: GoogleFonts.poppins(
+        color: Colors.white.withOpacity(0.5),
+        fontSize: 13,
+        height: 1.6,
+      ),
+    );
+  }
+
+  Widget _buildViewfinder() {
+    return AnimatedBuilder(
+      animation: Listenable.merge([_scanLineAnim, _pulseAnim]),
+      builder: (context, _) {
+        return Container(
+          width: double.infinity,
+          height: 320,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            color: const Color(0xFF151830),
+            border: Border.all(
+              color: _scanColors[_scanColorIndex].withOpacity(
+                _isAnalysing ? _pulseAnim.value : 0.4,
+              ),
+              width: _isAnalysing ? 2.0 : 1.5,
+            ),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: Stack(
+              children: [
+                // Background gradient
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: RadialGradient(
+                      center: Alignment.center,
+                      radius: 1.2,
+                      colors: [
+                        const Color(0xFF1E1A35),
+                        const Color(0xFF0D1135),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Grid overlay (subtle)
+                CustomPaint(
+                  size: const Size(double.infinity, 320),
+                  painter: _GridPainter(),
+                ),
+
+                // Centre face guide oval
+                Center(
+                  child: Container(
+                    width: 160,
+                    height: 200,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(100),
+                      border: Border.all(
+                        color: _scanColors[_scanColorIndex].withOpacity(0.35),
+                        width: 1.5,
+                      ),
+                    ),
+                    child: _imageCaptured && !_isAnalysing
+                        ? null
+                        : Center(
+                            child: Icon(
+                              Icons.face_outlined,
+                              color: Colors.white.withOpacity(0.15),
+                              size: 64,
+                            ),
+                          ),
+                  ),
+                ),
+
+                // Animated scan line
+                if (!_imageCaptured || _isAnalysing)
+                  Positioned(
+                    top: 20 + (_scanLineAnim.value * 280),
+                    left: 24,
+                    right: 24,
+                    child: Container(
+                      height: 2,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.transparent,
+                            _scanColors[_scanColorIndex].withOpacity(0.8),
+                            Colors.transparent,
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+                // Corner brackets
+                ..._cornerBrackets(_scanColors[_scanColorIndex]),
+
+                // NEURAL ANALYSIS badge
+                Positioned(
+                  top: 14,
+                  left: 14,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF8B2D8B),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      'NEURAL ANALYSIS',
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Status text
+                Positioned(
+                  top: 40,
+                  left: 14,
+                  child: Text(
+                    _isAnalysing
+                        ? 'STATUS: ANALYSING...'
+                        : _imageCaptured
+                        ? 'STATUS: DETECTED'
+                        : 'STATUS: READY',
+                    style: GoogleFonts.poppins(
+                      color: Colors.white.withOpacity(0.45),
+                      fontSize: 9,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ),
+
+                // Analysing spinner overlay
+                if (_isAnalysing)
+                  Positioned.fill(
+                    child: Container(
+                      color: Colors.black.withOpacity(0.45),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 48,
+                            height: 48,
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation(
+                                _scanColors[_scanColorIndex],
+                              ),
+                              strokeWidth: 2.5,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Mapping emotion...',
+                            style: GoogleFonts.poppins(
+                              color: Colors.white70,
+                              fontSize: 13,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                // Coordinates — bottom-right
+                Positioned(
+                  bottom: 14,
+                  right: 14,
+                  child: Row(
+                    children: [
+                      Text(
+                        'X: 42.1  Y: 88.4',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.5),
+                          fontSize: 9,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Icon(
+                        Icons.adjust,
+                        color: _scanColors[_scanColorIndex],
+                        size: 16,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildStatusChips() {
+    final chips = [
+      (Icons.face_retouching_natural_outlined, 'Face Detected'),
+      (Icons.lightbulb_outline, 'Lighting OK'),
+      (Icons.center_focus_strong_outlined, 'In Focus'),
+    ];
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: chips.map((chip) {
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.06),
+            borderRadius: BorderRadius.circular(100),
+            border: Border.all(color: Colors.white.withOpacity(0.12)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(chip.$1, color: const Color(0xFF8B2D8B), size: 13),
+              const SizedBox(width: 5),
+              Text(
+                chip.$2,
+                style: GoogleFonts.poppins(color: Colors.white60, fontSize: 10),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildCaptureButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: _isAnalysing ? null : _simulateDetection,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF8B2D8B),
+          disabledBackgroundColor: const Color(0xFF8B2D8B).withOpacity(0.4),
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(100),
+          ),
+          elevation: 8,
+          shadowColor: const Color(0xFF8B2D8B).withOpacity(0.5),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.camera_alt_outlined,
+              color: Colors.white,
+              size: 20,
+            ),
+            const SizedBox(width: 10),
+            Text(
+              _isAnalysing ? 'Analysing...' : 'Capture & Detect',
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildUploadButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton.icon(
+        onPressed: _isAnalysing ? null : _simulateDetection,
+        style: OutlinedButton.styleFrom(
+          side: BorderSide(color: Colors.white.withOpacity(0.25)),
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(100),
+          ),
+        ),
+        icon: Icon(
+          Icons.upload_file_outlined,
+          color: Colors.white.withOpacity(0.65),
+          size: 20,
+        ),
+        label: Text(
+          'Upload a Photo Instead',
+          style: GoogleFonts.poppins(
+            color: Colors.white.withOpacity(0.65),
+            fontSize: 14,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Driven entirely by allMoods — no hardcoded labels or colours here.
+  Widget _buildMoodLegend() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'DETECTABLE EMOTIONS',
+          style: GoogleFonts.poppins(
+            color: Colors.white.withOpacity(0.4),
+            fontSize: 10,
+            letterSpacing: 1.5,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: allMoods.map((mood) {
+            final color = mood.labelColor;
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(100),
+                border: Border.all(color: color.withOpacity(0.3)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 6,
+                    height: 6,
+                    decoration: BoxDecoration(
+                      color: color,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Text(mood.emoji, style: const TextStyle(fontSize: 10)),
+                  const SizedBox(width: 4),
+                  Text(
+                    mood.label,
+                    style: GoogleFonts.poppins(
+                      color: color,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  // ── Corner brackets helper ─────────────────────────────────────────────────
+  List<Widget> _cornerBrackets(Color color) {
+    const size = 22.0;
+    const stroke = 2.0;
+
+    Widget bracket(bool top, bool left) => Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        border: Border(
+          top: top ? BorderSide(color: color, width: stroke) : BorderSide.none,
+          bottom: !top
+              ? BorderSide(color: color, width: stroke)
+              : BorderSide.none,
+          left: left
+              ? BorderSide(color: color, width: stroke)
+              : BorderSide.none,
+          right: !left
+              ? BorderSide(color: color, width: stroke)
+              : BorderSide.none,
+        ),
+      ),
+    );
+
+    return [
+      Positioned(top: 10, left: 10, child: bracket(true, true)),
+      Positioned(top: 10, right: 10, child: bracket(true, false)),
+      Positioned(bottom: 10, left: 10, child: bracket(false, true)),
+      Positioned(bottom: 10, right: 10, child: bracket(false, false)),
+    ];
+  }
+}
+
+// ── Custom painter for subtle grid overlay ─────────────────────────────────
+class _GridPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white.withOpacity(0.03)
+      ..strokeWidth = 0.5;
+
+    const step = 32.0;
+    for (double x = 0; x < size.width; x += step) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
+    }
+    for (double y = 0; y < size.height; y += step) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_GridPainter old) => false;
 }

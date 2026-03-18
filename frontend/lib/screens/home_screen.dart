@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
+import 'package:frontend/screens/emotion/mood_model.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -8,19 +10,13 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   int _selectedIndex = 0;
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
 
-  final List<Map<String, dynamic>> _moods = [
-    {'label': 'Happy', 'icon': Icons.wb_sunny_outlined},
-    {'label': 'Peaceful', 'icon': Icons.cloud_outlined},
-    {'label': 'Melancholy', 'icon': Icons.nightlight_outlined},
-    {'label': 'Anxious', 'icon': Icons.air_outlined},
-    {'label': 'Energetic', 'icon': Icons.bolt_outlined},
-    {'label': 'Sad', 'icon': Icons.water_drop_outlined},
-  ];
+  // Mood grid now driven by allMoods from mood_model.dart — no local list needed.
 
   final List<Map<String, String>> _playlists = [
     {'title': 'Midnight Pulse', 'mood': 'ENERGETIC'},
@@ -64,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       const SizedBox(height: 16),
                       _buildTopBar(),
                       const SizedBox(height: 28),
-                      _buildAnalyzeButton(),
+                      _buildAnalyzeButton(), // 👈 now navigates to /scan
                       const SizedBox(height: 32),
                       _sectionHeader('Search by Mood'),
                       const SizedBox(height: 16),
@@ -115,14 +111,22 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         ),
       ),
       child: const Center(
-        child: Text('∞', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+        child: Text(
+          '∞',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildAnalyzeButton() {
     return ElevatedButton(
-      onPressed: () {},
+      // ✅ Navigate to EmotionDetectionScreen via GoRouter
+      onPressed: () => context.push('/scan'),
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.white,
         minimumSize: const Size(double.infinity, 56),
@@ -131,11 +135,19 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.bar_chart_rounded, color: Color(0xFF15173D), size: 22),
+          const Icon(
+            Icons.bar_chart_rounded,
+            color: Color(0xFF15173D),
+            size: 22,
+          ),
           const SizedBox(width: 10),
           Text(
             'Analyze Mood',
-            style: GoogleFonts.poppins(color: const Color(0xFF15173D), fontSize: 16, fontWeight: FontWeight.w700),
+            style: GoogleFonts.poppins(
+              color: const Color(0xFF15173D),
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ],
       ),
@@ -148,12 +160,20 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       children: [
         Text(
           title,
-          style: GoogleFonts.poppins(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700),
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+          ),
         ),
         if (showSeeAll)
           Text(
             'See all',
-            style: GoogleFonts.poppins(color: const Color(0xFFA7338A), fontSize: 14, fontWeight: FontWeight.w500),
+            style: GoogleFonts.poppins(
+              color: const Color(0xFFA7338A),
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
           ),
       ],
     );
@@ -168,24 +188,31 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
       ),
-      itemCount: _moods.length,
-      itemBuilder: (context, index) => _moodCard(_moods[index]),
+      itemCount: allMoods.length,
+      itemBuilder: (context, index) => _moodCard(allMoods[index]),
     );
   }
 
-  Widget _moodCard(Map<String, dynamic> mood) {
+  Widget _moodCard(MoodModel mood) {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFF1E1A35),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFA7338A).withOpacity(0.3)),
+        border: Border.all(color: mood.primaryColor.withOpacity(0.35)),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(mood['icon'] as IconData, color: const Color(0xFFA7338A), size: 28),
+          Text(mood.emoji, style: const TextStyle(fontSize: 26)),
           const SizedBox(height: 8),
-          Text(mood['label'], style: GoogleFonts.poppins(color: Colors.white, fontSize: 12)),
+          Text(
+            mood.label,
+            style: GoogleFonts.poppins(
+              color: mood.labelColor,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );
@@ -214,7 +241,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [const Color(0xFF2A1A4E).withOpacity(0.8), const Color(0xFF0D0A1E)],
+          colors: [
+            const Color(0xFF2A1A4E).withOpacity(0.8),
+            const Color(0xFF0D0A1E),
+          ],
         ),
       ),
       child: Column(
@@ -223,11 +253,28 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         children: [
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(color: const Color(0xFFA7338A), borderRadius: BorderRadius.circular(100)),
-            child: Text(playlist['mood']!, style: const TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold)),
+            decoration: BoxDecoration(
+              color: const Color(0xFFA7338A),
+              borderRadius: BorderRadius.circular(100),
+            ),
+            child: Text(
+              playlist['mood']!,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 8,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
           const SizedBox(height: 6),
-          Text(playlist['title']!, style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w700)),
+          Text(
+            playlist['title']!,
+            style: GoogleFonts.poppins(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         ],
       ),
     );
@@ -245,7 +292,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
         color: const Color(0xFF0F1130),
-        border: Border(top: BorderSide(color: const Color(0xFF2E2E50).withOpacity(0.5))),
+        border: Border(
+          top: BorderSide(color: const Color(0xFF2E2E50).withOpacity(0.5)),
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -256,8 +305,20 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(navItems[index]['icon'] as IconData, color: isSelected ? const Color(0xFFA7338A) : Colors.white38, size: 24),
-                Text(navItems[index]['label'] as String, style: GoogleFonts.poppins(color: isSelected ? const Color(0xFFA7338A) : Colors.white38, fontSize: 10)),
+                Icon(
+                  navItems[index]['icon'] as IconData,
+                  color: isSelected ? const Color(0xFFA7338A) : Colors.white38,
+                  size: 24,
+                ),
+                Text(
+                  navItems[index]['label'] as String,
+                  style: GoogleFonts.poppins(
+                    color: isSelected
+                        ? const Color(0xFFA7338A)
+                        : Colors.white38,
+                    fontSize: 10,
+                  ),
+                ),
               ],
             ),
           );
@@ -270,8 +331,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   Widget _circularIconButton(IconData icon) {
     return Container(
-      width: 38, height: 38,
-      decoration: BoxDecoration(color: const Color(0xFF1E1E45), shape: BoxShape.circle),
+      width: 38,
+      height: 38,
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E1E45),
+        shape: BoxShape.circle,
+      ),
       child: Icon(icon, color: Colors.white70, size: 20),
     );
   }
@@ -280,7 +345,18 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     return Stack(
       children: [
         _circularIconButton(Icons.notifications_outlined),
-        Positioned(right: 6, top: 6, child: Container(width: 8, height: 8, decoration: const BoxDecoration(color: Color(0xFFA7338A), shape: BoxShape.circle))),
+        Positioned(
+          right: 6,
+          top: 6,
+          child: Container(
+            width: 8,
+            height: 8,
+            decoration: const BoxDecoration(
+              color: Color(0xFFA7338A),
+              shape: BoxShape.circle,
+            ),
+          ),
+        ),
       ],
     );
   }
