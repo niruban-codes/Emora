@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:go_router/go_router.dart'; // 👈 replaced Navigator
+import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class RegisterWithEmailScreen extends StatefulWidget {
   const RegisterWithEmailScreen({super.key});
 
   @override
-  State<RegisterWithEmailScreen> createState() =>
-      _RegisterWithEmailScreenState();
+  State<RegisterWithEmailScreen> createState() => _RegisterWithEmailScreenState();
 }
 
 class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
@@ -67,7 +67,7 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
             position: _slideAnim,
             child: Column(
               children: [
-                _buildTopBar(),
+                _buildTopBar(), // 👈 Updated for top-right logo
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -104,9 +104,7 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
                           controller: _passwordController,
                           hint: 'Password',
                           obscure: _obscurePassword,
-                          onToggle: () => setState(
-                            () => _obscurePassword = !_obscurePassword,
-                          ),
+                          onToggle: () => setState(() => _obscurePassword = !_obscurePassword),
                         ),
                         const SizedBox(height: 18),
                         _buildFieldLabel('Confirm Password'),
@@ -115,10 +113,7 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
                           controller: _confirmPasswordController,
                           hint: 'Confirm Password',
                           obscure: _obscureConfirmPassword,
-                          onToggle: () => setState(
-                            () => _obscureConfirmPassword =
-                                !_obscureConfirmPassword,
-                          ),
+                          onToggle: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
                         ),
                         const SizedBox(height: 18),
                         _buildPrivacyRow(),
@@ -137,6 +132,7 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
     );
   }
 
+  // ── Updated Top Bar with Logo on Right ─────────────────────────────────────
   Widget _buildTopBar() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
@@ -144,46 +140,27 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           GestureDetector(
-            onTap: () => context.pop(), // 👈 go_router pop
+            onTap: () => context.pop(),
             child: const Icon(Icons.arrow_back, color: Colors.white, size: 22),
           ),
-          _buildInfinityBadge(),
+          // Only the logo remains here
+          Image.asset(
+            'assets/images/logo.png',
+            width: 45, 
+            height: 45,
+          ),
         ],
       ),
     );
   }
-
-  Widget _buildInfinityBadge() {
-    return Container(
-      width: 38,
-      height: 20,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(100),
-        gradient: const LinearGradient(
-          colors: [Color(0xFFA7338A), Color(0xFF7C4DFF)],
-        ),
-      ),
-      child: const Center(
-        child: Text(
-          '∞',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 15,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
-
+  // ── Form UI Helpers ────────────────────────────────────────────────────────
   Widget _buildTitle() {
-    return const Text(
+    return Text(
       'Enter the details',
-      style: TextStyle(
+      style: GoogleFonts.poppins(
         fontSize: 26,
         fontWeight: FontWeight.w800,
-        letterSpacing: 0.2,
-        color: Color(0xFFA7338A),
+        color: const Color(0xFFA7338A),
       ),
     );
   }
@@ -191,88 +168,43 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
   Widget _buildFieldLabel(String label) {
     return Text(
       label,
-      style: const TextStyle(
-        color: Colors.white,
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-      ),
+      style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
     );
   }
 
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String hint,
-    TextInputType keyboardType = TextInputType.text,
-  }) {
+  Widget _buildTextField({required TextEditingController controller, required String hint, TextInputType keyboardType = TextInputType.text}) {
     return TextField(
       controller: controller,
       keyboardType: keyboardType,
-      style: const TextStyle(color: Colors.white, fontSize: 14),
-      decoration: InputDecoration(
-        hintText: hint,
-        filled: true,
-        fillColor: const Color(0xFF1E1E35),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(100),
-          borderSide: const BorderSide(color: Color(0xFF2E2E50), width: 1),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(100),
-          borderSide: const BorderSide(color: Color(0xFF2E2E50), width: 1),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(100),
-          borderSide: const BorderSide(color: Color(0xFFA7338A), width: 1.5),
-        ),
-        hintStyle: const TextStyle(color: Color(0xFF6B6B8A), fontSize: 14),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
+      style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
+      decoration: _inputDecoration(hint),
+    );
+  }
+
+  Widget _buildPasswordTextField({required TextEditingController controller, required String hint, required bool obscure, required VoidCallback onToggle}) {
+    return TextField(
+      controller: controller,
+      obscureText: obscure,
+      style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
+      decoration: _inputDecoration(hint).copyWith(
+        suffixIcon: GestureDetector(
+          onTap: onToggle,
+          child: Icon(obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: const Color(0xFF6B6B8A), size: 18),
         ),
       ),
     );
   }
 
-  Widget _buildPasswordTextField({
-    required TextEditingController controller,
-    required String hint,
-    required bool obscure,
-    required VoidCallback onToggle,
-  }) {
-    return TextField(
-      controller: controller,
-      obscureText: obscure,
-      style: const TextStyle(color: Colors.white, fontSize: 14),
-      decoration: InputDecoration(
-        hintText: hint,
-        filled: true,
-        fillColor: const Color(0xFF1E1E35),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(100),
-          borderSide: const BorderSide(color: Color(0xFF2E2E50), width: 1),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(100),
-          borderSide: const BorderSide(color: Color(0xFF2E2E50), width: 1),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(100),
-          borderSide: const BorderSide(color: Color(0xFFA7338A), width: 1.5),
-        ),
-        hintStyle: const TextStyle(color: Color(0xFF6B6B8A), fontSize: 14),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
-        ),
-        suffixIcon: GestureDetector(
-          onTap: onToggle,
-          child: Icon(
-            obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-            color: const Color(0xFF6B6B8A),
-            size: 18,
-          ),
-        ),
-      ),
+  InputDecoration _inputDecoration(String hint) {
+    return InputDecoration(
+      hintText: hint,
+      filled: true,
+      fillColor: const Color(0xFF1E1E35),
+      hintStyle: const TextStyle(color: Color(0xFF6B6B8A), fontSize: 14),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(100), borderSide: const BorderSide(color: Color(0xFF2E2E50))),
+      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(100), borderSide: const BorderSide(color: Color(0xFF2E2E50))),
+      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(100), borderSide: const BorderSide(color: Color(0xFFA7338A), width: 1.5)),
     );
   }
 
@@ -288,11 +220,7 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
     );
   }
 
-  Widget _buildDobField(
-    TextEditingController controller,
-    String hint,
-    int maxLength,
-  ) {
+  Widget _buildDobField(TextEditingController controller, String hint, int maxLength) {
     return TextField(
       controller: controller,
       keyboardType: TextInputType.number,
@@ -300,36 +228,14 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
       textAlign: TextAlign.center,
       style: const TextStyle(color: Colors.white, fontSize: 14),
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-      decoration: InputDecoration(
-        hintText: hint,
-        counterText: '',
-        filled: true,
-        fillColor: const Color(0xFF1E1E35),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(100),
-          borderSide: const BorderSide(color: Color(0xFF2E2E50), width: 1),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(100),
-          borderSide: const BorderSide(color: Color(0xFF2E2E50), width: 1),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(100),
-          borderSide: const BorderSide(color: Color(0xFFA7338A), width: 1.5),
-        ),
-        hintStyle: const TextStyle(color: Color(0xFF6B6B8A), fontSize: 14),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: 12,
-        ),
-      ),
+      decoration: _inputDecoration(hint).copyWith(counterText: ''),
     );
   }
 
   Widget _buildDobNote() {
-    return const Text(
+    return Text(
       "Your birthday is only visible to you and Emora's team.",
-      style: TextStyle(color: Color(0xFF6B6B8A), fontSize: 11, height: 1.4),
+      style: GoogleFonts.poppins(color: const Color(0xFF6B6B8A), fontSize: 11, height: 1.4),
     );
   }
 
@@ -337,43 +243,24 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
     return GestureDetector(
       onTap: () => setState(() => _agreeToPolicy = !_agreeToPolicy),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            width: 18,
-            height: 18,
+            width: 18, height: 18,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(4),
-              border: Border.all(
-                color: _agreeToPolicy
-                    ? const Color(0xFFA7338A)
-                    : const Color(0xFF4A4A6A),
-                width: 1.5,
-              ),
-              color: _agreeToPolicy
-                  ? const Color(0xFFA7338A).withOpacity(0.2)
-                  : Colors.transparent,
+              border: Border.all(color: _agreeToPolicy ? const Color(0xFFA7338A) : const Color(0xFF4A4A6A), width: 1.5),
+              color: _agreeToPolicy ? const Color(0xFFA7338A).withOpacity(0.2) : Colors.transparent,
             ),
-            child: _agreeToPolicy
-                ? const Icon(Icons.check, size: 12, color: Color(0xFFA7338A))
-                : null,
+            child: _agreeToPolicy ? const Icon(Icons.check, size: 12, color: Color(0xFFA7338A)) : null,
           ),
           const SizedBox(width: 10),
           Expanded(
             child: RichText(
-              text: const TextSpan(
-                style: TextStyle(color: Color(0xFF9090B0), fontSize: 13),
-                children: [
+              text: TextSpan(
+                style: GoogleFonts.poppins(color: const Color(0xFF9090B0), fontSize: 13),
+                children: const [
                   TextSpan(text: 'I agree to the '),
-                  TextSpan(
-                    text: "Emora's Privacy Policy",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      decoration: TextDecoration.underline,
-                      decorationColor: Colors.white,
-                    ),
-                  ),
+                  TextSpan(text: "Emora's Privacy Policy", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, decoration: TextDecoration.underline)),
                 ],
               ),
             ),
@@ -385,28 +272,15 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
 
   Widget _buildContinueButton() {
     return GestureDetector(
-      onTap: _agreeToPolicy
-          ? () =>
-                context.go('/home') // 👈 go_router to home after register
-          : null,
+      onTap: _agreeToPolicy ? () => context.go('/home') : null,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        width: double.infinity,
-        height: 52,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(100),
-        ),
+        width: double.infinity, height: 52,
+        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(100)),
         child: Center(
           child: Text(
             'Continue',
-            style: TextStyle(
-              color: _agreeToPolicy
-                  ? const Color(0xFF15173D)
-                  : const Color(0xFF6B6B8A),
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-            ),
+            style: GoogleFonts.poppins(color: _agreeToPolicy ? const Color(0xFF15173D) : const Color(0xFF6B6B8A), fontSize: 16, fontWeight: FontWeight.w700),
           ),
         ),
       ),

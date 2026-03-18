@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'auth_widgets.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -9,130 +10,170 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  bool _rememberMe = false;
+class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStateMixin {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _rememberMe = false;
+  late AnimationController _animController;
+  late Animation<double> _fadeAnim;
+  late Animation<Offset> _slideAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _animController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _fadeAnim = CurvedAnimation(parent: _animController, curve: Curves.easeOut);
+    _slideAnim = Tween<Offset>(
+      begin: const Offset(0, 0.08),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _animController, curve: Curves.easeOut));
+    _animController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0D1333),
+      backgroundColor: const Color(0xFF15173D), // Your specific blue background
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 48),
+        child: FadeTransition(
+          opacity: _fadeAnim,
+          child: SlideTransition(
+            position: _slideAnim,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 56),
+                  _buildLogo(),
+                  const SizedBox(height: 40),
+                  
+                  // Social Buttons
+                  _socialButton(
+                    icon: _googleIcon(),
+                    label: 'Continue with Google',
+                    onTap: () {},
+                  ),
+                  const SizedBox(height: 14),
+                  _socialButton(
+                    icon: _facebookIcon(),
+                    label: 'Continue with Facebook',
+                    onTap: () {},
+                  ),
 
-              // ── EMORA Logo ──
-              _buildLogo(),
+                  const SizedBox(height: 24),
+                  _orDivider(),
+                  const SizedBox(height: 24),
 
-              const SizedBox(height: 36),
+                  // Input Fields
+                  _fieldLabel('Email'),
+                  const SizedBox(height: 8),
+                  _inputField(
+                    controller: _emailController,
+                    hint: 'Enter your email address',
+                    icon: Icons.mail_outline,
+                  ),
 
-              // ── Continue with Google ──
-              _socialButton(
-                label: 'Continue with Google',
-                icon: const Icon(
-                  Icons.g_mobiledata,
-                  color: Colors.white,
-                  size: 28,
-                ),
+                  const SizedBox(height: 18),
+                  _fieldLabel('Password'),
+                  const SizedBox(height: 8),
+                  _passwordField(),
+
+                  const SizedBox(height: 14),
+                  _rememberForgotRow(),
+
+                  const SizedBox(height: 32),
+                  _signInButton(),
+
+                  const SizedBox(height: 32),
+                  _signUpPrompt(),
+                  const SizedBox(height: 32),
+                ],
               ),
-
-              const SizedBox(height: 16),
-
-              // ── Continue with Facebook ──
-              _socialButton(
-                label: 'Continue with Facebook',
-                icon: const Icon(
-                  Icons.facebook,
-                  color: Color(0xFF1877F2),
-                  size: 24,
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              // ── OR divider ──
-              _orDivider(),
-
-              const SizedBox(height: 24),
-
-              // ── Email field ──
-              _fieldLabel('Email'),
-              const SizedBox(height: 8),
-              _inputField(
-                hint: 'Enter your email address',
-                icon: Icons.email_outlined,
-              ),
-
-              const SizedBox(height: 18),
-
-              // ── Password field ──
-              _fieldLabel('Password'),
-              const SizedBox(height: 8),
-              _passwordField(),
-
-              const SizedBox(height: 14),
-
-              // ── Remember Me + Forgot Password ──
-              _rememberForgotRow(),
-
-              const SizedBox(height: 28),
-
-              // ── Sign In Button ──
-              _signInButton(),
-
-              const SizedBox(height: 40),
-
-              // ── Sign Up Prompt ──
-              _signUpPrompt(),
-
-              const SizedBox(height: 32),
-            ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  // ── EMORA Logo ──────────────────────────────────────────────────────────
+  // ── UI Components ──────────────────────────────────────────────────────────
+
+  // Widget _buildLogo() {
+  //   return Row(
+  //     mainAxisAlignment: MainAxisAlignment.center,
+  //     children: [
+  //       Text(
+  //         'EMORA',
+  //         style: GoogleFonts.arvo(
+  //           fontSize: 32,
+  //           fontWeight: FontWeight.w700,
+  //           letterSpacing: 3,
+  //           color: Colors.white,
+  //         ),
+  //       ),
+  //       const SizedBox(width: 8),
+  //       _buildInfinityIcon(),
+  //     ],
+  //   );
+  // }
+
   Widget _buildLogo() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Text(
-          'EMORA',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 28,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 3,
-          ),
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      Text(
+        'EMORA',
+        style: GoogleFonts.arvo(
+          fontSize: 32,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 3,
+          color: Colors.white,
         ),
-        const SizedBox(width: 8),
-        ShaderMask(
-          shaderCallback: (bounds) => const LinearGradient(
-            colors: [Color(0xFF9B59B6), Color(0xFF3498DB)],
-          ).createShader(bounds),
-          child: const Icon(Icons.all_inclusive, color: Colors.white, size: 28),
-        ),
-      ],
+      ),
+      const SizedBox(width: 8),
+      // Replace Icon with your local asset image
+      Image.asset(
+        'assets/images/logo.png',
+        width: 50, // Adjust size as needed
+        height: 50,
+      ),
+    ],
+  );
+}
+
+  Widget _buildInfinityIcon() {
+    return ShaderMask(
+      shaderCallback: (bounds) => const LinearGradient(
+        colors: [Color(0xFFA7338A), Color(0xFF7C4DFF)],
+      ).createShader(bounds),
+      child: const Icon(Icons.all_inclusive, color: Colors.white, size: 32),
     );
   }
 
-  // ── Social Button ───────────────────────────────────────────────────────
-  Widget _socialButton({required String label, required Widget icon}) {
+  Widget _socialButton({required Widget icon, required String label, required VoidCallback onTap}) {
     return SizedBox(
       width: double.infinity,
       height: 56,
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: onTap,
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF1A2040),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),
+            side: const BorderSide(color: Color(0xFF2E2E50)),
           ),
           elevation: 0,
         ),
@@ -143,11 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(width: 12),
             Text(
               label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-              ),
+              style: GoogleFonts.poppins(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500),
             ),
           ],
         ),
@@ -155,183 +192,129 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // ── OR Divider ──────────────────────────────────────────────────────────
   Widget _orDivider() {
     return Row(
       children: [
-        Expanded(
-          child: Divider(color: Colors.white.withOpacity(0.15), thickness: 1),
+        Expanded(child: Divider(color: Colors.white.withOpacity(0.1), thickness: 1)),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Text('or', style: GoogleFonts.poppins(color: Colors.white38, fontSize: 13)),
         ),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            'or',
-            style: TextStyle(color: Colors.white38, fontSize: 13),
-          ),
-        ),
-        Expanded(
-          child: Divider(color: Colors.white.withOpacity(0.15), thickness: 1),
-        ),
+        Expanded(child: Divider(color: Colors.white.withOpacity(0.1), thickness: 1)),
       ],
     );
   }
 
-  // ── Field Label ─────────────────────────────────────────────────────────
   Widget _fieldLabel(String label) {
     return Align(
       alignment: Alignment.centerLeft,
       child: Text(
         label,
-        style: const TextStyle(color: Colors.white70, fontSize: 13),
+        style: GoogleFonts.poppins(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w500),
       ),
     );
   }
 
-  // ── Input Field ─────────────────────────────────────────────────────────
-  Widget _inputField({required String hint, required IconData icon}) {
+  Widget _inputField({required TextEditingController controller, required String hint, required IconData icon}) {
     return TextField(
-      style: const TextStyle(color: Colors.white, fontSize: 14),
+      controller: controller,
+      style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(
-          color: Colors.white.withOpacity(0.3),
-          fontSize: 14,
-        ),
+        hintStyle: TextStyle(color: Colors.white.withOpacity(0.2), fontSize: 14),
         prefixIcon: Icon(icon, color: Colors.white38, size: 20),
         filled: true,
         fillColor: const Color(0xFF1A2040),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: BorderSide.none,
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 16,
-          horizontal: 20,
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(30), borderSide: BorderSide.none),
+        contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
       ),
     );
   }
 
-  // ── Password Field ──────────────────────────────────────────────────────
   Widget _passwordField() {
     return TextField(
+      controller: _passwordController,
       obscureText: _obscurePassword,
-      style: const TextStyle(color: Colors.white, fontSize: 14),
+      style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
       decoration: InputDecoration(
         hintText: 'Enter your password',
-        hintStyle: TextStyle(
-          color: Colors.white.withOpacity(0.3),
-          fontSize: 14,
-        ),
-        prefixIcon: const Icon(
-          Icons.lock_outline,
-          color: Colors.white38,
-          size: 20,
-        ),
-        suffixIcon: GestureDetector(
-          onTap: () => setState(() => _obscurePassword = !_obscurePassword),
-          child: Icon(
-            _obscurePassword
-                ? Icons.visibility_off_outlined
-                : Icons.visibility_outlined,
-            color: Colors.white38,
-            size: 20,
-          ),
+        hintStyle: TextStyle(color: Colors.white.withOpacity(0.2), fontSize: 14),
+        prefixIcon: const Icon(Icons.lock_outline, color: Colors.white38, size: 20),
+        suffixIcon: IconButton(
+          icon: Icon(_obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: Colors.white38, size: 20),
+          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
         ),
         filled: true,
         fillColor: const Color(0xFF1A2040),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: BorderSide.none,
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 16,
-          horizontal: 20,
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(30), borderSide: BorderSide.none),
+        contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
       ),
     );
   }
 
-  // ── Remember Me + Forgot Password ───────────────────────────────────────
   Widget _rememberForgotRow() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Row(
           children: [
-            SizedBox(
-              width: 18,
-              height: 18,
-              child: Checkbox(
-                value: _rememberMe,
-                onChanged: (val) => setState(() => _rememberMe = val ?? false),
-                activeColor: const Color(0xFF2E3A8C),
-                side: const BorderSide(color: Colors.white38),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
+            Checkbox(
+              value: _rememberMe,
+              onChanged: (val) => setState(() => _rememberMe = val ?? false),
+              activeColor: const Color(0xFFA7338A),
+              side: const BorderSide(color: Colors.white38),
             ),
-            const SizedBox(width: 8),
-            const Text(
-              'Remember Me',
-              style: TextStyle(color: Colors.white54, fontSize: 12),
-            ),
+            Text('Remember Me', style: GoogleFonts.poppins(color: Colors.white54, fontSize: 12)),
           ],
         ),
-        const Text(
-          'Forgot Password?',
-          style: TextStyle(color: Colors.white54, fontSize: 12),
-        ),
+        Text('Forgot Password?', style: GoogleFonts.poppins(color: Colors.white54, fontSize: 12)),
       ],
     );
   }
 
-  // ── Sign In Button ──────────────────────────────────────────────────────
   Widget _signInButton() {
     return SizedBox(
       width: double.infinity,
       height: 56,
       child: ElevatedButton(
-        onPressed: () => context.go('/playlist'),
+        onPressed: () => context.go('/home'), // Using your router.dart path
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
-          ),
-          elevation: 0,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         ),
-        child: const Text(
+        child: Text(
           'Sign in',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-          ),
+          style: GoogleFonts.poppins(color: const Color(0xFF15173D), fontSize: 16, fontWeight: FontWeight.w700),
         ),
       ),
     );
   }
 
-  // ── Sign Up Prompt ──────────────────────────────────────────────────────
   Widget _signUpPrompt() {
     return GestureDetector(
       onTap: () => context.go('/register'),
       child: RichText(
-        text: const TextSpan(
+        text: TextSpan(
           text: "Don't have an Account ? ",
-          style: TextStyle(color: Colors.white54, fontSize: 13),
-          children: [
-            TextSpan(
-              text: 'Sign up',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+          style: GoogleFonts.poppins(color: Colors.white54, fontSize: 13),
+          children: const [
+            TextSpan(text: 'Sign up', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           ],
         ),
       ),
     );
+  }
+
+  // ── Helper Icons ──────────────────────────────────────────────────────────
+
+  Widget _googleIcon() {
+    return SvgPicture.string(
+      '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>''',
+      width: 22,
+    );
+  }
+
+  Widget _facebookIcon() {
+    return const Icon(Icons.facebook, color: Color(0xFF1877F2), size: 24);
   }
 }
