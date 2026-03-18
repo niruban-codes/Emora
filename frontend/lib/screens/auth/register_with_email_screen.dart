@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'home_screen.dart';
+import 'package:go_router/go_router.dart'; // 👈 replaced Navigator
 
 class RegisterWithEmailScreen extends StatefulWidget {
   const RegisterWithEmailScreen({super.key});
@@ -104,8 +104,9 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
                           controller: _passwordController,
                           hint: 'Password',
                           obscure: _obscurePassword,
-                          onToggle: () =>
-                              setState(() => _obscurePassword = !_obscurePassword),
+                          onToggle: () => setState(
+                            () => _obscurePassword = !_obscurePassword,
+                          ),
                         ),
                         const SizedBox(height: 18),
                         _buildFieldLabel('Confirm Password'),
@@ -114,8 +115,10 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
                           controller: _confirmPasswordController,
                           hint: 'Confirm Password',
                           obscure: _obscureConfirmPassword,
-                          onToggle: () => setState(() =>
-                              _obscureConfirmPassword = !_obscureConfirmPassword),
+                          onToggle: () => setState(
+                            () => _obscureConfirmPassword =
+                                !_obscureConfirmPassword,
+                          ),
                         ),
                         const SizedBox(height: 18),
                         _buildPrivacyRow(),
@@ -141,7 +144,7 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           GestureDetector(
-            onTap: () => Navigator.pop(context),
+            onTap: () => context.pop(), // 👈 go_router pop
             child: const Icon(Icons.arrow_back, color: Colors.white, size: 22),
           ),
           _buildInfinityBadge(),
@@ -177,7 +180,6 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
     return const Text(
       'Enter the details',
       style: TextStyle(
-        fontFamily: 'Poppins',
         fontSize: 26,
         fontWeight: FontWeight.w800,
         letterSpacing: 0.2,
@@ -190,7 +192,6 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
     return Text(
       label,
       style: const TextStyle(
-        fontFamily: 'Poppins',
         color: Colors.white,
         fontSize: 14,
         fontWeight: FontWeight.w500,
@@ -206,7 +207,7 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
     return TextField(
       controller: controller,
       keyboardType: keyboardType,
-      style: const TextStyle(fontFamily: 'Poppins', color: Colors.white, fontSize: 14),
+      style: const TextStyle(color: Colors.white, fontSize: 14),
       decoration: InputDecoration(
         hintText: hint,
         filled: true,
@@ -223,12 +224,11 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
           borderRadius: BorderRadius.circular(100),
           borderSide: const BorderSide(color: Color(0xFFA7338A), width: 1.5),
         ),
-        hintStyle: const TextStyle(
-          fontFamily: 'Poppins',
-          color: Color(0xFF6B6B8A),
-          fontSize: 14,
+        hintStyle: const TextStyle(color: Color(0xFF6B6B8A), fontSize: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
     );
   }
@@ -242,7 +242,7 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
     return TextField(
       controller: controller,
       obscureText: obscure,
-      style: const TextStyle(fontFamily: 'Poppins', color: Colors.white, fontSize: 14),
+      style: const TextStyle(color: Colors.white, fontSize: 14),
       decoration: InputDecoration(
         hintText: hint,
         filled: true,
@@ -259,12 +259,11 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
           borderRadius: BorderRadius.circular(100),
           borderSide: const BorderSide(color: Color(0xFFA7338A), width: 1.5),
         ),
-        hintStyle: const TextStyle(
-          fontFamily: 'Poppins',
-          color: Color(0xFF6B6B8A),
-          fontSize: 14,
+        hintStyle: const TextStyle(color: Color(0xFF6B6B8A), fontSize: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         suffixIcon: GestureDetector(
           onTap: onToggle,
           child: Icon(
@@ -284,22 +283,22 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
         const SizedBox(width: 10),
         Expanded(child: _buildDobField(_dobMonthController, 'MM', 2)),
         const SizedBox(width: 10),
-        Expanded(
-          flex: 2,
-          child: _buildDobField(_dobYearController, 'YYYY', 4),
-        ),
+        Expanded(flex: 2, child: _buildDobField(_dobYearController, 'YYYY', 4)),
       ],
     );
   }
 
   Widget _buildDobField(
-      TextEditingController controller, String hint, int maxLength) {
+    TextEditingController controller,
+    String hint,
+    int maxLength,
+  ) {
     return TextField(
       controller: controller,
       keyboardType: TextInputType.number,
       maxLength: maxLength,
       textAlign: TextAlign.center,
-      style: const TextStyle(fontFamily: 'Poppins', color: Colors.white, fontSize: 14),
+      style: const TextStyle(color: Colors.white, fontSize: 14),
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       decoration: InputDecoration(
         hintText: hint,
@@ -318,12 +317,11 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
           borderRadius: BorderRadius.circular(100),
           borderSide: const BorderSide(color: Color(0xFFA7338A), width: 1.5),
         ),
-        hintStyle: const TextStyle(
-          fontFamily: 'Poppins',
-          color: Color(0xFF6B6B8A),
-          fontSize: 14,
+        hintStyle: const TextStyle(color: Color(0xFF6B6B8A), fontSize: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 12,
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       ),
     );
   }
@@ -331,12 +329,7 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
   Widget _buildDobNote() {
     return const Text(
       "Your birthday is only visible to you and Emora's team.",
-      style: TextStyle(
-        fontFamily: 'Poppins',
-        color: Color(0xFF6B6B8A),
-        fontSize: 11,
-        height: 1.4,
-      ),
+      style: TextStyle(color: Color(0xFF6B6B8A), fontSize: 11, height: 1.4),
     );
   }
 
@@ -369,17 +362,12 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
           Expanded(
             child: RichText(
               text: const TextSpan(
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  color: Color(0xFF9090B0),
-                  fontSize: 13,
-                ),
+                style: TextStyle(color: Color(0xFF9090B0), fontSize: 13),
                 children: [
                   TextSpan(text: 'I agree to the '),
                   TextSpan(
                     text: "Emora's Privacy Policy",
                     style: TextStyle(
-                      fontFamily: 'Poppins',
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
                       decoration: TextDecoration.underline,
@@ -397,13 +385,10 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
 
   Widget _buildContinueButton() {
     return GestureDetector(
-      //onTap: _agreeToPolicy ? () {} : null,
-      onTap: _agreeToPolicy ? () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
-        );
-      } : null,
+      onTap: _agreeToPolicy
+          ? () =>
+                context.go('/home') // 👈 go_router to home after register
+          : null,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         width: double.infinity,
@@ -416,7 +401,6 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
           child: Text(
             'Continue',
             style: TextStyle(
-              fontFamily: 'Poppins',
               color: _agreeToPolicy
                   ? const Color(0xFF15173D)
                   : const Color(0xFF6B6B8A),

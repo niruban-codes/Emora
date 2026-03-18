@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'launch_screen.dart'; // Make sure the path matches your folder structure
+import 'package:go_router/go_router.dart'; // 👈 added
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,38 +18,22 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
 
-    // Set up the animation controller (duration of the pop-in effect)
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 4000),
     );
 
-    // Use a curved animation for a smooth, premium "pop" effect
     _animation = CurvedAnimation(
       parent: _controller,
       curve: Curves.easeOutBack,
     );
 
-    // Start the animation
     _controller.forward();
 
-    // Navigate to the Launch Screen after 5 seconds with a smooth Fade Transition
+    // 👇 replaced Navigator.pushReplacement with go_router
     Future.delayed(const Duration(milliseconds: 5000), () {
       if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          PageRouteBuilder(
-            transitionDuration: const Duration(
-              milliseconds: 800,
-            ), // 800ms fade duration
-            pageBuilder: (context, animation, secondaryAnimation) =>
-                const LaunchScreen(),
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) {
-                  return FadeTransition(opacity: animation, child: child);
-                },
-          ),
-        );
+        context.go('/launch');
       }
     });
   }
@@ -63,17 +47,15 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF110E26), // Dark navy background
+      backgroundColor: const Color(0xFF110E26),
       body: Stack(
         fit: StackFit.expand,
         children: [
           // 1. Topographical Background Image
           Image.asset(
-            'assets/images/splash_bg.png', // Export this full background from Figma
+            'assets/images/splash_bg.png',
             fit: BoxFit.cover,
-            opacity: const AlwaysStoppedAnimation(
-              0.5,
-            ), // Dims background slightly if needed
+            opacity: const AlwaysStoppedAnimation(0.5),
           ),
 
           // 2. Animated Centered Content
@@ -87,7 +69,7 @@ class _SplashScreenState extends State<SplashScreen>
                   children: [
                     // Infinity Logo
                     Image.asset(
-                      'assets/images/logo_large.png', // Export the large 3D logo
+                      'assets/images/logo_large.png',
                       width: 140,
                       height: 140,
                       fit: BoxFit.contain,
@@ -110,7 +92,7 @@ class _SplashScreenState extends State<SplashScreen>
                     const Text(
                       'YOUR MOOD YOUR MUSIC',
                       style: TextStyle(
-                        color: Color(0xFFFF2994), // Neon pink color from design
+                        color: Color(0xFFFF2994),
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 2.5,
