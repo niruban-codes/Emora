@@ -1,116 +1,287 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
+  int _selectedIndex = 0;
+  late AnimationController _animController;
+  late Animation<double> _fadeAnim;
+
+  final List<Map<String, dynamic>> _moods = [
+    {'label': 'Happy', 'icon': Icons.wb_sunny_outlined},
+    {'label': 'Peaceful', 'icon': Icons.cloud_outlined},
+    {'label': 'Melancholy', 'icon': Icons.nightlight_outlined},
+    {'label': 'Anxious', 'icon': Icons.air_outlined},
+    {'label': 'Energetic', 'icon': Icons.bolt_outlined},
+    {'label': 'Sad', 'icon': Icons.water_drop_outlined},
+  ];
+
+  final List<Map<String, String>> _playlists = [
+    {'title': 'Midnight Pulse', 'mood': 'ENERGETIC'},
+    {'title': 'Ocean Breeze', 'mood': 'PEACEFUL'},
+    {'title': 'Urban Night', 'mood': 'HAPPY'},
+    {'title': 'Rainy Echoes', 'mood': 'SAD'},
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _animController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+    _fadeAnim = CurvedAnimation(parent: _animController, curve: Curves.easeOut);
+    _animController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Emora',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        actions: [IconButton(icon: const Icon(Icons.person), onPressed: () {})],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Hello, Alex! 👋',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Ready to match your mood with music?',
-              style: Theme.of(
-                context,
-              ).textTheme.bodyLarge?.copyWith(color: Colors.grey),
-            ),
-            const SizedBox(height: 32),
-
-            // Primary Call to Action
-            SizedBox(
-              width: double.infinity,
-              height: 60,
-              child: FilledButton.icon(
-                onPressed: () => context.push('/detect'),
-                icon: const Icon(Icons.camera_alt),
-                label: const Text(
-                  'Detect My Mood',
-                  style: TextStyle(fontSize: 18),
-                ),
-                style: FilledButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+      backgroundColor: const Color(0xFF15173D),
+      body: FadeTransition(
+        opacity: _fadeAnim,
+        child: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 16),
+                      _buildTopBar(),
+                      const SizedBox(height: 28),
+                      _buildAnalyzeButton(),
+                      const SizedBox(height: 32),
+                      _sectionHeader('Search by Mood'),
+                      const SizedBox(height: 16),
+                      _buildMoodGrid(),
+                      const SizedBox(height: 32),
+                      _sectionHeader('Trending Playlists', showSeeAll: false),
+                      const SizedBox(height: 16),
+                      _buildPlaylistGrid(),
+                      const SizedBox(height: 24),
+                    ],
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 32),
-
-            // Grid Shortcuts
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                children: [
-                  _buildShortcutCard(
-                    context,
-                    Icons.queue_music,
-                    'My Playlists',
-                    Colors.blue,
-                  ),
-                  _buildShortcutCard(
-                    context,
-                    Icons.history,
-                    'Mood History',
-                    Colors.orange,
-                  ),
-                  _buildShortcutCard(
-                    context,
-                    Icons.favorite,
-                    'Favorites',
-                    Colors.red,
-                  ),
-                  _buildShortcutCard(
-                    context,
-                    Icons.settings,
-                    'Settings',
-                    Colors.grey,
-                  ),
-                ],
-              ),
-            ),
-          ],
+              _buildBottomNav(),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildShortcutCard(
-    BuildContext context,
-    IconData icon,
-    String title,
-    Color color,
-  ) {
-    return Card(
-      child: InkWell(
-        onTap: () {},
-        borderRadius: BorderRadius.circular(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+  // ── UI Components ──────────────────────────────────────────────────────────
+
+  Widget _buildTopBar() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _buildLogoIcon(),
+        Row(
           children: [
-            Icon(icon, size: 48, color: color),
-            const SizedBox(height: 12),
-            Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+            _circularIconButton(Icons.history),
+            const SizedBox(width: 12),
+            _notificationButton(),
           ],
         ),
+      ],
+    );
+  }
+
+  Widget _buildLogoIcon() {
+    return Container(
+      width: 44,
+      height: 44,
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: LinearGradient(
+          colors: [Color(0xFFA7338A), Color(0xFF7C4DFF)],
+        ),
       ),
+      child: const Center(
+        child: Text('∞', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+      ),
+    );
+  }
+
+  Widget _buildAnalyzeButton() {
+    return ElevatedButton(
+      onPressed: () {},
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.white,
+        minimumSize: const Size(double.infinity, 56),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.bar_chart_rounded, color: Color(0xFF15173D), size: 22),
+          const SizedBox(width: 10),
+          Text(
+            'Analyze Mood',
+            style: GoogleFonts.poppins(color: const Color(0xFF15173D), fontSize: 16, fontWeight: FontWeight.w700),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _sectionHeader(String title, {bool showSeeAll = true}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style: GoogleFonts.poppins(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700),
+        ),
+        if (showSeeAll)
+          Text(
+            'See all',
+            style: GoogleFonts.poppins(color: const Color(0xFFA7338A), fontSize: 14, fontWeight: FontWeight.w500),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildMoodGrid() {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+      ),
+      itemCount: _moods.length,
+      itemBuilder: (context, index) => _moodCard(_moods[index]),
+    );
+  }
+
+  Widget _moodCard(Map<String, dynamic> mood) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E1A35),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFA7338A).withOpacity(0.3)),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(mood['icon'] as IconData, color: const Color(0xFFA7338A), size: 28),
+          const SizedBox(height: 8),
+          Text(mood['label'], style: GoogleFonts.poppins(color: Colors.white, fontSize: 12)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPlaylistGrid() {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 1.1,
+      ),
+      itemCount: _playlists.length,
+      itemBuilder: (context, index) => _playlistCard(_playlists[index]),
+    );
+  }
+
+  Widget _playlistCard(Map<String, String> playlist) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [const Color(0xFF2A1A4E).withOpacity(0.8), const Color(0xFF0D0A1E)],
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(color: const Color(0xFFA7338A), borderRadius: BorderRadius.circular(100)),
+            child: Text(playlist['mood']!, style: const TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold)),
+          ),
+          const SizedBox(height: 6),
+          Text(playlist['title']!, style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w700)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomNav() {
+    final navItems = [
+      {'icon': Icons.home_rounded, 'label': 'HOME'},
+      {'icon': Icons.search_rounded, 'label': 'EXPLORE'},
+      {'icon': Icons.library_music_outlined, 'label': 'LIBRARY'},
+      {'icon': Icons.person_rounded, 'label': 'PROFILE'},
+    ];
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0F1130),
+        border: Border(top: BorderSide(color: const Color(0xFF2E2E50).withOpacity(0.5))),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: List.generate(navItems.length, (index) {
+          final isSelected = _selectedIndex == index;
+          return GestureDetector(
+            onTap: () => setState(() => _selectedIndex = index),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(navItems[index]['icon'] as IconData, color: isSelected ? const Color(0xFFA7338A) : Colors.white38, size: 24),
+                Text(navItems[index]['label'] as String, style: GoogleFonts.poppins(color: isSelected ? const Color(0xFFA7338A) : Colors.white38, fontSize: 10)),
+              ],
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+
+  Widget _circularIconButton(IconData icon) {
+    return Container(
+      width: 38, height: 38,
+      decoration: BoxDecoration(color: const Color(0xFF1E1E45), shape: BoxShape.circle),
+      child: Icon(icon, color: Colors.white70, size: 20),
+    );
+  }
+
+  Widget _notificationButton() {
+    return Stack(
+      children: [
+        _circularIconButton(Icons.notifications_outlined),
+        Positioned(right: 6, top: 6, child: Container(width: 8, height: 8, decoration: const BoxDecoration(color: Color(0xFFA7338A), shape: BoxShape.circle))),
+      ],
     );
   }
 }
