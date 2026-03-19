@@ -3,14 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:frontend/screens/emotion/mood_model.dart';
 
-/// ResultScreen
-///
-/// Fully dynamic — driven entirely by [MoodModel].
-/// Every colour, label, song, and playlist reflects the detected emotion.
-///
-/// Receive via GoRouter extra:
-///   context.push('/result', extra: MoodModel.fromString('happy'));
-
 class ResultScreen extends StatefulWidget {
   final MoodModel mood;
   const ResultScreen({super.key, required this.mood});
@@ -23,6 +15,7 @@ class _ResultScreenState extends State<ResultScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _fadeCtrl;
   late Animation<double> _fadeAnim;
+  int _currentNavIndex = 2; // result is under LIBRARY
 
   Color get _primary => widget.mood.primaryColor;
   Color get _secondary => widget.mood.secondaryColor;
@@ -84,7 +77,7 @@ class _ResultScreenState extends State<ResultScreen>
                     ),
                   ),
                 ),
-                _buildBottomNavBar(),
+                _buildBottomNavBar(context),
               ],
             ),
           ),
@@ -93,8 +86,7 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 
-  // ── Top bar ────────────────────────────────────────────────────────────────
-
+  // ── Top Bar ───────────────────────────────────────────────────────────────
   Widget _buildTopBar(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -131,8 +123,7 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 
-  // ── Face scan area ─────────────────────────────────────────────────────────
-
+  // ── Face Scan Area ────────────────────────────────────────────────────────
   Widget _buildFaceScanArea() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -146,7 +137,6 @@ class _ResultScreenState extends State<ResultScreen>
         ),
         child: Stack(
           children: [
-            // Image — replace with actual captured image when backend ready
             Positioned.fill(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
@@ -175,8 +165,6 @@ class _ResultScreenState extends State<ResultScreen>
                 ),
               ),
             ),
-
-            // Mood-tinted overlay
             Positioned.fill(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
@@ -195,8 +183,6 @@ class _ResultScreenState extends State<ResultScreen>
                 ),
               ),
             ),
-
-            // Static scan line
             Positioned(
               top: 130,
               left: 20,
@@ -210,8 +196,6 @@ class _ResultScreenState extends State<ResultScreen>
                 ),
               ),
             ),
-
-            // NEURAL ANALYSIS badge
             Positioned(
               top: 14,
               left: 14,
@@ -235,8 +219,6 @@ class _ResultScreenState extends State<ResultScreen>
                 ),
               ),
             ),
-
-            // STATUS text
             Positioned(
               top: 40,
               left: 14,
@@ -249,11 +231,7 @@ class _ResultScreenState extends State<ResultScreen>
                 ),
               ),
             ),
-
-            // Corner brackets
             ..._cornerBrackets(_primary),
-
-            // Detected mood chip — bottom left
             Positioned(
               bottom: 14,
               left: 14,
@@ -292,8 +270,6 @@ class _ResultScreenState extends State<ResultScreen>
                 ),
               ),
             ),
-
-            // Coordinates — bottom right
             Positioned(
               bottom: 14,
               right: 14,
@@ -318,8 +294,7 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 
-  // ── Mood label ─────────────────────────────────────────────────────────────
-
+  // ── Mood Label ────────────────────────────────────────────────────────────
   Widget _buildMoodLabel() {
     return Center(
       child: Column(
@@ -340,7 +315,7 @@ class _ResultScreenState extends State<ResultScreen>
             child: Text(
               widget.mood.label,
               style: GoogleFonts.poppins(
-                color: Colors.white, // masked by shader
+                color: Colors.white,
                 fontSize: 44,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1,
@@ -369,8 +344,7 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 
-  // ── Song section ───────────────────────────────────────────────────────────
-
+  // ── Song Section ──────────────────────────────────────────────────────────
   Widget _buildSongSection() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -396,7 +370,6 @@ class _ResultScreenState extends State<ResultScreen>
             ),
             child: Row(
               children: [
-                // Album art
                 Container(
                   width: 52,
                   height: 52,
@@ -438,7 +411,6 @@ class _ResultScreenState extends State<ResultScreen>
                     ],
                   ),
                 ),
-                // Play button
                 Container(
                   width: 38,
                   height: 38,
@@ -460,11 +432,9 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 
-  // ── Mood playlists ─────────────────────────────────────────────────────────
-
+  // ── Mood Playlists ────────────────────────────────────────────────────────
   Widget _buildMoodPlaylists() {
     final playlists = widget.mood.playlistTitles;
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -548,8 +518,7 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 
-  // ── Bottom buttons ─────────────────────────────────────────────────────────
-
+  // ── Bottom Buttons ────────────────────────────────────────────────────────
   Widget _buildBottomButtons(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -567,7 +536,7 @@ class _ResultScreenState extends State<ResultScreen>
                 elevation: 8,
                 shadowColor: _primary.withOpacity(0.5),
               ),
-              onPressed: () {},
+              onPressed: () => context.push('/playlist', extra: widget.mood),
               child: Text(
                 'Play Mood Playlist',
                 style: GoogleFonts.poppins(
@@ -609,15 +578,19 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 
-  // ── Bottom nav ─────────────────────────────────────────────────────────────
-
-  Widget _buildBottomNavBar() {
+  // ── Bottom Nav Bar ────────────────────────────────────────────────────────
+  // Removed: History
+  // Working: Home → /home, Explore → /search, Library → /playlist, Profile → no action yet
+  Widget _buildBottomNavBar(BuildContext context) {
     final items = [
-      (Icons.home_outlined, 'HOME'),
-      (Icons.search, 'EXPLORE'),
-      (Icons.library_music_outlined, 'LIBRARY'),
-      (Icons.history, 'HISTORY'),
-      (Icons.person, 'PROFILE'),
+      _NavItem(icon: Icons.home_outlined, label: 'HOME', route: '/home'),
+      _NavItem(icon: Icons.search, label: 'EXPLORE', route: '/search'),
+      _NavItem(
+        icon: Icons.library_music_outlined,
+        label: 'LIBRARY',
+        route: '/playlist',
+      ),
+      _NavItem(icon: Icons.person, label: 'PROFILE', route: null),
     ];
 
     return Container(
@@ -629,33 +602,47 @@ class _ResultScreenState extends State<ResultScreen>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: items.asMap().entries.map((entry) {
-          final isActive = entry.key == 4;
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                entry.value.$1,
-                color: isActive ? _primary : Colors.white.withOpacity(0.4),
-                size: 22,
-              ),
-              const SizedBox(height: 3),
-              Text(
-                entry.value.$2,
-                style: TextStyle(
+          final i = entry.key;
+          final item = entry.value;
+          final isActive = i == _currentNavIndex;
+
+          return GestureDetector(
+            onTap: () {
+              setState(() => _currentNavIndex = i);
+              if (item.route == '/playlist') {
+                // Pass current mood when going to playlist
+                context.push('/playlist', extra: widget.mood);
+              } else if (item.route != null) {
+                context.push(item.route!);
+              }
+              // Profile: no action yet
+            },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  item.icon,
                   color: isActive ? _primary : Colors.white.withOpacity(0.4),
-                  fontSize: 9,
-                  letterSpacing: 0.5,
+                  size: 22,
                 ),
-              ),
-            ],
+                const SizedBox(height: 3),
+                Text(
+                  item.label,
+                  style: TextStyle(
+                    color: isActive ? _primary : Colors.white.withOpacity(0.4),
+                    fontSize: 9,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ],
+            ),
           );
         }).toList(),
       ),
     );
   }
 
-  // ── Corner brackets ────────────────────────────────────────────────────────
-
+  // ── Corner Brackets ───────────────────────────────────────────────────────
   List<Widget> _cornerBrackets(Color color) {
     const size = 20.0;
     const stroke = 2.0;
@@ -686,4 +673,16 @@ class _ResultScreenState extends State<ResultScreen>
       Positioned(bottom: 10, right: 10, child: b(false, false)),
     ];
   }
+}
+
+// ── Nav Item Model ────────────────────────────────────────────────────────────
+class _NavItem {
+  final IconData icon;
+  final String label;
+  final String? route; // null = not yet implemented
+  const _NavItem({
+    required this.icon,
+    required this.label,
+    required this.route,
+  });
 }
