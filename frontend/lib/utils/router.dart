@@ -1,17 +1,21 @@
+import 'package:go_router/go_router.dart';
+import 'package:frontend/screens/splash_screen.dart';
+import 'package:frontend/screens/launch_screen.dart';
 import 'package:frontend/screens/auth/register_screen.dart';
-import 'package:frontend/screens/auth/login_screen.dart';
 import 'package:frontend/screens/auth/register_with_email_screen.dart';
-import 'package:frontend/screens/music/playlist_details_screen.dart';
-import 'package:frontend/screens/music/search_mood_screen.dart';
-import 'package:frontend/screens/music/player_screen.dart'; // 👈 added
+import 'package:frontend/screens/auth/login_screen.dart';
 import 'package:frontend/screens/home_screen.dart';
 import 'package:frontend/screens/emotion/emotion_detection_screen.dart';
 import 'package:frontend/screens/emotion/result_screen.dart';
 import 'package:frontend/screens/emotion/mood_model.dart';
-import 'package:frontend/models/song_model.dart'; // 👈 added
-import 'package:go_router/go_router.dart';
-import '../screens/splash_screen.dart';
-import '../screens/launch_screen.dart';
+import 'package:frontend/models/song_model.dart';
+import 'package:frontend/screens/music/playlist_details_screen.dart';
+import 'package:frontend/screens/music/search_mood_screen.dart';
+import 'package:frontend/screens/music/player_screen.dart';
+
+// 1. ADD THESE IMPORTS
+import 'package:frontend/screens/profile/profile_screen.dart';
+import 'package:frontend/screens/profile/account_setting.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/',
@@ -33,7 +37,17 @@ final appRouter = GoRouter(
       builder: (context, state) => const SearchMoodScreen(),
     ),
 
-    // ── Playlist ──────────────────────────────────────────────────────────
+    // 2. ADD THESE NEW ROUTES
+    GoRoute(
+      path: '/profile',
+      builder: (context, state) => const ProfileSettingsScreen(),
+    ),
+    GoRoute(
+      path: '/account-settings',
+      builder: (context, state) => const AccountSettingScreen(),
+    ),
+
+    // ── Existing Playlist & Player Routes ────────────────────────────────
     GoRoute(
       path: '/playlist',
       builder: (context, state) {
@@ -43,8 +57,6 @@ final appRouter = GoRouter(
         );
       },
     ),
-
-    // ── Player — receives {songs: List<Song>, index: int} via extra ────────
     GoRoute(
       path: '/player',
       builder: (context, state) {
@@ -58,8 +70,6 @@ final appRouter = GoRouter(
         );
       },
     ),
-
-    // ── Emotion flow ──────────────────────────────────────────────────────
     GoRoute(
       path: '/scan',
       builder: (context, state) => const EmotionDetectionScreen(),
