@@ -1,0 +1,357 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+class ProfileSettingsScreen extends StatelessWidget {
+  const ProfileSettingsScreen({super.key});
+
+  // Theme Colors - Synced with group project home_screen.dart
+  static const Color bgColor = Color(0xFF15173D);
+  static const Color accentPurple = Color(0xFF9C27B0);
+  static const Color cardColor = Color(0xFF1E1A35);
+  static const Color textSecondary = Colors.white38;
+  static const Color logoutRedBg = Color(0xFF3B1E2B);
+  static const Color logoutTextRed = Color(0xFFEF5350);
+  static const Color activeHighlight = Color(0xFFA7338A);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: bgColor,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => context.pop(), // GoRouter back
+        ),
+        title: const Text(
+          'Settings',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            color: Colors.white,
+          ),
+        ),
+        centerTitle: true,
+        actions: const [
+          Padding(
+            padding: EdgeInsets.only(right: 16),
+            child: Icon(Icons.more_vert, color: Colors.white),
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          children: [
+            const SizedBox(height: 10),
+            _buildProfileHeader(),
+            const SizedBox(height: 30),
+
+            _buildSectionLabel('ACCOUNT SETTINGS'),
+            _buildSimpleTile(context, Icons.person_outline, 'Edit Profile'),
+            _buildSimpleTile(context, Icons.trending_up, 'Insights'),
+            _buildSimpleTile(
+              context,
+              Icons.sentiment_satisfied_alt_outlined,
+              'Mood Analytics',
+            ),
+
+            const SizedBox(height: 25),
+            _buildSectionLabel('MUSIC INTEGRATION'),
+            _buildIntegrationCard(
+              'Spotify',
+              'Connected as @sarahj_music',
+              'Disconnect',
+              Icons.grid_view_rounded,
+              true,
+            ),
+            const SizedBox(height: 12),
+            _buildIntegrationCard(
+              'Connect YouTube Music',
+              '',
+              '+',
+              Icons.play_circle_fill,
+              false,
+            ),
+
+            const SizedBox(height: 25),
+            _buildSectionLabel('APP PREFERENCES'),
+            _buildSwitchTile(
+              Icons.notifications_none,
+              'Push Notifications',
+              true,
+            ),
+
+            const SizedBox(height: 30),
+            _buildPremiumCard(),
+
+            const SizedBox(height: 30),
+            _buildLogoutButton(context),
+
+            const SizedBox(height: 40),
+          ],
+        ),
+      ),
+      bottomNavigationBar: _buildBottomNav(context),
+    );
+  }
+
+  // ── Helper Methods (Fixes the 7 errors in your screenshot) ──────────────────
+
+  Widget _buildProfileHeader() {
+    return Column(
+      children: [
+        Stack(
+          alignment: Alignment.bottomRight,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: accentPurple, width: 3),
+              ),
+              child: const CircleAvatar(
+                radius: 55,
+                backgroundImage: NetworkImage(
+                  'https://i.imgur.com/8Km9t9S.png',
+                ),
+              ),
+            ),
+            const CircleAvatar(
+              radius: 16,
+              backgroundColor: accentPurple,
+              child: Icon(Icons.edit, size: 16, color: Colors.white),
+            ),
+          ],
+        ),
+        const SizedBox(height: 15),
+        const Text(
+          'Sarah Jenkins',
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        const Text(
+          'sarah.jenkins@emora.app',
+          style: TextStyle(color: textSecondary, fontSize: 14),
+        ),
+        const SizedBox(height: 10),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+          decoration: BoxDecoration(
+            color: accentPurple.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: const Text(
+            'PREMIUM MEMBER',
+            style: TextStyle(
+              color: accentPurple,
+              fontWeight: FontWeight.bold,
+              fontSize: 11,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSectionLabel(String label) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: Text(
+          label,
+          style: const TextStyle(
+            color: textSecondary,
+            fontSize: 11,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.1,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSimpleTile(BuildContext context, IconData icon, String title) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: _iconBox(icon),
+      title: Text(
+        title,
+        style: const TextStyle(color: Colors.white, fontSize: 15),
+      ),
+      trailing: const Icon(Icons.chevron_right, color: textSecondary),
+      onTap: () {
+        if (title == 'Edit Profile') {
+          context.push('/account-settings');
+        }
+      },
+    );
+  }
+
+  Widget _buildIntegrationCard(
+    String title,
+    String sub,
+    String action,
+    IconData icon,
+    bool connected,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(15),
+        border: connected ? null : Border.all(color: Colors.white10, width: 1),
+      ),
+      child: Row(
+        children: [
+          _iconBox(icon),
+          const SizedBox(width: 15),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                if (sub.isNotEmpty)
+                  Text(
+                    sub,
+                    style: const TextStyle(color: textSecondary, fontSize: 12),
+                  ),
+              ],
+            ),
+          ),
+          Text(
+            action,
+            style: TextStyle(
+              color: connected ? textSecondary : Colors.white,
+              fontSize: connected ? 12 : 20,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSwitchTile(IconData icon, String title, bool value) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: _iconBox(icon),
+      title: Text(
+        title,
+        style: const TextStyle(color: Colors.white, fontSize: 15),
+      ),
+      trailing: Switch(
+        value: value,
+        onChanged: (v) {},
+        activeColor: accentPurple,
+      ),
+    );
+  }
+
+  Widget _buildPremiumCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25),
+        gradient: const LinearGradient(
+          colors: [Color(0xFF8E24AA), Color(0xFF512DA8)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: const [
+              Text(
+                'Emora Premium',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 4),
+              Text(
+                'Experience music without boundaries.',
+                style: TextStyle(color: Colors.white70, fontSize: 12),
+              ),
+            ],
+          ),
+          const Icon(Icons.chevron_right, color: Colors.white, size: 30),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLogoutButton(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 55,
+      decoration: BoxDecoration(
+        color: logoutRedBg,
+        borderRadius: BorderRadius.circular(30),
+      ),
+      child: TextButton.icon(
+        onPressed: () => context.go('/login'),
+        icon: const Icon(Icons.logout, color: logoutTextRed, size: 20),
+        label: const Text(
+          'Log Out',
+          style: TextStyle(
+            color: logoutTextRed,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _iconBox(IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Icon(icon, color: accentPurple, size: 20),
+    );
+  }
+
+  Widget _buildBottomNav(BuildContext context) {
+    return BottomNavigationBar(
+      backgroundColor: const Color(0xFF0F1130),
+      type: BottomNavigationBarType.fixed,
+      selectedItemColor: activeHighlight,
+      unselectedItemColor: textSecondary,
+      currentIndex: 4,
+      onTap: (index) {
+        final routes = ['/home', '/search', '/library', '/history', '/profile'];
+        context.go(routes[index]);
+      },
+      items: const [
+        BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'HOME'),
+        BottomNavigationBarItem(icon: Icon(Icons.search), label: 'EXPLORE'),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.library_music_outlined),
+          label: 'LIBRARY',
+        ),
+        BottomNavigationBarItem(icon: Icon(Icons.history), label: 'HISTORY'),
+        BottomNavigationBarItem(icon: Icon(Icons.person_pin), label: 'PROFILE'),
+      ],
+    );
+  }
+}
