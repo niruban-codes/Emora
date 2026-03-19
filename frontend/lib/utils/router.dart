@@ -37,7 +37,7 @@ final appRouter = GoRouter(
       builder: (context, state) => const SearchMoodScreen(),
     ),
 
-    // 2. ADD THESE NEW ROUTES
+    // added the new routes for profile and account settings
     GoRoute(
       path: '/profile',
       builder: (context, state) => const ProfileSettingsScreen(),

@@ -91,8 +91,6 @@ class _HomeScreenState extends State<HomeScreen>
         _buildLogoIcon(),
         Row(
           children: [
-            _circularIconButton(Icons.history),
-            const SizedBox(width: 12),
             _notificationButton(),
           ],
         ),
@@ -101,31 +99,17 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildLogoIcon() {
-    return Container(
-      width: 44,
-      height: 44,
-      decoration: const BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: LinearGradient(
-          colors: [Color(0xFFA7338A), Color(0xFF7C4DFF)],
-        ),
-      ),
-      child: const Center(
-        child: Text(
-          '∞',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
+    return Image.asset(
+      'assets/images/logo.png',
+      width: 40,  
+      height: 40,
+      fit: BoxFit.contain,
     );
   }
 
   Widget _buildAnalyzeButton() {
     return ElevatedButton(
-      // ✅ Navigate to EmotionDetectionScreen via GoRouter
+      // Navigate to EmotionDetectionScreen via GoRouter
       onPressed: () => context.push('/scan'),
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.white,
@@ -180,43 +164,59 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildMoodGrid() {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-      ),
-      itemCount: allMoods.length,
-      itemBuilder: (context, index) => _moodCard(allMoods[index]),
-    );
-  }
+  return GridView.builder(
+    shrinkWrap: true,
+    physics: const NeverScrollableScrollPhysics(),
+    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: 3, 
+      crossAxisSpacing: 16,
+      mainAxisSpacing: 16,
+      childAspectRatio: 1.1, 
+    ),
+    itemCount: allMoods.length,
+    itemBuilder: (context, index) => _moodCard(allMoods[index]),
+  );
+}
 
   Widget _moodCard(MoodModel mood) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E1A35),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: mood.primaryColor.withOpacity(0.35)),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(mood.emoji, style: const TextStyle(fontSize: 26)),
-          const SizedBox(height: 8),
-          Text(
-            mood.label,
-            style: GoogleFonts.poppins(
-              color: mood.labelColor,
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
+  // changed the icons
+  IconData moodIcon;
+  switch (mood.label.toLowerCase()) {
+    case 'happy': moodIcon = Icons.wb_sunny_outlined; break;
+    case 'peaceful': moodIcon = Icons.cloud_outlined; break;
+    case 'melancholy': moodIcon = Icons.nightlight_round_outlined; break;
+    case 'anxious': moodIcon = Icons.air_rounded; break;
+    case 'energetic': moodIcon = Icons.bolt_rounded; break;
+    case 'sad': moodIcon = Icons.water_drop_outlined; break;
+    default: moodIcon = Icons.face;
   }
+
+  return Container(
+    decoration: BoxDecoration(
+      color: const Color(0xFF1E1A35), // Dark purple background
+      borderRadius: BorderRadius.circular(24), // Softer rounded corners
+    ),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          moodIcon,
+          color: const Color(0xFFA7338A), // Pinkish-purple icon color
+          size: 32,
+        ),
+        const SizedBox(height: 12),
+        Text(
+          mood.label,
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    ),
+  );
+}
 
   Widget _buildPlaylistGrid() {
     return GridView.builder(
@@ -301,7 +301,17 @@ class _HomeScreenState extends State<HomeScreen>
         children: List.generate(navItems.length, (index) {
           final isSelected = _selectedIndex == index;
           return GestureDetector(
-            onTap: () => setState(() => _selectedIndex = index),
+            onTap: () {
+              setState(() {
+                _selectedIndex = index;
+              });
+
+              if (index == 3) { // 3 is the index for PROFILE
+                context.push('/profile');
+              } else if (index == 1) { // 1 is for EXPLORE/SEARCH
+                context.push('/search');
+              }
+            },
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
