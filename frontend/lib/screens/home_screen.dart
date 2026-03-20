@@ -285,6 +285,7 @@ class _HomeScreenState extends State<HomeScreen>
       {'icon': Icons.home_rounded, 'label': 'HOME'},
       {'icon': Icons.search_rounded, 'label': 'EXPLORE'},
       {'icon': Icons.library_music_outlined, 'label': 'LIBRARY'},
+      {'icon': Icons.history_rounded, 'label': 'HISTORY'},
       {'icon': Icons.person_rounded, 'label': 'PROFILE'},
     ];
 
@@ -306,10 +307,19 @@ class _HomeScreenState extends State<HomeScreen>
                 _selectedIndex = index;
               });
 
-              if (index == 3) { // 3 is the index for PROFILE
-                context.push('/profile');
-              } else if (index == 1) { // 1 is for EXPLORE/SEARCH
-                context.push('/search');
+              switch (index) {
+                case 1:
+                  context.push('/search'); // EXPLORE
+                  break;
+                case 2:
+                  context.push('/playlist'); 
+                  break;
+                case 3:
+                  context.push('/history'); // HISTORY
+                  break;
+                case 4:
+                  context.push('/profile'); // PROFILE
+                  break;
               }
             },
             child: Column(
@@ -352,22 +362,25 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _notificationButton() {
-    return Stack(
-      children: [
-        _circularIconButton(Icons.notifications_outlined),
-        Positioned(
-          right: 6,
-          top: 6,
-          child: Container(
-            width: 8,
-            height: 8,
-            decoration: const BoxDecoration(
-              color: Color(0xFFA7338A),
-              shape: BoxShape.circle,
+    return GestureDetector(
+      onTap: () => context.push('/notifications'),
+      child: Stack(
+        children: [
+          _circularIconButton(Icons.notifications_outlined),
+          Positioned(
+            right: 6,
+            top: 6,
+            child: Container(
+              width: 8,
+              height: 8,
+              decoration: const BoxDecoration(
+                color: Color(0xFFA7338A),
+                shape: BoxShape.circle,
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
-  }
+  } 
 }
