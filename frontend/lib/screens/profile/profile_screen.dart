@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 class ProfileSettingsScreen extends StatelessWidget {
   const ProfileSettingsScreen({super.key});
 
-  // Theme Colors - Synced with group project home_screen.dart
   static const Color bgColor = Color(0xFF15173D);
   static const Color accentPurple = Color(0xFF9C27B0);
   static const Color cardColor = Color(0xFF1E1A35);
@@ -22,7 +21,7 @@ class ProfileSettingsScreen extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => context.pop(), // GoRouter back
+          onPressed: () => context.pop(),
         ),
         title: const Text(
           'Settings',
@@ -50,12 +49,16 @@ class ProfileSettingsScreen extends StatelessWidget {
 
             _buildSectionLabel('ACCOUNT SETTINGS'),
             _buildSimpleTile(context, Icons.person_outline, 'Edit Profile'),
-            _buildSimpleTile(context, Icons.trending_up, 'Insights'),
+            _buildSimpleTile(
+              context,
+              Icons.trending_up,
+              'Insights',
+            ), // 👈 navigates to /insights
             _buildSimpleTile(
               context,
               Icons.sentiment_satisfied_alt_outlined,
               'Mood Analytics',
-            ),
+            ), // 👈 navigates to /mood-analytics
 
             const SizedBox(height: 25),
             _buildSectionLabel('MUSIC INTEGRATION'),
@@ -96,8 +99,6 @@ class ProfileSettingsScreen extends StatelessWidget {
       bottomNavigationBar: _buildBottomNav(context),
     );
   }
-
-  // ── Helper Methods (Fixes the 7 errors in your screenshot) ──────────────────
 
   Widget _buildProfileHeader() {
     return Column(
@@ -188,6 +189,10 @@ class ProfileSettingsScreen extends StatelessWidget {
       onTap: () {
         if (title == 'Edit Profile') {
           context.push('/account-settings');
+        } else if (title == 'Insights') {
+          context.push('/insights'); // 👈 added
+        } else if (title == 'Mood Analytics') {
+          context.push('/mood-analytics'); // 👈 added
         }
       },
     );
@@ -272,10 +277,10 @@ class ProfileSettingsScreen extends StatelessWidget {
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
+        children: const [
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               Text(
                 'Emora Premium',
                 style: TextStyle(
@@ -291,7 +296,7 @@ class ProfileSettingsScreen extends StatelessWidget {
               ),
             ],
           ),
-          const Icon(Icons.chevron_right, color: Colors.white, size: 30),
+          Icon(Icons.chevron_right, color: Colors.white, size: 30),
         ],
       ),
     );
@@ -339,7 +344,13 @@ class ProfileSettingsScreen extends StatelessWidget {
       unselectedItemColor: textSecondary,
       currentIndex: 4,
       onTap: (index) {
-        final routes = ['/home', '/search', '/library', '/history', '/profile'];
+        const routes = [
+          '/home',
+          '/search',
+          '/playlist',
+          '/history',
+          '/profile',
+        ];
         context.go(routes[index]);
       },
       items: const [

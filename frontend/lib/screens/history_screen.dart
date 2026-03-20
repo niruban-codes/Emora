@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart'; // 👈 added
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -8,7 +9,6 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
-  // Theme Colors from Figma
   static const Color bgColor = Color(0xFF13112B);
   static const Color cardBg = Color(0xFF1D1B3E);
   static const Color pinkAccent = Color(0xFFE598D0);
@@ -16,7 +16,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
   static const Color chipActive = Color(0xFF7986CB);
 
   int _selectedFilterIndex = 0;
-  final List<String> _filters = ["All", "Happy", "Sad", "Melancholic", "Energetic"];
+  final List<String> _filters = [
+    "All",
+    "Happy",
+    "Sad",
+    "Melancholic",
+    "Energetic",
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -27,10 +33,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white70),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.pop(), // 👈 go_router pop
         ),
-        title: const Text("History", 
-            style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+        title: const Text(
+          "History",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         centerTitle: true,
       ),
       body: Column(
@@ -81,13 +93,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   iconColor: Colors.blueAccent,
                   trackImage: Icons.park,
                 ),
-                const SizedBox(height: 100), // Space for bottom nav
+                const SizedBox(height: 100),
               ],
             ),
           ),
         ],
       ),
-      bottomNavigationBar: _buildBottomNav(),
+      bottomNavigationBar: _buildBottomNav(context), // 👈 pass context
     );
   }
 
@@ -115,7 +127,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   _filters[index],
                   style: TextStyle(
                     color: isSelected ? Colors.white : Colors.white60,
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    fontWeight: isSelected
+                        ? FontWeight.bold
+                        : FontWeight.normal,
                   ),
                 ),
               ),
@@ -132,9 +146,23 @@ class _HistoryScreenState extends State<HistoryScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+          Text(
+            title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           if (showViewAll)
-            const Text("View All", style: TextStyle(color: pinkAccent, fontSize: 14, fontWeight: FontWeight.w600)),
+            const Text(
+              "View All",
+              style: TextStyle(
+                color: pinkAccent,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
         ],
       ),
     );
@@ -170,8 +198,21 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(mood, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-                    Text(time, style: const TextStyle(color: Colors.white38, fontSize: 10)),
+                    Text(
+                      mood,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      time,
+                      style: const TextStyle(
+                        color: Colors.white38,
+                        fontSize: 10,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -188,7 +229,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
             child: Row(
               children: [
                 Container(
-                  width: 45, height: 45,
+                  width: 45,
+                  height: 45,
                   decoration: BoxDecoration(
                     color: Colors.orange.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(12),
@@ -200,32 +242,63 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(trackName, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500)),
+                      Text(
+                        trackName,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                       const SizedBox(height: 2),
-                      Text(subText, style: const TextStyle(color: purpleAccent, fontSize: 10, fontWeight: FontWeight.bold)),
+                      Text(
+                        subText,
+                        style: const TextStyle(
+                          color: purpleAccent,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
                 ),
-                const Icon(Icons.play_arrow_rounded, color: Colors.white70, size: 28),
+                const Icon(
+                  Icons.play_arrow_rounded,
+                  color: Colors.white70,
+                  size: 28,
+                ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildBottomNav() {
+  Widget _buildBottomNav(BuildContext context) {
     return BottomNavigationBar(
-      currentIndex: 3, // History index
+      currentIndex: 3,
       backgroundColor: bgColor,
       type: BottomNavigationBarType.fixed,
       selectedItemColor: pinkAccent,
       unselectedItemColor: Colors.white24,
+      onTap: (index) {
+        const routes = [
+          '/home',
+          '/search',
+          '/playlist',
+          '/history',
+          '/profile',
+        ];
+        context.go(routes[index]); // 👈 go_router navigation
+      },
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "HOME"),
         BottomNavigationBarItem(icon: Icon(Icons.search), label: "EXPLORE"),
-        BottomNavigationBarItem(icon: Icon(Icons.library_music_outlined), label: "LIBRARY"),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.library_music_outlined),
+          label: "LIBRARY",
+        ),
         BottomNavigationBarItem(icon: Icon(Icons.history), label: "HISTORY"),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: "PROFILE"),
       ],
