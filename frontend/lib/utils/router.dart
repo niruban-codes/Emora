@@ -18,6 +18,7 @@ import 'package:frontend/screens/profile/insights_screen.dart';
 import 'package:frontend/screens/profile/mood_analysis_screen.dart';
 import 'package:frontend/screens/profile/monthly_analysis_screen.dart'; // 👈 added
 import 'package:frontend/screens/history_screen.dart'; // 👈 added
+import 'package:frontend/screens/notification_screen.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/',
@@ -87,6 +88,12 @@ final appRouter = GoRouter(
       },
     ),
 
+    //Notification
+    GoRoute(
+      path: '/notifications',
+      builder: (context, state) => const NotificationScreen(),
+    ),
+    
     // ── Emotion flow ──────────────────────────────────────────────────────
     GoRoute(
       path: '/scan',
