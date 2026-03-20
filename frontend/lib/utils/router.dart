@@ -12,10 +12,12 @@ import 'package:frontend/models/song_model.dart';
 import 'package:frontend/screens/music/playlist_details_screen.dart';
 import 'package:frontend/screens/music/search_mood_screen.dart';
 import 'package:frontend/screens/music/player_screen.dart';
-
-// 1. ADD THESE IMPORTS
 import 'package:frontend/screens/profile/profile_screen.dart';
 import 'package:frontend/screens/profile/account_setting.dart';
+import 'package:frontend/screens/profile/insights_screen.dart';
+import 'package:frontend/screens/profile/mood_analysis_screen.dart';
+import 'package:frontend/screens/profile/monthly_analysis_screen.dart'; // 👈 added
+import 'package:frontend/screens/history_screen.dart'; // 👈 added
 
 final appRouter = GoRouter(
   initialLocation: '/',
@@ -36,8 +38,11 @@ final appRouter = GoRouter(
       path: '/search',
       builder: (context, state) => const SearchMoodScreen(),
     ),
-
-    // added the new routes for profile and account settings
+    GoRoute(
+      path: '/history',
+      builder: (context, state) => const HistoryScreen(),
+    ), // 👈 added
+    // ── Profile ───────────────────────────────────────────────────────────
     GoRoute(
       path: '/profile',
       builder: (context, state) => const ProfileSettingsScreen(),
@@ -46,8 +51,19 @@ final appRouter = GoRouter(
       path: '/account-settings',
       builder: (context, state) => const AccountSettingScreen(),
     ),
-
-    // ── Existing Playlist & Player Routes ────────────────────────────────
+    GoRoute(
+      path: '/insights',
+      builder: (context, state) => const InsightsScreen(),
+    ),
+    GoRoute(
+      path: '/mood-analytics',
+      builder: (context, state) => const MoodAnalyticsScreen(),
+    ),
+    GoRoute(
+      path: '/monthly-analytics',
+      builder: (context, state) => const MonthlyAnalysisScreen(),
+    ), // 👈 added
+    // ── Playlist & Player ─────────────────────────────────────────────────
     GoRoute(
       path: '/playlist',
       builder: (context, state) {
@@ -70,6 +86,8 @@ final appRouter = GoRouter(
         );
       },
     ),
+
+    // ── Emotion flow ──────────────────────────────────────────────────────
     GoRoute(
       path: '/scan',
       builder: (context, state) => const EmotionDetectionScreen(),
