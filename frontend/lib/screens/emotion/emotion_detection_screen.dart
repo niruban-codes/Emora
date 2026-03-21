@@ -142,23 +142,23 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
             children: [
               _buildTopBar(),
               Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 20, right: 20, top: 0),
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const SizedBox(height: 8),
                       _buildSubtitle(),
-                      const SizedBox(height: 24),
                       _buildViewfinder(),
-                      const SizedBox(height: 20),
                       _buildStatusChips(),
-                      const SizedBox(height: 32),
-                      _buildCaptureButton(),
-                      const SizedBox(height: 16),
-                      _buildUploadButton(),
-                      const SizedBox(height: 28),
+                      Column(
+                        children: [
+                          _buildCaptureButton(),
+                          const SizedBox(height: 10),
+                          _buildUploadButton(),
+                        ],
+                      ),
                       _buildMoodLegend(),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 8),
                     ],
                   ),
                 ),
@@ -174,7 +174,7 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
 
   Widget _buildTopBar() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Row(
         children: [
           GestureDetector(
@@ -193,30 +193,20 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
               ),
             ),
           ),
-          const SizedBox(width: 16),
-          Text(
-            'Emotion Scan',
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
+          // const Spacer(),
+          Expanded(
+            child: Center(
+              child: Text(
+                'Emotion Scan',
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ),
           ),
-          const Spacer(),
-          // Flash toggle (visual only — wire up with camera package)
-          Container(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white.withOpacity(0.1),
-            ),
-            child: const Icon(
-              Icons.flash_off_outlined,
-              color: Colors.white70,
-              size: 20,
-            ),
-          ),
+          const SizedBox(width: 38),
         ],
       ),
     );
@@ -228,8 +218,8 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
       textAlign: TextAlign.center,
       style: GoogleFonts.poppins(
         color: Colors.white.withOpacity(0.5),
-        fontSize: 13,
-        height: 1.6,
+        fontSize: 16,
+        height: 1.8,
       ),
     );
   }
@@ -240,7 +230,7 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
       builder: (context, _) {
         return Container(
           width: double.infinity,
-          height: 320,
+          height: 370,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
             color: const Color(0xFF151830),
@@ -271,7 +261,7 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
 
                 // Grid overlay (subtle)
                 CustomPaint(
-                  size: const Size(double.infinity, 320),
+                  size: const Size(double.infinity, 370),
                   painter: _GridPainter(),
                 ),
 
@@ -287,22 +277,14 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
                         width: 1.5,
                       ),
                     ),
-                    child: _imageCaptured && !_isAnalysing
-                        ? null
-                        : Center(
-                            child: Icon(
-                              Icons.face_outlined,
-                              color: Colors.white.withOpacity(0.15),
-                              size: 64,
-                            ),
-                          ),
+                    child: null,
                   ),
                 ),
 
                 // Animated scan line
                 if (!_imageCaptured || _isAnalysing)
                   Positioned(
-                    top: 20 + (_scanLineAnim.value * 280),
+                    top: 20 + (_scanLineAnim.value * 320),
                     left: 24,
                     right: 24,
                     child: Container(
@@ -566,8 +548,8 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
                     ),
                   ),
                   const SizedBox(width: 4),
-                  Text(mood.emoji, style: const TextStyle(fontSize: 10)),
-                  const SizedBox(width: 4),
+                  //Text(mood.emoji, style: const TextStyle(fontSize: 10)),
+                  //const SizedBox(width: 4),
                   Text(
                     mood.label,
                     style: GoogleFonts.poppins(

@@ -154,13 +154,7 @@ class _ResultScreenState extends State<ResultScreen>
                         ],
                       ),
                     ),
-                    child: Center(
-                      child: Icon(
-                        Icons.face_outlined,
-                        color: _primary.withOpacity(0.3),
-                        size: 80,
-                      ),
-                    ),
+                    child: Center(),
                   ),
                 ),
               ),
