@@ -13,3 +13,7 @@ frontend/.pub-cache/
 # General Secrets
 *.json
 .DS_Store
+
+# Virtual Environment
+venv/
+backend/venv/
