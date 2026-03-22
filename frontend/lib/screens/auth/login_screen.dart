@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // 👈 added
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -10,11 +11,13 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStateMixin {
+class _LoginScreenState extends State<LoginScreen>
+    with SingleTickerProviderStateMixin {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _rememberMe = false;
+  bool _isLoading = false; // 👈 added
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
   late Animation<Offset> _slideAnim;
@@ -42,10 +45,71 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     super.dispose();
   }
 
+  // ── Firebase Login Logic ──────────────────────────────────────────────────
+  Future<void> _login() async {
+    // 1. Validate fields
+    if (_emailController.text.trim().isEmpty ||
+        _passwordController.text.trim().isEmpty) {
+      _showError('Please enter your email and password.');
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      // 2. Sign in with Firebase Auth
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      // 3. Navigate to home on success
+      if (mounted) context.go('/home');
+    } on FirebaseAuthException catch (e) {
+      // 4. Handle specific Firebase errors
+      switch (e.code) {
+        case 'user-not-found':
+          _showError('No account found with this email.');
+          break;
+        case 'wrong-password':
+          _showError('Incorrect password. Please try again.');
+          break;
+        case 'invalid-email':
+          _showError('Please enter a valid email address.');
+          break;
+        case 'user-disabled':
+          _showError('This account has been disabled.');
+          break;
+        case 'invalid-credential':
+          _showError('Incorrect email or password. Please try again.');
+          break;
+        default:
+          _showError('Login failed. Please try again.');
+      }
+    } catch (e) {
+      _showError('Something went wrong. Please try again.');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  // ── Show Error Snackbar ───────────────────────────────────────────────────
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message, style: GoogleFonts.poppins(color: Colors.white)),
+        backgroundColor: const Color(0xFFEF5350),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: const EdgeInsets.all(16),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF15173D), // Your specific blue background
+      backgroundColor: const Color(0xFF15173D),
       body: SafeArea(
         child: FadeTransition(
           opacity: _fadeAnim,
@@ -59,8 +123,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                   const SizedBox(height: 56),
                   _buildLogo(),
                   const SizedBox(height: 40),
-                  
-                  // Social Buttons
+
                   _socialButton(
                     icon: _googleIcon(),
                     label: 'Continue with Google',
@@ -77,7 +140,6 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                   _orDivider(),
                   const SizedBox(height: 24),
 
-                  // Input Fields
                   _fieldLabel('Email'),
                   const SizedBox(height: 8),
                   _inputField(
@@ -95,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                   _rememberForgotRow(),
 
                   const SizedBox(height: 32),
-                  _signInButton(),
+                  _signInButton(), // 👈 now calls _login()
 
                   const SizedBox(height: 32),
                   _signUpPrompt(),
@@ -109,61 +171,30 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     );
   }
 
-  // ── UI Components ──────────────────────────────────────────────────────────
-
-  // Widget _buildLogo() {
-  //   return Row(
-  //     mainAxisAlignment: MainAxisAlignment.center,
-  //     children: [
-  //       Text(
-  //         'EMORA',
-  //         style: GoogleFonts.arvo(
-  //           fontSize: 32,
-  //           fontWeight: FontWeight.w700,
-  //           letterSpacing: 3,
-  //           color: Colors.white,
-  //         ),
-  //       ),
-  //       const SizedBox(width: 8),
-  //       _buildInfinityIcon(),
-  //     ],
-  //   );
-  // }
-
   Widget _buildLogo() {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      Text(
-        'EMORA',
-        style: GoogleFonts.arvo(
-          fontSize: 32,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 3,
-          color: Colors.white,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'EMORA',
+          style: GoogleFonts.arvo(
+            fontSize: 32,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 3,
+            color: Colors.white,
+          ),
         ),
-      ),
-      const SizedBox(width: 8),
-      // Replace Icon with your local asset image
-      Image.asset(
-        'assets/images/logo.png',
-        width: 50, // Adjust size as needed
-        height: 50,
-      ),
-    ],
-  );
-}
-
-  Widget _buildInfinityIcon() {
-    return ShaderMask(
-      shaderCallback: (bounds) => const LinearGradient(
-        colors: [Color(0xFFA7338A), Color(0xFF7C4DFF)],
-      ).createShader(bounds),
-      child: const Icon(Icons.all_inclusive, color: Colors.white, size: 32),
+        const SizedBox(width: 8),
+        Image.asset('assets/images/logo.png', width: 50, height: 50),
+      ],
     );
   }
 
-  Widget _socialButton({required Widget icon, required String label, required VoidCallback onTap}) {
+  Widget _socialButton({
+    required Widget icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
     return SizedBox(
       width: double.infinity,
       height: 56,
@@ -184,7 +215,11 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
             const SizedBox(width: 12),
             Text(
               label,
-              style: GoogleFonts.poppins(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500),
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ],
         ),
@@ -195,12 +230,19 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   Widget _orDivider() {
     return Row(
       children: [
-        Expanded(child: Divider(color: Colors.white.withOpacity(0.1), thickness: 1)),
+        Expanded(
+          child: Divider(color: Colors.white.withOpacity(0.1), thickness: 1),
+        ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text('or', style: GoogleFonts.poppins(color: Colors.white38, fontSize: 13)),
+          child: Text(
+            'or',
+            style: GoogleFonts.poppins(color: Colors.white38, fontSize: 13),
+          ),
         ),
-        Expanded(child: Divider(color: Colors.white.withOpacity(0.1), thickness: 1)),
+        Expanded(
+          child: Divider(color: Colors.white.withOpacity(0.1), thickness: 1),
+        ),
       ],
     );
   }
@@ -210,23 +252,40 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
       alignment: Alignment.centerLeft,
       child: Text(
         label,
-        style: GoogleFonts.poppins(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w500),
+        style: GoogleFonts.poppins(
+          color: Colors.white70,
+          fontSize: 13,
+          fontWeight: FontWeight.w500,
+        ),
       ),
     );
   }
 
-  Widget _inputField({required TextEditingController controller, required String hint, required IconData icon}) {
+  Widget _inputField({
+    required TextEditingController controller,
+    required String hint,
+    required IconData icon,
+  }) {
     return TextField(
       controller: controller,
       style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(color: Colors.white.withOpacity(0.2), fontSize: 14),
+        hintStyle: TextStyle(
+          color: Colors.white.withOpacity(0.2),
+          fontSize: 14,
+        ),
         prefixIcon: Icon(icon, color: Colors.white38, size: 20),
         filled: true,
         fillColor: const Color(0xFF1A2040),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(30), borderSide: BorderSide.none),
-        contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 16,
+          horizontal: 20,
+        ),
       ),
     );
   }
@@ -238,16 +297,35 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
       style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
       decoration: InputDecoration(
         hintText: 'Enter your password',
-        hintStyle: TextStyle(color: Colors.white.withOpacity(0.2), fontSize: 14),
-        prefixIcon: const Icon(Icons.lock_outline, color: Colors.white38, size: 20),
+        hintStyle: TextStyle(
+          color: Colors.white.withOpacity(0.2),
+          fontSize: 14,
+        ),
+        prefixIcon: const Icon(
+          Icons.lock_outline,
+          color: Colors.white38,
+          size: 20,
+        ),
         suffixIcon: IconButton(
-          icon: Icon(_obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: Colors.white38, size: 20),
+          icon: Icon(
+            _obscurePassword
+                ? Icons.visibility_off_outlined
+                : Icons.visibility_outlined,
+            color: Colors.white38,
+            size: 20,
+          ),
           onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
         ),
         filled: true,
         fillColor: const Color(0xFF1A2040),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(30), borderSide: BorderSide.none),
-        contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 16,
+          horizontal: 20,
+        ),
       ),
     );
   }
@@ -264,28 +342,50 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
               activeColor: const Color(0xFFA7338A),
               side: const BorderSide(color: Colors.white38),
             ),
-            Text('Remember Me', style: GoogleFonts.poppins(color: Colors.white54, fontSize: 12)),
+            Text(
+              'Remember Me',
+              style: GoogleFonts.poppins(color: Colors.white54, fontSize: 12),
+            ),
           ],
         ),
-        Text('Forgot Password?', style: GoogleFonts.poppins(color: Colors.white54, fontSize: 12)),
+        Text(
+          'Forgot Password?',
+          style: GoogleFonts.poppins(color: Colors.white54, fontSize: 12),
+        ),
       ],
     );
   }
 
+  // 👇 Updated Sign In button with loading state and Firebase call
   Widget _signInButton() {
     return SizedBox(
       width: double.infinity,
       height: 56,
       child: ElevatedButton(
-        onPressed: () => context.go('/home'), // Using your router.dart path
+        onPressed: _isLoading ? null : _login, // 👈 calls _login()
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
         ),
-        child: Text(
-          'Sign in',
-          style: GoogleFonts.poppins(color: const Color(0xFF15173D), fontSize: 16, fontWeight: FontWeight.w700),
-        ),
+        child: _isLoading
+            ? const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF15173D)),
+                ),
+              )
+            : Text(
+                'Sign in',
+                style: GoogleFonts.poppins(
+                  color: const Color(0xFF15173D),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
       ),
     );
   }
@@ -298,14 +398,18 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
           text: "Don't have an Account ? ",
           style: GoogleFonts.poppins(color: Colors.white54, fontSize: 13),
           children: const [
-            TextSpan(text: 'Sign up', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            TextSpan(
+              text: 'Sign up',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ],
         ),
       ),
     );
   }
-
-  // ── Helper Icons ──────────────────────────────────────────────────────────
 
   Widget _googleIcon() {
     return SvgPicture.string(
