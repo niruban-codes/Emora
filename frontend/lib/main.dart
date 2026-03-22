@@ -1,7 +1,17 @@
 import 'package:flutter/material.dart';
-import './utils/router.dart'; // 👈 single source of truth for all routes
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import './utils/router.dart';
 
-void main() => runApp(const MyApp());
+void main() async {
+  // ✅ Required before Firebase.initializeApp()
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // ✅ Initialize Firebase using the generated options
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -10,7 +20,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      routerConfig: appRouter, // 👈 uses router.dart
+      routerConfig: appRouter,
     );
   }
 }
