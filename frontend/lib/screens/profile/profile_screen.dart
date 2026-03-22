@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // 👈 added
 
 class ProfileSettingsScreen extends StatelessWidget {
   const ProfileSettingsScreen({super.key});
@@ -49,16 +50,12 @@ class ProfileSettingsScreen extends StatelessWidget {
 
             _buildSectionLabel('ACCOUNT SETTINGS'),
             _buildSimpleTile(context, Icons.person_outline, 'Edit Profile'),
-            _buildSimpleTile(
-              context,
-              Icons.trending_up,
-              'Insights',
-            ), // 👈 navigates to /insights
+            _buildSimpleTile(context, Icons.trending_up, 'Insights'),
             _buildSimpleTile(
               context,
               Icons.sentiment_satisfied_alt_outlined,
               'Mood Analytics',
-            ), // 👈 navigates to /mood-analytics
+            ),
 
             const SizedBox(height: 25),
             _buildSectionLabel('MUSIC INTEGRATION'),
@@ -90,7 +87,7 @@ class ProfileSettingsScreen extends StatelessWidget {
             _buildPremiumCard(),
 
             const SizedBox(height: 30),
-            _buildLogoutButton(context),
+            _buildLogoutButton(context), // 👈 now signs out from Firebase
 
             const SizedBox(height: 40),
           ],
@@ -190,9 +187,9 @@ class ProfileSettingsScreen extends StatelessWidget {
         if (title == 'Edit Profile') {
           context.push('/account-settings');
         } else if (title == 'Insights') {
-          context.push('/insights'); // 👈 added
+          context.push('/insights');
         } else if (title == 'Mood Analytics') {
-          context.push('/mood-analytics'); // 👈 added
+          context.push('/mood-analytics');
         }
       },
     );
@@ -302,6 +299,7 @@ class ProfileSettingsScreen extends StatelessWidget {
     );
   }
 
+  // ── Logout Button with Firebase Sign Out ──────────────────────────────────
   Widget _buildLogoutButton(BuildContext context) {
     return Container(
       width: double.infinity,
@@ -311,7 +309,55 @@ class ProfileSettingsScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(30),
       ),
       child: TextButton.icon(
-        onPressed: () => context.go('/login'),
+        onPressed: () async {
+          // 1. Show confirmation dialog
+          final confirm = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              backgroundColor: const Color(0xFF1E1A35),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              title: const Text(
+                'Log Out',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: const Text(
+                'Are you sure you want to log out?',
+                style: TextStyle(color: Colors.white70),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.white54),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  child: const Text(
+                    'Log Out',
+                    style: TextStyle(
+                      color: Color(0xFFEF5350),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+
+          // 2. If confirmed sign out from Firebase and navigate to login
+          if (confirm == true) {
+            await FirebaseAuth.instance
+                .signOut(); // 👈 actual Firebase sign out
+            if (context.mounted) context.go('/login');
+          }
+        },
         icon: const Icon(Icons.logout, color: logoutTextRed, size: 20),
         label: const Text(
           'Log Out',
