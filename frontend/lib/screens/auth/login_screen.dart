@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // 👈 added
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -16,6 +17,7 @@ class _LoginScreenState extends State<LoginScreen>
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _rememberMe = false;
+  bool _isLoading = false; // 👈 added
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
   late Animation<Offset> _slideAnim;
@@ -43,10 +45,71 @@ class _LoginScreenState extends State<LoginScreen>
     super.dispose();
   }
 
+  // ── Firebase Login Logic ──────────────────────────────────────────────────
+  Future<void> _login() async {
+    // 1. Validate fields
+    if (_emailController.text.trim().isEmpty ||
+        _passwordController.text.trim().isEmpty) {
+      _showError('Please enter your email and password.');
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      // 2. Sign in with Firebase Auth
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      // 3. Navigate to home on success
+      if (mounted) context.go('/home');
+    } on FirebaseAuthException catch (e) {
+      // 4. Handle specific Firebase errors
+      switch (e.code) {
+        case 'user-not-found':
+          _showError('No account found with this email.');
+          break;
+        case 'wrong-password':
+          _showError('Incorrect password. Please try again.');
+          break;
+        case 'invalid-email':
+          _showError('Please enter a valid email address.');
+          break;
+        case 'user-disabled':
+          _showError('This account has been disabled.');
+          break;
+        case 'invalid-credential':
+          _showError('Incorrect email or password. Please try again.');
+          break;
+        default:
+          _showError('Login failed. Please try again.');
+      }
+    } catch (e) {
+      _showError('Something went wrong. Please try again.');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  // ── Show Error Snackbar ───────────────────────────────────────────────────
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message, style: GoogleFonts.poppins(color: Colors.white)),
+        backgroundColor: const Color(0xFFEF5350),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: const EdgeInsets.all(16),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF15173D), // Your specific blue background
+      backgroundColor: const Color(0xFF15173D),
       body: SafeArea(
         child: FadeTransition(
           opacity: _fadeAnim,
@@ -78,7 +141,6 @@ class _LoginScreenState extends State<LoginScreen>
                   _orDivider(),
                   const SizedBox(height: 24),
 
-                  // Input Fields
                   _fieldLabel('Email'),
                   const SizedBox(height: 8),
                   _inputField(
@@ -96,7 +158,7 @@ class _LoginScreenState extends State<LoginScreen>
                   _rememberForgotRow(),
 
                   const SizedBox(height: 32),
-                  _signInButton(),
+                  _signInButton(), // 👈 now calls _login()
 
                   const SizedBox(height: 32),
                   _signUpPrompt(),
@@ -109,27 +171,6 @@ class _LoginScreenState extends State<LoginScreen>
       ),
     );
   }
-
-  // ── UI Components ──────────────────────────────────────────────────────────
-
-  // Widget _buildLogo() {
-  //   return Row(
-  //     mainAxisAlignment: MainAxisAlignment.center,
-  //     children: [
-  //       Text(
-  //         'EMORA',
-  //         style: GoogleFonts.arvo(
-  //           fontSize: 32,
-  //           fontWeight: FontWeight.w700,
-  //           letterSpacing: 3,
-  //           color: Colors.white,
-  //         ),
-  //       ),
-  //       const SizedBox(width: 8),
-  //       _buildInfinityIcon(),
-  //     ],
-  //   );
-  // }
 
   Widget _buildLogo() {
     return Row(
@@ -145,22 +186,8 @@ class _LoginScreenState extends State<LoginScreen>
           ),
         ),
         const SizedBox(width: 8),
-        // Replace Icon with your local asset image
-        Image.asset(
-          'assets/images/logo.png',
-          width: 50, // Adjust size as needed
-          height: 50,
-        ),
+        Image.asset('assets/images/logo.png', width: 50, height: 50),
       ],
-    );
-  }
-
-  Widget _buildInfinityIcon() {
-    return ShaderMask(
-      shaderCallback: (bounds) => const LinearGradient(
-        colors: [Color(0xFFA7338A), Color(0xFF7C4DFF)],
-      ).createShader(bounds),
-      child: const Icon(Icons.all_inclusive, color: Colors.white, size: 32),
     );
   }
 
@@ -330,26 +357,36 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
+  // 👇 Updated Sign In button with loading state and Firebase call
   Widget _signInButton() {
     return SizedBox(
       width: double.infinity,
       height: 56,
       child: ElevatedButton(
-        onPressed: () => context.go('/home'), // Using your router.dart path
+        onPressed: _isLoading ? null : _login, // 👈 calls _login()
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),
           ),
         ),
-        child: Text(
-          'Sign in',
-          style: GoogleFonts.poppins(
-            color: const Color(0xFF15173D),
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
+        child: _isLoading
+            ? const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF15173D)),
+                ),
+              )
+            : Text(
+                'Sign in',
+                style: GoogleFonts.poppins(
+                  color: const Color(0xFF15173D),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
       ),
     );
   }
@@ -374,8 +411,6 @@ class _LoginScreenState extends State<LoginScreen>
       ),
     );
   }
-
-  // ── Helper Icons ──────────────────────────────────────────────────────────
 
   Widget _googleIcon() {
     return SvgPicture.string(
