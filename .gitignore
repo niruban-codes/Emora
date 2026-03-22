@@ -10,9 +10,11 @@ frontend/.flutter-plugins
 frontend/.packages
 frontend/.pub-cache/
 
-# General Secrets
-*.json
+# General Secrets - specific files only (not all .json)
+backend/serviceAccountKey.json
+backend/*.json
 .DS_Store
+
 # Virtual Environment
 venv/
 backend/venv/

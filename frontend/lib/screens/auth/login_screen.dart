@@ -124,6 +124,7 @@ class _LoginScreenState extends State<LoginScreen>
                   _buildLogo(),
                   const SizedBox(height: 40),
 
+                  // Social Buttons
                   _socialButton(
                     icon: _googleIcon(),
                     label: 'Continue with Google',
