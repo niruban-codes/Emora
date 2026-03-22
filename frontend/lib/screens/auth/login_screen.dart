@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // 👈 added
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../../services/auth_service.dart'; // 👈 added
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,7 +18,9 @@ class _LoginScreenState extends State<LoginScreen>
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _rememberMe = false;
-  bool _isLoading = false; // 👈 added
+  bool _isLoading = false;
+  bool _isGoogleLoading = false; // 👈 added
+
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
   late Animation<Offset> _slideAnim;
@@ -45,9 +48,8 @@ class _LoginScreenState extends State<LoginScreen>
     super.dispose();
   }
 
-  // ── Firebase Login Logic ──────────────────────────────────────────────────
+  // ── Email/Password Login ──────────────────────────────────────────────────
   Future<void> _login() async {
-    // 1. Validate fields
     if (_emailController.text.trim().isEmpty ||
         _passwordController.text.trim().isEmpty) {
       _showError('Please enter your email and password.');
@@ -57,16 +59,12 @@ class _LoginScreenState extends State<LoginScreen>
     setState(() => _isLoading = true);
 
     try {
-      // 2. Sign in with Firebase Auth
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
-
-      // 3. Navigate to home on success
       if (mounted) context.go('/home');
     } on FirebaseAuthException catch (e) {
-      // 4. Handle specific Firebase errors
       switch (e.code) {
         case 'user-not-found':
           _showError('No account found with this email.');
@@ -90,6 +88,21 @@ class _LoginScreenState extends State<LoginScreen>
       _showError('Something went wrong. Please try again.');
     } finally {
       if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  // ── Google Sign In ────────────────────────────────────────────────────────
+  Future<void> _handleGoogleSignIn() async {
+    setState(() => _isGoogleLoading = true);
+    try {
+      final result = await AuthService.signInWithGoogle();
+      if (result != null && mounted) {
+        context.go('/home');
+      }
+    } catch (e) {
+      if (mounted) _showError('Google Sign-in failed. Please try again.');
+    } finally {
+      if (mounted) setState(() => _isGoogleLoading = false);
     }
   }
 
@@ -124,11 +137,22 @@ class _LoginScreenState extends State<LoginScreen>
                   _buildLogo(),
                   const SizedBox(height: 40),
 
-                  // Social Buttons
+                  // 👇 Google button now calls _handleGoogleSignIn()
                   _socialButton(
-                    icon: _googleIcon(),
+                    icon: _isGoogleLoading
+                        ? const SizedBox(
+                            width: 22,
+                            height: 22,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
+                            ),
+                          )
+                        : _googleIcon(),
                     label: 'Continue with Google',
-                    onTap: () {},
+                    onTap: _isGoogleLoading ? null : _handleGoogleSignIn,
                   ),
                   const SizedBox(height: 14),
                   _socialButton(
@@ -158,7 +182,7 @@ class _LoginScreenState extends State<LoginScreen>
                   _rememberForgotRow(),
 
                   const SizedBox(height: 32),
-                  _signInButton(), // 👈 now calls _login()
+                  _signInButton(),
 
                   const SizedBox(height: 32),
                   _signUpPrompt(),
@@ -194,7 +218,7 @@ class _LoginScreenState extends State<LoginScreen>
   Widget _socialButton({
     required Widget icon,
     required String label,
-    required VoidCallback onTap,
+    required VoidCallback? onTap,
   }) {
     return SizedBox(
       width: double.infinity,
@@ -357,13 +381,12 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
-  // 👇 Updated Sign In button with loading state and Firebase call
   Widget _signInButton() {
     return SizedBox(
       width: double.infinity,
       height: 56,
       child: ElevatedButton(
-        onPressed: _isLoading ? null : _login, // 👈 calls _login()
+        onPressed: _isLoading ? null : _login,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
