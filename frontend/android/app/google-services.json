@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "496966281450",
+    "project_id": "emora-1c563",
+    "storage_bucket": "emora-1c563.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:496966281450:android:cced4b202d629ee162cf93",
+        "android_client_info": {
+          "package_name": "com.example.frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-V4rf4gYKdOxGv43w-l4li8faNpN1TdI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
