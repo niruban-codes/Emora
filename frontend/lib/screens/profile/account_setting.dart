@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // 👈 added
+import '../../../services/firestore_service.dart'; // 👈 added
+import 'package:cloud_firestore/cloud_firestore.dart'; // 👈 added
 
 class AccountSettingScreen extends StatefulWidget {
   const AccountSettingScreen({super.key});
@@ -17,12 +20,56 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
   static const Color buttonRed = Color(0xFFC62828);
 
   // Controllers to handle text input
-  final _usernameController = TextEditingController(text: 'alex_rivera_ai');
-  final _emailController = TextEditingController(text: 'alex@emora.ai');
-  final _currentPasswordController = TextEditingController(
-    text: '************',
-  );
+  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _currentPasswordController = TextEditingController(text: '************');
   final _newPasswordController = TextEditingController();
+
+  bool _isLoading = true; // Added loading state
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCurrentUserData(); // 2. Load real data on start
+  }
+
+  // 3. Fetch data from Firebase
+  Future<void> _loadCurrentUserData() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        // Assuming your FirestoreService has getUserProfile
+        final userData = await FirestoreService().getUserProfile(user.uid);
+        
+        setState(() {
+          _usernameController.text = userData?['name'] ?? 'No Name Found';
+          _emailController.text = userData?['email'] ?? user.email ?? '';
+          _isLoading = false;
+        });
+      } catch (e) {
+        setState(() => _isLoading = false);
+        // Optional: show error snackbar
+      }
+    }
+  }
+
+  // 4. Update the save logic for TC11
+  Future<void> _handleSave() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null && _usernameController.text.isNotEmpty) {
+      setState(() => _isLoading = true);
+      
+      // Add a method in FirestoreService to update the name
+      await FirestoreService().updateUserProfile(user.uid, _usernameController.text.trim());
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profile Updated Successfully!')),
+        );
+        context.pop(); 
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -42,154 +89,155 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => context.pop(), // Navigates back to Profile
+          onPressed: () => context.pop(),
         ),
         title: const Text(
           'Account Settings',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-            color: Colors.white,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            // Profile Image Section
-            Center(
-              child: Container(
-                padding: const EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: accentPurple.withOpacity(0.5),
-                    width: 2,
-                  ),
-                ),
-                child: const CircleAvatar(
-                  radius: 70,
-                  backgroundImage: NetworkImage(
-                    'https://i.imgur.com/vHqJ4r5.png',
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Alex Rivera',
-              style: TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const Text(
-              'Pro Member since 2024',
-              style: TextStyle(
-                color: accentPurple,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: 30),
+      // 1. ADD FUTUREBUILDER TO FETCH REAL DATA
+      body: FutureBuilder<Map<String, dynamic>?>(
+        future: FirestoreService().getUserProfile(FirebaseAuth.instance.currentUser?.uid ?? ''),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator(color: accentPurple));
+          }
 
-            // Action Buttons (Upload/Remove)
-            Row(
+          // ✅ IMPROVED LOGIC: Only fill if the controllers are totally empty
+          // This prevents the UI from resetting if the user is in the middle of typing!
+          if (snapshot.hasData && snapshot.data != null) {
+            final data = snapshot.data!;
+            if (_usernameController.text.isEmpty) {
+            _usernameController.text = data['name'] ?? '';
+            }
+            if (_emailController.text.isEmpty) {
+            _emailController.text = data['email'] ?? '';
+            }
+        }
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
               children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.upload, size: 18),
-                    label: const Text('Upload New'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      side: const BorderSide(color: accentPurple, width: 1.5),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
+                const SizedBox(height: 20),
+                // Profile Image Section
+                Center(
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: accentPurple.withOpacity(0.5), width: 2),
+                    ),
+                    child: const CircleAvatar(
+                      radius: 70,
+                      backgroundImage: NetworkImage('https://i.imgur.com/vHqJ4r5.png'),
                     ),
                   ),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: TextButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.delete_outline, size: 18),
-                    label: const Text('Remove'),
-                    style: TextButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: buttonRed.withOpacity(0.15),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+                const SizedBox(height: 20),
+                // 4. DISPLAY REAL NAME 
+                Text(
+                  _usernameController.text,
+                  style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white),
+                ),
+                // --- DYNAMIC MEMBER DATE START ---
+                Text(
+                  // We check if snapshot has data and the createdAt field exists
+                  snapshot.hasData && snapshot.data?['createdAt'] != null
+                      ? 'Member since ${(snapshot.data!['createdAt'] as Timestamp).toDate().year}'
+                      : 'Member since 2026', // Fallback while loading or if null
+                  style: const TextStyle(
+                    color: accentPurple, 
+                    fontSize: 14, 
+                    fontWeight: FontWeight.w500
+                  ),
+                ),
+                const SizedBox(height: 30),
+
+                // Action Buttons (Upload/Remove)
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () {}, // Future task: Image upload
+                        icon: const Icon(Icons.upload, size: 18),
+                        label: const Text('Upload New'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          side: const BorderSide(color: accentPurple, width: 1.5),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                        ),
                       ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: TextButton.icon(
+                        onPressed: () {},
+                        icon: const Icon(Icons.delete_outline, size: 18),
+                        label: const Text('Remove'),
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: buttonRed.withOpacity(0.15),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 30),
+                _buildSectionHeader(Icons.person_outline, 'PERSONAL DETAILS'),
+                const SizedBox(height: 15),
+                _buildInputField('USERNAME', _usernameController),
+                _buildInputField(
+                  'EMAIL ADDRESS',
+                  _emailController,
+                  suffixIcon: const Icon(Icons.check_circle_outline, color: Colors.green, size: 18),
+                ),
+
+                const SizedBox(height: 20),
+                _buildSectionHeader(Icons.lock_outline, 'SECURITY'),
+                const SizedBox(height: 15),
+                _buildInputField('CURRENT PASSWORD', _currentPasswordController, obscureText: true),
+                _buildInputField('NEW PASSWORD', _newPasswordController, hintText: 'Min. 8 characters', obscureText: true),
+
+                const SizedBox(height: 40),
+                // 5. UPDATE SAVE BUTTON LOGIC
+                SizedBox(
+                  width: double.infinity,
+                  height: 60,
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      final uid = FirebaseAuth.instance.currentUser?.uid;
+                      if (uid != null) {
+                        // Call a new update method in your service
+                        await FirestoreService().updateUserProfile(uid, _usernameController.text);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Profile updated!')),
+                          );
+                          context.pop(); 
+                        }
+                      }
+                    },
+                    icon: const Icon(Icons.save_outlined),
+                    label: const Text('Save Changes', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: accentPurple,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                     ),
                   ),
                 ),
+                const SizedBox(height: 40),
               ],
             ),
-
-            const SizedBox(height: 30),
-            _buildSectionHeader(Icons.person_outline, 'PERSONAL DETAILS'),
-            const SizedBox(height: 15),
-            _buildInputField('USERNAME', _usernameController),
-            _buildInputField(
-              'EMAIL ADDRESS',
-              _emailController,
-              suffixIcon: const Icon(
-                Icons.check_circle_outline,
-                color: Colors.green,
-                size: 18,
-              ),
-            ),
-
-            const SizedBox(height: 20),
-            _buildSectionHeader(Icons.lock_outline, 'SECURITY'),
-            const SizedBox(height: 15),
-            _buildInputField(
-              'CURRENT PASSWORD',
-              _currentPasswordController,
-              obscureText: true,
-            ),
-            _buildInputField(
-              'NEW PASSWORD',
-              _newPasswordController,
-              hintText: 'Min. 8 characters',
-              obscureText: true,
-            ),
-
-            const SizedBox(height: 40),
-            // Save Changes Button
-            SizedBox(
-              width: double.infinity,
-              height: 60,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  // Logic to save data would go here
-                  context.pop(); // Returns to Profile screen after "saving"
-                },
-                icon: const Icon(Icons.save_outlined),
-                label: const Text(
-                  'Save Changes',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: accentPurple,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 40),
-          ],
-        ),
+          );
+        },
       ),
       bottomNavigationBar: _buildBottomNav(context),
     );

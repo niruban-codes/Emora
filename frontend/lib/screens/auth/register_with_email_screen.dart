@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // 👈 added
+import '../../../services/firestore_service.dart'; // 👈 added
 
 class RegisterWithEmailScreen extends StatefulWidget {
   const RegisterWithEmailScreen({super.key});
@@ -85,15 +86,24 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
 
     try {
       // 4. Create user with Firebase Auth
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
 
       // 5. Update display name with username
-      await FirebaseAuth.instance.currentUser?.updateDisplayName(
+      await userCredential.user?.updateDisplayName(
         _usernameController.text.trim(),
       );
+
+      // Create user document in Firestore
+      if (userCredential.user != null) {
+        await FirestoreService().createUser(
+          userCredential.user!.uid,            // The unique ID
+          _usernameController.text.trim(),     // The name
+          _emailController.text.trim(),        // The email
+        );
+      }
 
       // 6. Navigate to home on success
       if (mounted) context.go('/home');
