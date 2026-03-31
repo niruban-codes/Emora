@@ -1,0 +1,193 @@
+# 🗓️ Emora — Sprint Plan
+
+> **Project:** Emora — Emotion-Based Music Recommendation App
+> **Team:** Group 01 | Sabaragamuwa University of Sri Lanka
+> **Mentor:** Arimac Lanka
+> **Total Duration:** 15 Weeks
+
+---
+
+## 👥 Team
+
+| Member | Phase | Responsibility |
+|--------|-------|----------------|
+| Niruban | Phase 1 | Firebase Auth — Build |
+| Wathsiluni | Phase 2 | Firestore — Build |
+| Geethma | Phase 3 | Flask + DeepFace — Build |
+| Dinithi | Phase 4 | YouTube API — Build |
+| Hafsa | Phase 5 | Flutter Integration — Build |
+| pending | Phase 6 | Admin panel |
+
+> **Testing Policy:** No member tests their own phase.
+> Hafsa → tests Phase 1 | Dinithi → tests Phase 2 | Niruban → tests Phase 3 | Geethma → tests Phase 4 | Wathsiluni → tests Phase 5
+
+---
+
+## 📋 Sprint Overview
+
+| Sprint | Week | Theme | Phase | Builder(s) | Tester(s) | Status |
+|--------|------|-------|-------|------------|-----------|--------|
+| 1 | Week 1 | Planning | Pre-Dev | All Members | — | ✅ Done |
+| 2 | Week 2 | Wireframing | Pre-Dev | All Members | — | ✅ Done |
+| 3 | Week 3 | UI Design & Prototyping | Pre-Dev | All Members | — | ✅ Done |
+| 4 | Week 4 | Flutter Learning & Dev Start | Pre-Dev | All Members | — | ✅ Done |
+| 5 | Week 5 | Frontend Development & GitHub | Pre-Dev | All Members | — | ✅ Done |
+| 6 | Week 6 | Phase 1 Complete + Phase 2 Start | Phase 1 & 2 | Niruban (P1), Wathsiluni (P2) | Hafsa (P1) | ✅ Done |
+| 7 | Week 7 | Phase 2 Complete + Testing | Phase 2 | Wathsiluni | Dinithi (P2) | 🔄 In Progress |
+| 8 | Week 8 | Phase 3 — Flask + DeepFace | Phase 3 | Geethma | Niruban (P3) | ⏳ Upcoming |
+| 9 | Week 9 | Phase 4 — YouTube API | Phase 4 | Dinithi | Geethma (P4) | ⏳ Upcoming |
+| 10 | Week 10 | Phase 5 — Flutter Integration | Phase 5 | Hafsa | Wathsiluni (P5) | ⏳ Upcoming |
+| 11 | Week 11 | Phase 6 — Admin Panel | Phase 6 | TBD | TBD | ⏳ Upcoming |
+| 12 | Week 12 | Full Integration & Final Setup | Phase 6 | TBD | TBD | ⏳ Upcoming |
+| 13 | Week 13 | Buffer Week | — | All Members | — | ⏳ Upcoming |
+| 14 | Week 14 | Demo Prep + UAT | — | All Members | — | ⏳ Upcoming |
+| 15 | Week 15 | Journal + Submission | — | All Members | — | ⏳ Upcoming |
+
+---
+
+## 📌 Sprint Details
+
+### Sprint 1 · Week 1 · Planning
+**Owner(s):** All Members | **Status:** ✅ Done
+
+- Project discussion and team alignment
+- Requirement gathering and feature identification
+- Initial wireframes started
+
+---
+
+### Sprint 2 · Week 2 · Wireframing
+**Owner(s):** All Members | **Status:** ✅ Done
+
+- Completed wireframes for all screens
+- Defined navigation flow
+- Team review and adjustments made
+
+---
+
+### Sprint 3 · Week 3 · UI Design & Prototyping
+**Owner(s):** All Members | **Status:** ✅ Done
+
+- Figma UI designs created
+- Colors and typography applied
+- Interactive prototype built and reviewed
+
+---
+
+### Sprint 4 · Week 4 · Flutter Learning & Dev Start
+**Owner(s):** All Members | **Status:** ✅ Done
+
+- Team began learning Flutter and Dart
+- Sign In and Sign Up pages started
+- Project folder structure set up
+
+---
+
+### Sprint 5 · Week 5 · Frontend Development & GitHub
+**Owner(s):** All Members | **Status:** ✅ Done
+
+- Continued building auth screens
+- Code pushed to GitHub
+- Branching, merging, and merge conflict resolution
+- Team meetings and coordination
+
+---
+
+### Sprint 6 · Week 6 · Phase 1 Complete + Phase 2 Start
+**Builder(s):** Niruban (Phase 1), Wathsiluni (Phase 2) | **Tester:** Hafsa (Phase 1) | **Status:** ✅ Done
+
+- Firebase Authentication connected and completed
+- Phase 1 tested and signed off
+- Firestore collections and structure started (Phase 2)
+
+---
+
+### Sprint 7 · Week 7 · Phase 2 Complete + Testing
+**Builder:** Wathsiluni | **Tester:** Dinithi | **Status:** 🔄 In Progress
+
+- Firestore integration completed
+- Phase 2 tested end-to-end and signed off
+- Bugs identified and fixed
+
+---
+
+### Sprint 8 · Week 8 · Phase 3 — Flask + DeepFace
+**Builder:** Geethma | **Tester:** Niruban | **Status:** ⏳ Upcoming
+
+- Flask backend set up
+- `/ping` health check endpoint created
+- `/detect-emotion` endpoint built with DeepFace integration
+- Error handling implemented
+- `.env` configuration set up
+- Phase 3 tested and signed off
+
+---
+
+### Sprint 9 · Week 9 · Phase 4 — YouTube API
+**Builder:** Dinithi | **Tester:** Geethma | **Status:** ⏳ Upcoming
+
+- YouTube API integrated
+- `/recommend-music` endpoint completed
+- All emotion categories tested
+- Phase 4 tested and signed off
+
+---
+
+### Sprint 10 · Week 10 · Phase 5 — Flutter Integration
+**Builder:** Hafsa | **Tester:** Wathsiluni | **Status:** ⏳ Upcoming
+
+- Flutter fully connected to backend
+- Emotion-to-query mapping implemented
+- Error handling and `.env` setup complete
+- Phase 5 tested and signed off
+
+---
+
+### Sprint 11 · Week 11 · Phase 6 — Admin Panel
+**Builder:** TBD | **Tester:** TBD | **Status:** ⏳ Upcoming
+
+- Admin panel built
+- Phase 6 tested and signed off
+
+> ⚠️ **Note:** Admin panel ownership and testing assignment pending team decision.
+
+---
+
+### Sprint 12 · Week 12 · Full Integration & Final Setup
+**Owner(s):** TBD | **Tester:** TBD | **Status:** ⏳ Upcoming
+
+- End-to-end testing on a real device
+- Flask backend deployed
+- Final integration checks completed
+
+> ⚠️ **Note:** Ownership and testing assignment pending team decision.
+
+---
+
+### Sprint 13 · Week 13 · Buffer Week
+**Owner(s):** All Members | **Status:** ⏳ Upcoming
+
+- Remaining bugs fixed
+- Failed test cases re-tested
+- UI polishing and final adjustments
+
+---
+
+### Sprint 14 · Week 14 · Demo Prep + UAT
+**Owner(s):** All Members | **Status:** ⏳ Upcoming
+
+- Full demo rehearsal conducted
+- Presentation slides prepared
+- User Acceptance Testing (UAT) and final checks
+
+---
+
+### Sprint 15 · Week 15 · Journal + Submission
+**Owner(s):** All Members | **Status:** ⏳ Upcoming
+
+- Project journal completed
+- All documentation finalised and submitted
+
+---
+
+> 📝 *Last updated: March 2026*
