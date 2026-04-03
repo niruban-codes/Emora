@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:frontend/screens/emotion/mood_model.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // 👈 added
+import '../../../services/firestore_service.dart'; // 👈 added
 
 /// EmotionDetectionScreen
 ///
@@ -107,27 +109,37 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
       _imageCaptured = true;
     });
 
-    // Simulate network delay
+    // 1. Simulate network delay
     await Future.delayed(const Duration(milliseconds: 2800));
 
-    // Cycle through allMoods for demo — replace with your real API response string.
-    // e.g. final detected = await EmotionApiService.detect(imageBytes);
-    final detected = allMoods[DateTime.now().millisecond % allMoods.length]
-        .label
-        .toLowerCase();
+    // 2. Logic to pick the mood
+    final moodIndex = DateTime.now().millisecond % allMoods.length;
+    final detectedMood = allMoods[moodIndex]; 
+    final detectedLabel = detectedMood.label.toLowerCase();
+
+      // 3. Save to Firestore (using the label as "emotion" and a dummy insight)
+      try {
+      await FirestoreService().addEmotion(
+        detectedMood.label, 
+        detectedMood.description,
+      );
+      print("✅ DB Success: Saved '${detectedMood.label}' to emotion_history"); // Log success
+    } catch (e) { 
+      print("❌ Database Error: $e"); // Log any errors but continue navigation regardless, since this is non-critical for the user flow.
+    }
 
     if (!mounted) return;
 
     setState(() {
       _isAnalysing = false;
-      _capturedLabel = detected;
+      _capturedLabel = detectedLabel;
     });
 
     // Brief pause so user sees "captured" state, then navigate
     await Future.delayed(const Duration(milliseconds: 400));
     if (!mounted) return;
 
-    context.push('/result', extra: MoodModel.fromString(detected));
+    context.push('/result', extra: MoodModel.fromString(detectedLabel));
   }
 
   // ── Build ──────────────────────────────────────────────────────────────────
