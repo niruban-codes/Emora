@@ -60,16 +60,24 @@ class FirestoreService {
     }
   }
 
-  // 🔹 Add playlist
-  Future<void> addPlaylist(String uid, String playlistName) async {
+  // 🔹 Save a generated playlist to history
+  Future<void> savePlaylistHistory({
+    required String emotion,
+    required List<Map<String, dynamic>> songs,
+  }) async {
     try {
-      await _db.collection('playlists').add({
-        'userId': uid,
-        'name': playlistName,
-        'createdAt': FieldValue.serverTimestamp(),
+      final String? uid = _auth.currentUser?.uid;
+      
+      await _db.collection('playlist_history').add({
+        'userId': uid ?? 'anonymous',
+        'emotion': emotion,
+        'songs': songs, // This stores the list of song objects
+        'timestamp': FieldValue.serverTimestamp(),
       });
+      
+      print("✅ Playlist History saved for: $emotion"); // Debug log to confirm saving
     } catch (e) {
-      print("Error adding playlist: $e");
+      print("❌ Failed to save Playlist History: $e"); // Debug log for error
     }
   }
 }

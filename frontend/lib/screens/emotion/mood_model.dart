@@ -26,6 +26,19 @@ class MoodModel {
     required this.description,
   });
 
+  // Converts the MoodModel into a Map for Firestore storage.
+  Map<String, dynamic> toMap() {
+    return {
+      'type': type.name, 
+      'label': label,
+      'songTitle': songTitle,
+      'artist': artist,
+      'genre': genre,
+      'playlistTitles': playlistTitles, 
+      'emoji': emoji,
+    };
+  }
+
   // ── Colours ───────────────────────────────────────────────────────────────
   // Computed from type so callers never need to pass colours manually.
   // Previously mood_data.dart hardcoded Color(0xFF8B2D8B) for every mood —

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:frontend/screens/emotion/mood_model.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // 👈 added
+import '../../../services/firestore_service.dart'; // 👈 added
 
 class ResultScreen extends StatefulWidget {
   final MoodModel mood;
@@ -24,11 +26,46 @@ class _ResultScreenState extends State<ResultScreen>
   @override
   void initState() {
     super.initState();
+    // 2. Trigger the save as soon as the result is displayed
+    _savePlaylistToFirebase();
+
     _fadeCtrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 600),
     )..forward();
     _fadeAnim = CurvedAnimation(parent: _fadeCtrl, curve: Curves.easeOut);
+  }
+
+  // 3. Create the save method
+  Future<void> _savePlaylistToFirebase() async {
+  final user = FirebaseAuth.instance.currentUser;
+  
+  if (user == null) {
+    print("⚠️ No user logged in. Skipping playlist save.");
+    return;
+  }
+
+  // Initialize the service here so it can be used below
+    final firestoreService = FirestoreService();
+
+  // Map your mood data into the format for playlist_history
+  List<Map<String, dynamic>> playlistData = widget.mood.playlistTitles.map((title) {
+      return {
+        'playlistName': title,
+        'mainSong': widget.mood.songTitle,
+        'artist': widget.mood.artist,
+      };
+    }).toList();
+
+   try {
+  await firestoreService.savePlaylistHistory(
+    emotion: widget.mood.label,
+    songs: playlistData,
+  );
+    print("✅ History saved successfully!");
+    } catch (e) {
+    print("❌ Error saving history: $e");
+    }
   }
 
   @override
