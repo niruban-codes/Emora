@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'firestore_service.dart'; // 👈 added
 
 class AuthService {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -27,6 +28,26 @@ class AuthService {
       );
 
       // 6. Sign in to Firebase with the Google credential
+      UserCredential userCredential = await _auth.signInWithCredential(credential);
+      User? user = userCredential.user;
+
+      // 7. New Database Connection Logic
+      if (user != null) {
+        final firestore = FirestoreService();
+        
+        // Check if user already exists in Firestore
+        final existingProfile = await firestore.getUserProfile(user.uid);
+        
+        if (existingProfile == null) {
+          // If profile doesn't exist, create it using Google's info
+          await firestore.createUser(
+            user.uid,
+            user.displayName ?? "Google User", // Fallback name
+            user.email ?? "",
+          );
+        }
+      }
+      
       return await _auth.signInWithCredential(credential);
     } catch (e) {
       rethrow;
