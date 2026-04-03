@@ -22,6 +22,7 @@ dependencies:
   firebase_auth: ^6.2.0
   google_sign_in: 6.2.1
   cloud_firestore: ^6.2.0
+  lottie: ^3.3.2
 
 dev_dependencies:
   flutter_test:
@@ -36,3 +37,4 @@ flutter:
     - assets/images/logo.png
     - assets/images/splash_bg.png
     - assets/images/logo_large.png
+    - assets/animations/infinite_loader.json
