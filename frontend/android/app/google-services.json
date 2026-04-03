@@ -30,6 +30,14 @@
           }
         },
         {
+          "client_id": "496966281450-ruah40jp45feu4nqogdhbcovkbmecvqt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.frontend",
+            "certificate_hash": "adc6d76e3da1ae7eb3ea694bce93cd7755649889"
+          }
+        },
+        {
           "client_id": "496966281450-siv6fsbb6kpjsko1t0e69tadskj6b28l.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
