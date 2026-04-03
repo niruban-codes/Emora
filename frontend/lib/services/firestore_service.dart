@@ -9,6 +9,7 @@ class FirestoreService {
   Future<void> createUser(String uid, String name, String email) async {
     try {
       await _db.collection('users').doc(uid).set({
+        'uid': uid, // 👈 Added this
         'name': name,
         'email': email,
         'createdAt': FieldValue.serverTimestamp(),
