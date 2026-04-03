@@ -41,16 +41,22 @@ class FirestoreService {
     }
   }
 
-  // 🔹 Add emotion (for emotion_history)
-  Future<void> addEmotion(String uid, String emotion) async {
+  // 🔹 Updated: Add emotion to a TOP-LEVEL COLLECTION
+  Future<void> addEmotion(String emotion, String insight) async {
     try {
+      final String? uid = _auth.currentUser?.uid;
+      
+      // We still want to know WHICH user this belongs to, 
+      // so we store the uid as a field inside the document.
       await _db.collection('emotion_history').add({
-        'userId': uid,
+        'userId': uid ?? 'anonymous', // Link it to the user
         'emotion': emotion,
+        'insight': insight,
         'timestamp': FieldValue.serverTimestamp(),
+        'isDummy': true,
       });
     } catch (e) {
-      print("Error adding emotion: $e");
+      print("Error adding emotion history: $e");
     }
   }
 
