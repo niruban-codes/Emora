@@ -8,6 +8,11 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
+ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "webp"}
+
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
 @app.route("/ping", methods=["GET"])
 def ping():
     return jsonify({"status": "ok"}), 200
@@ -20,7 +25,10 @@ def detect_emotion_route():
     file = request.files["image"]
     
     if file.filename == "":
-        return jsonify({"error": "No file selected"}), 400
+        return jsonify({"error": "No image file attached"}), 400
+    
+    if not allowed_file(file.filename):
+        return jsonify({"error": "Invalid file type. Please upload a jpg, jpeg, png or webp image"}), 400
     
     image_path = "temp_image.jpg"
     file.save(image_path)
@@ -30,7 +38,7 @@ def detect_emotion_route():
         return jsonify(result), 200
     except ValueError as e:
         error_msg = str(e)
-        if "Face could not be detected" in error_msg:
+        if "No face detected" in error_msg:
             return jsonify({"error": "No face detected in the image"}), 400
         return jsonify({"error": error_msg}), 500
     finally:
