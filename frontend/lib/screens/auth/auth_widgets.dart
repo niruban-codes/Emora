@@ -22,6 +22,6 @@ Widget myTextField(String hint, IconData icon, {bool isPass = false}) {
         borderRadius: BorderRadius.circular(10),
         borderSide: const BorderSide(color: Colors.purpleAccent),
       ),
-    ),
+    ), // new change
   );
 }
