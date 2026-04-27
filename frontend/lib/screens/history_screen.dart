@@ -283,13 +283,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       selectedItemColor: pinkAccent,
       unselectedItemColor: Colors.white24,
       onTap: (index) {
-        const routes = [
-          '/home',
-          '/search',
-          '/playlist',
-          '/history',
-          '/profile',
-        ];
+        const routes = ['/home', '/search', '/library', '/history', '/profile'];
         context.go(routes[index]); // 👈 go_router navigation
       },
       items: const [

@@ -446,7 +446,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
       _NavItem(
         icon: Icons.library_music_rounded,
         label: 'LIBRARY',
-        route: '/insights',
+        route: '/library',
       ),
       _NavItem(
         icon: Icons.history_rounded,

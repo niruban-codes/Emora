@@ -18,15 +18,15 @@ class ProfileSettingsScreen extends StatefulWidget {
   State<ProfileSettingsScreen> createState() => _ProfileSettingsScreenState();
 }
 
-  //  Added the State class 
-  class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
+//  Added the State class
+class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   String userName = "Loading...";
   String userEmail = "";
 
   @override
   void initState() {
     super.initState();
-    _fetchUserData(); 
+    _fetchUserData();
   }
 
   Future<void> _fetchUserData() async {
@@ -126,64 +126,70 @@ class ProfileSettingsScreen extends StatefulWidget {
     );
   }
 
-  
-Widget _buildProfileHeader() {
-  return Column(
-    children: [
-      Stack(
-        alignment: Alignment.bottomRight,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: ProfileSettingsScreen.accentPurple, width: 3),
+  Widget _buildProfileHeader() {
+    return Column(
+      children: [
+        Stack(
+          alignment: Alignment.bottomRight,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: ProfileSettingsScreen.accentPurple,
+                  width: 3,
+                ),
+              ),
+              child: const CircleAvatar(
+                radius: 55,
+                backgroundImage: NetworkImage(
+                  'https://i.imgur.com/8Km9t9S.png',
+                ),
+              ),
             ),
-            child: const CircleAvatar(
-              radius: 55,
-              backgroundImage: NetworkImage('https://i.imgur.com/8Km9t9S.png'),
+            const CircleAvatar(
+              radius: 16,
+              backgroundColor: ProfileSettingsScreen.accentPurple,
+              child: Icon(Icons.edit, size: 16, color: Colors.white),
             ),
-          ),
-          const CircleAvatar(
-            radius: 16,
-            backgroundColor: ProfileSettingsScreen.accentPurple,
-            child: Icon(Icons.edit, size: 16, color: Colors.white),
-          ),
-        ],
-      ),
-      const SizedBox(height: 15),
-      Text(
-        userName, // 👈 Uses the variable from Firestore
-        style: const TextStyle(
-          fontSize: 22,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
+          ],
         ),
-      ),
-      Text(
-        userEmail, // 👈 Uses the variable from Firestore
-        style: const TextStyle(color: ProfileSettingsScreen.textSecondary, fontSize: 14),
-      ),
-      const SizedBox(height: 10),
-      Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-        decoration: BoxDecoration(
-          color: ProfileSettingsScreen.accentPurple.withOpacity(0.15),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: const Text(
-          'PREMIUM MEMBER',
-          style: TextStyle(
-            color: ProfileSettingsScreen.accentPurple,
+        const SizedBox(height: 15),
+        Text(
+          userName, // 👈 Uses the variable from Firestore
+          style: const TextStyle(
+            fontSize: 22,
             fontWeight: FontWeight.bold,
-            fontSize: 11,
+            color: Colors.white,
           ),
         ),
-      ),
-    ],
-  );
-}
-
+        Text(
+          userEmail, // 👈 Uses the variable from Firestore
+          style: const TextStyle(
+            color: ProfileSettingsScreen.textSecondary,
+            fontSize: 14,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+          decoration: BoxDecoration(
+            color: ProfileSettingsScreen.accentPurple.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: const Text(
+            'PREMIUM MEMBER',
+            style: TextStyle(
+              color: ProfileSettingsScreen.accentPurple,
+              fontWeight: FontWeight.bold,
+              fontSize: 11,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
   Widget _buildSectionLabel(String label) {
     return Align(
@@ -193,7 +199,7 @@ Widget _buildProfileHeader() {
         child: Text(
           label,
           style: const TextStyle(
-            color: ProfileSettingsScreen.textSecondary, 
+            color: ProfileSettingsScreen.textSecondary,
             fontSize: 11,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.1,
@@ -203,87 +209,90 @@ Widget _buildProfileHeader() {
     );
   }
 
- Widget _buildSimpleTile(BuildContext context, IconData icon, String title) {
-  return ListTile(
-    contentPadding: EdgeInsets.zero,
-    leading: _iconBox(icon),
-    title: Text(
-      title,
-      style: const TextStyle(color: Colors.white, fontSize: 15),
-    ),
-    trailing: const Icon(
-      Icons.chevron_right, 
-      color: ProfileSettingsScreen.textSecondary
-    ),
-    onTap: () async { // 👈 Added async
-      if (title == 'Edit Profile') {
-        // 1. Wait for the user to return from Account Settings
-        await context.push('/account-settings');
-        
-        // 2. Refresh data from Firestore automatically
-        _fetchUserData(); 
-        
-      } else if (title == 'Insights') {
-        context.push('/insights');
-      } else if (title == 'Mood Analytics') {
-        context.push('/mood-analytics');
-      }
-    },
-  );
-}
+  Widget _buildSimpleTile(BuildContext context, IconData icon, String title) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: _iconBox(icon),
+      title: Text(
+        title,
+        style: const TextStyle(color: Colors.white, fontSize: 15),
+      ),
+      trailing: const Icon(
+        Icons.chevron_right,
+        color: ProfileSettingsScreen.textSecondary,
+      ),
+      onTap: () async {
+        // 👈 Added async
+        if (title == 'Edit Profile') {
+          // 1. Wait for the user to return from Account Settings
+          await context.push('/account-settings');
+
+          // 2. Refresh data from Firestore automatically
+          _fetchUserData();
+        } else if (title == 'Insights') {
+          context.push('/insights');
+        } else if (title == 'Mood Analytics') {
+          context.push('/mood-analytics');
+        }
+      },
+    );
+  }
+
   Widget _buildIntegrationCard(
-  String title,
-  String sub,
-  String action,
-  IconData icon,
-  bool connected,
-) {
-  return Container(
-    padding: const EdgeInsets.all(12),
-    decoration: BoxDecoration(
-      color: ProfileSettingsScreen.cardColor, // 👈 1. Added Prefix
-      borderRadius: BorderRadius.circular(15),
-      border: connected ? null : Border.all(color: Colors.white10, width: 1),
-    ),
-    child: Row(
-      children: [
-        _iconBox(icon),
-        const SizedBox(width: 15),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              if (sub.isNotEmpty)
+    String title,
+    String sub,
+    String action,
+    IconData icon,
+    bool connected,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: ProfileSettingsScreen.cardColor, // 👈 1. Added Prefix
+        borderRadius: BorderRadius.circular(15),
+        border: connected ? null : Border.all(color: Colors.white10, width: 1),
+      ),
+      child: Row(
+        children: [
+          _iconBox(icon),
+          const SizedBox(width: 15),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Text(
-                  sub,
-                  // 👈 2. Added Prefix & removed 'const'
-                  style: const TextStyle(
-                    color: ProfileSettingsScreen.textSecondary, 
-                    fontSize: 12,
+                  title,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-            ],
+                if (sub.isNotEmpty)
+                  Text(
+                    sub,
+                    // 👈 2. Added Prefix & removed 'const'
+                    style: const TextStyle(
+                      color: ProfileSettingsScreen.textSecondary,
+                      fontSize: 12,
+                    ),
+                  ),
+              ],
+            ),
           ),
-        ),
-        Text(
-          action,
-          // 👈 3. Added Prefix & removed 'const'
-          style: TextStyle(
-            color: connected ? ProfileSettingsScreen.textSecondary : Colors.white,
-            fontSize: connected ? 12 : 20,
+          Text(
+            action,
+            // 👈 3. Added Prefix & removed 'const'
+            style: TextStyle(
+              color: connected
+                  ? ProfileSettingsScreen.textSecondary
+                  : Colors.white,
+              fontSize: connected ? 12 : 20,
+            ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 
   Widget _buildSwitchTile(IconData icon, String title, bool value) {
     return ListTile(
@@ -296,7 +305,7 @@ Widget _buildProfileHeader() {
       trailing: Switch(
         value: value,
         onChanged: (v) {},
-        activeColor: ProfileSettingsScreen.accentPurple, 
+        activeColor: ProfileSettingsScreen.accentPurple,
       ),
     );
   }
@@ -399,7 +408,11 @@ Widget _buildProfileHeader() {
             if (context.mounted) context.go('/login');
           }
         },
-        icon: Icon(Icons.logout, color: ProfileSettingsScreen.logoutTextRed, size: 20),
+        icon: Icon(
+          Icons.logout,
+          color: ProfileSettingsScreen.logoutTextRed,
+          size: 20,
+        ),
         label: Text(
           'Log Out',
           style: TextStyle(
@@ -431,13 +444,7 @@ Widget _buildProfileHeader() {
       unselectedItemColor: ProfileSettingsScreen.textSecondary,
       currentIndex: 4,
       onTap: (index) {
-        const routes = [
-          '/home',
-          '/search',
-          '/playlist',
-          '/history',
-          '/profile',
-        ];
+        const routes = ['/home', '/search', '/library', '/history', '/profile'];
         context.go(routes[index]);
       },
       items: const [
