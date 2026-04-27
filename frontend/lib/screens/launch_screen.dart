@@ -93,7 +93,7 @@ class LaunchScreen extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF6A1B62),
                         foregroundColor: Colors.white,
-                        // 👇 Added horizontal padding to make it a nice pill shape
+
                         padding: const EdgeInsets.symmetric(
                           vertical: 16,
                           horizontal: 40,
