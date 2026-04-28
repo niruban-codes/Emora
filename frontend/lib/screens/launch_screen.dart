@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LaunchScreen extends StatelessWidget {
   const LaunchScreen({super.key});
@@ -55,43 +56,59 @@ class LaunchScreen extends StatelessWidget {
                   const Spacer(),
 
                   // Main Quote
-                  const Text(
-                    '"Where Words Fail,\nMusic Speaks."',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 28, // Adjust based on your Figma typography
-                      fontWeight: FontWeight.w400,
-                      height: 1.3,
+                  ShaderMask(
+                    blendMode: BlendMode.srcIn,
+                    shaderCallback: (bounds) =>
+                        const LinearGradient(
+                          begin: Alignment
+                              .topCenter, // Adjust these to change gradient direction
+                          end: Alignment.bottomCenter,
+                          colors: [Color(0xFFF38BDC), Color(0xFFDBA4CF)],
+                        ).createShader(
+                          Rect.fromLTWH(0, 0, bounds.width, bounds.height),
+                        ),
+                    child: Text(
+                      '"Where Words Fail,\nMusic Speaks."',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.arvo(
+                        // The text color MUST be white for the gradient mask to work
+                        color: Colors.white,
+                        fontSize: 28,
+                        fontWeight: FontWeight.w400,
+                        height: 1.3,
+                      ),
                     ),
                   ),
 
                   const SizedBox(height: 40),
 
                   // Get Started Button
-                  ElevatedButton(
-                    onPressed: () {
-                      // Navigate to Register or Home
-                      context.push(
-                        '/register',
-                      ); // Update with your actual route
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(
-                        0xFF6A1B62,
-                      ), // Extracted dark purple color
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+                  Align(
+                    alignment: Alignment.center,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // Navigate to Register or Home
+                        context.push('/register');
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF6A1B62),
+                        foregroundColor: Colors.white,
+
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 16,
+                          horizontal: 40,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        elevation: 0,
                       ),
-                      elevation: 0,
-                    ),
-                    child: const Text(
-                      'Get Started',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+                      child: Text(
+                        'Get Started',
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ),
@@ -104,7 +121,7 @@ class LaunchScreen extends StatelessWidget {
                     children: [
                       Text(
                         'Already have an account ? ',
-                        style: TextStyle(
+                        style: GoogleFonts.poppins(
                           color: Colors.white.withOpacity(0.8),
                           fontSize: 13,
                         ),
@@ -114,9 +131,9 @@ class LaunchScreen extends StatelessWidget {
                           // Navigate to Login Screen
                           context.push('/login');
                         },
-                        child: const Text(
+                        child: Text(
                           'Sign in',
-                          style: TextStyle(
+                          style: GoogleFonts.poppins(
                             color: Colors.white,
                             fontSize: 13,
                             fontWeight: FontWeight.bold,

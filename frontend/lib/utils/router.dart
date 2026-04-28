@@ -19,6 +19,7 @@ import 'package:frontend/screens/profile/mood_analysis_screen.dart';
 import 'package:frontend/screens/profile/monthly_analysis_screen.dart'; // 👈 added
 import 'package:frontend/screens/history_screen.dart'; // 👈 added
 import 'package:frontend/screens/notification_screen.dart';
+import 'package:frontend/screens/music/library_screen.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/',
@@ -38,6 +39,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/search',
       builder: (context, state) => const SearchMoodScreen(),
+    ),
+    GoRoute(
+      path: '/library',
+      builder: (context, state) => const LibraryScreen(),
     ),
     GoRoute(
       path: '/history',
@@ -93,7 +98,7 @@ final appRouter = GoRouter(
       path: '/notifications',
       builder: (context, state) => const NotificationScreen(),
     ),
-    
+
     // ── Emotion flow ──────────────────────────────────────────────────────
     GoRoute(
       path: '/scan',

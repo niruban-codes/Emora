@@ -89,11 +89,7 @@ class _HomeScreenState extends State<HomeScreen>
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         _buildLogoIcon(),
-        Row(
-          children: [
-            _notificationButton(),
-          ],
-        ),
+        Row(children: [_notificationButton()]),
       ],
     );
   }
@@ -101,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen>
   Widget _buildLogoIcon() {
     return Image.asset(
       'assets/images/logo.png',
-      width: 40,  
+      width: 40,
       height: 40,
       fit: BoxFit.contain,
     );
@@ -164,59 +160,72 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildMoodGrid() {
-  return GridView.builder(
-    shrinkWrap: true,
-    physics: const NeverScrollableScrollPhysics(),
-    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-      crossAxisCount: 3, 
-      crossAxisSpacing: 16,
-      mainAxisSpacing: 16,
-      childAspectRatio: 1.1, 
-    ),
-    itemCount: allMoods.length,
-    itemBuilder: (context, index) => _moodCard(allMoods[index]),
-  );
-}
-
-  Widget _moodCard(MoodModel mood) {
-  // changed the icons
-  IconData moodIcon;
-  switch (mood.label.toLowerCase()) {
-    case 'happy': moodIcon = Icons.wb_sunny_outlined; break;
-    case 'peaceful': moodIcon = Icons.cloud_outlined; break;
-    case 'melancholy': moodIcon = Icons.nightlight_round_outlined; break;
-    case 'anxious': moodIcon = Icons.air_rounded; break;
-    case 'energetic': moodIcon = Icons.bolt_rounded; break;
-    case 'sad': moodIcon = Icons.water_drop_outlined; break;
-    default: moodIcon = Icons.face;
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+        childAspectRatio: 1.1,
+      ),
+      itemCount: allMoods.length,
+      itemBuilder: (context, index) => _moodCard(allMoods[index]),
+    );
   }
 
-  return Container(
-    decoration: BoxDecoration(
-      color: const Color(0xFF1E1A35), // Dark purple background
-      borderRadius: BorderRadius.circular(24), // Softer rounded corners
-    ),
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(
-          moodIcon,
-          color: const Color(0xFFA7338A), // Pinkish-purple icon color
-          size: 32,
-        ),
-        const SizedBox(height: 12),
-        Text(
-          mood.label,
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
+  Widget _moodCard(MoodModel mood) {
+    // changed the icons
+    IconData moodIcon;
+    switch (mood.label.toLowerCase()) {
+      case 'happy':
+        moodIcon = Icons.wb_sunny_outlined;
+        break;
+      case 'peaceful':
+        moodIcon = Icons.cloud_outlined;
+        break;
+      case 'melancholy':
+        moodIcon = Icons.nightlight_round_outlined;
+        break;
+      case 'anxious':
+        moodIcon = Icons.air_rounded;
+        break;
+      case 'energetic':
+        moodIcon = Icons.bolt_rounded;
+        break;
+      case 'sad':
+        moodIcon = Icons.water_drop_outlined;
+        break;
+      default:
+        moodIcon = Icons.face;
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E1A35), // Dark purple background
+        borderRadius: BorderRadius.circular(24), // Softer rounded corners
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            moodIcon,
+            color: const Color(0xFFA7338A), // Pinkish-purple icon color
+            size: 32,
           ),
-        ),
-      ],
-    ),
-  );
-}
+          const SizedBox(height: 12),
+          Text(
+            mood.label,
+            style: GoogleFonts.poppins(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildPlaylistGrid() {
     return GridView.builder(
@@ -284,19 +293,15 @@ class _HomeScreenState extends State<HomeScreen>
     final navItems = [
       {'icon': Icons.home_rounded, 'label': 'HOME'},
       {'icon': Icons.search_rounded, 'label': 'EXPLORE'},
-      {'icon': Icons.library_music_outlined, 'label': 'LIBRARY'},
+      {'icon': Icons.library_music_rounded, 'label': 'LIBRARY'},
       {'icon': Icons.history_rounded, 'label': 'HISTORY'},
       {'icon': Icons.person_rounded, 'label': 'PROFILE'},
     ];
 
+    // 👇 ONLY THE VISUAL DESIGN CHANGES BELOW 👇
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      decoration: BoxDecoration(
-        color: const Color(0xFF0F1130),
-        border: Border(
-          top: BorderSide(color: const Color(0xFF2E2E50).withOpacity(0.5)),
-        ),
-      ),
+      color: const Color(0xFF080716),
+      padding: const EdgeInsets.only(top: 10, bottom: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: List.generate(navItems.length, (index) {
@@ -312,7 +317,7 @@ class _HomeScreenState extends State<HomeScreen>
                   context.push('/search'); // EXPLORE
                   break;
                 case 2:
-                  context.push('/playlist'); 
+                  context.push('/library'); // LIBRARY
                   break;
                 case 3:
                   context.push('/history'); // HISTORY
@@ -327,16 +332,21 @@ class _HomeScreenState extends State<HomeScreen>
               children: [
                 Icon(
                   navItems[index]['icon'] as IconData,
-                  color: isSelected ? const Color(0xFFA7338A) : Colors.white38,
+                  color: isSelected
+                      ? const Color(0xFFE040FB)
+                      : Colors.white.withOpacity(0.4),
                   size: 24,
                 ),
+                const SizedBox(height: 4),
                 Text(
                   navItems[index]['label'] as String,
                   style: GoogleFonts.poppins(
                     color: isSelected
-                        ? const Color(0xFFA7338A)
-                        : Colors.white38,
-                    fontSize: 10,
+                        ? const Color(0xFFE040FB)
+                        : Colors.white.withOpacity(0.4),
+                    fontSize: 9,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+                    letterSpacing: 0.8,
                   ),
                 ),
               ],
@@ -382,5 +392,17 @@ class _HomeScreenState extends State<HomeScreen>
         ],
       ),
     );
-  } 
+  }
+}
+
+// ── Nav Item Model ─────────────────────────────────────────────────────────────
+class _NavItem {
+  final IconData icon;
+  final String label;
+  final String route;
+  const _NavItem({
+    required this.icon,
+    required this.label,
+    required this.route,
+  });
 }

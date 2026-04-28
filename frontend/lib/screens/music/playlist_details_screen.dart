@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:frontend/screens/emotion/mood_model.dart';
 import 'package:frontend/models/song_model.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class PlaylistDetailsScreen extends StatefulWidget {
   final MoodModel mood;
@@ -476,53 +477,71 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
     );
   }
 
-  // ── Bottom Nav ────────────────────────────────────────────────────────────
+  // ── Bottom Nav (UPDATED) ──────────────────────────────────────────────────
   Widget _buildBottomNav() {
     final items = [
-      _NavItem(icon: Icons.home_rounded, label: 'HOME', route: '/home'),
-      _NavItem(icon: Icons.explore_rounded, label: 'EXPLORE', route: '/search'),
-      _NavItem(
+      const _NavItem(icon: Icons.home_rounded, label: 'HOME', route: '/home'),
+      const _NavItem(
+        icon: Icons.search_rounded,
+        label: 'EXPLORE',
+        route: '/search',
+      ),
+      const _NavItem(
         icon: Icons.library_music_rounded,
         label: 'LIBRARY',
-        route: null,
+        route: '/library',
       ),
-      _NavItem(icon: Icons.history_rounded, label: 'History', route: null),
-      _NavItem(icon: Icons.person_rounded, label: 'PROFILE', route: null),
+      const _NavItem(
+        icon: Icons.history_rounded,
+        label: 'HISTORY',
+        route: '/history',
+      ),
+      const _NavItem(
+        icon: Icons.person_rounded,
+        label: 'PROFILE',
+        route: '/profile',
+      ),
     ];
 
+    // 👇 ONLY THE VISUAL DESIGN CHANGES BELOW 👇
     return Container(
-      color: const Color(0xFF0A091E),
-      padding: const EdgeInsets.only(top: 10, bottom: 16),
+      color: const Color(0xFF080716),
+      padding: const EdgeInsets.only(top: 10, bottom: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: List.generate(items.length, (i) {
-          final isActive = i == _currentNavIndex;
+        children: List.generate(items.length, (index) {
+          final isSelected =
+              index == 2; // Hardcoded to 2 since Playlist is inside Library
+
           return GestureDetector(
             onTap: () {
-              setState(() => _currentNavIndex = i);
-              if (items[i].route != null) {
-                context.push(items[i].route!);
+              if (!isSelected) {
+                // If they click any other tab, navigate to it
+                context.push(items[index].route!);
+              } else {
+                // If they click the Library tab while in a playlist, go back to main Library
+                context.pop();
               }
             },
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
-                  items[i].icon,
-                  color: isActive
-                      ? _mood.primaryColor
+                  items[index].icon,
+                  color: isSelected
+                      ? const Color(0xFFE040FB)
                       : Colors.white.withOpacity(0.4),
                   size: 24,
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  items[i].label,
-                  style: TextStyle(
-                    color: isActive
-                        ? _mood.primaryColor
+                  items[index].label,
+                  style: GoogleFonts.poppins(
+                    color: isSelected
+                        ? const Color(0xFFE040FB)
                         : Colors.white.withOpacity(0.4),
                     fontSize: 9,
-                    fontWeight: isActive ? FontWeight.w700 : FontWeight.w400,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
                     letterSpacing: 0.8,
                   ),
                 ),

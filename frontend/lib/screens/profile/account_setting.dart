@@ -22,7 +22,9 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
   // Controllers to handle text input
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _currentPasswordController = TextEditingController(text: '************');
+  final _currentPasswordController = TextEditingController(
+    text: '************',
+  );
   final _newPasswordController = TextEditingController();
 
   bool _isLoading = true; // Added loading state
@@ -40,7 +42,7 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
       try {
         // Assuming your FirestoreService has getUserProfile
         final userData = await FirestoreService().getUserProfile(user.uid);
-        
+
         setState(() {
           _usernameController.text = userData?['name'] ?? 'No Name Found';
           _emailController.text = userData?['email'] ?? user.email ?? '';
@@ -58,15 +60,18 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null && _usernameController.text.isNotEmpty) {
       setState(() => _isLoading = true);
-      
+
       // Add a method in FirestoreService to update the name
-      await FirestoreService().updateUserProfile(user.uid, _usernameController.text.trim());
-      
+      await FirestoreService().updateUserProfile(
+        user.uid,
+        _usernameController.text.trim(),
+      );
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Profile Updated Successfully!')),
         );
-        context.pop(); 
+        context.pop();
       }
     }
   }
@@ -93,16 +98,24 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
         ),
         title: const Text(
           'Account Settings',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            color: Colors.white,
+          ),
         ),
         centerTitle: true,
       ),
       // 1. ADD FUTUREBUILDER TO FETCH REAL DATA
       body: FutureBuilder<Map<String, dynamic>?>(
-        future: FirestoreService().getUserProfile(FirebaseAuth.instance.currentUser?.uid ?? ''),
+        future: FirestoreService().getUserProfile(
+          FirebaseAuth.instance.currentUser?.uid ?? '',
+        ),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator(color: accentPurple));
+            return const Center(
+              child: CircularProgressIndicator(color: accentPurple),
+            );
           }
 
           // ✅ IMPROVED LOGIC: Only fill if the controllers are totally empty
@@ -110,12 +123,12 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
           if (snapshot.hasData && snapshot.data != null) {
             final data = snapshot.data!;
             if (_usernameController.text.isEmpty) {
-            _usernameController.text = data['name'] ?? '';
+              _usernameController.text = data['name'] ?? '';
             }
             if (_emailController.text.isEmpty) {
-            _emailController.text = data['email'] ?? '';
+              _emailController.text = data['email'] ?? '';
             }
-        }
+          }
 
           return SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -128,19 +141,28 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                     padding: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: accentPurple.withOpacity(0.5), width: 2),
+                      border: Border.all(
+                        color: accentPurple.withOpacity(0.5),
+                        width: 2,
+                      ),
                     ),
                     child: const CircleAvatar(
                       radius: 70,
-                      backgroundImage: NetworkImage('https://i.imgur.com/vHqJ4r5.png'),
+                      backgroundImage: NetworkImage(
+                        'https://i.imgur.com/vHqJ4r5.png',
+                      ),
                     ),
                   ),
                 ),
                 const SizedBox(height: 20),
-                // 4. DISPLAY REAL NAME 
+                // 4. DISPLAY REAL NAME
                 Text(
                   _usernameController.text,
-                  style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white),
+                  style: const TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
                 // --- DYNAMIC MEMBER DATE START ---
                 Text(
@@ -149,9 +171,9 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                       ? 'Member since ${(snapshot.data!['createdAt'] as Timestamp).toDate().year}'
                       : 'Member since 2026', // Fallback while loading or if null
                   style: const TextStyle(
-                    color: accentPurple, 
-                    fontSize: 14, 
-                    fontWeight: FontWeight.w500
+                    color: accentPurple,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 30),
@@ -166,9 +188,14 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                         label: const Text('Upload New'),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.white,
-                          side: const BorderSide(color: accentPurple, width: 1.5),
+                          side: const BorderSide(
+                            color: accentPurple,
+                            width: 1.5,
+                          ),
                           padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
                         ),
                       ),
                     ),
@@ -182,7 +209,9 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                           foregroundColor: Colors.white,
                           backgroundColor: buttonRed.withOpacity(0.15),
                           padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
                         ),
                       ),
                     ),
@@ -196,14 +225,27 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                 _buildInputField(
                   'EMAIL ADDRESS',
                   _emailController,
-                  suffixIcon: const Icon(Icons.check_circle_outline, color: Colors.green, size: 18),
+                  suffixIcon: const Icon(
+                    Icons.check_circle_outline,
+                    color: Colors.green,
+                    size: 18,
+                  ),
                 ),
 
                 const SizedBox(height: 20),
                 _buildSectionHeader(Icons.lock_outline, 'SECURITY'),
                 const SizedBox(height: 15),
-                _buildInputField('CURRENT PASSWORD', _currentPasswordController, obscureText: true),
-                _buildInputField('NEW PASSWORD', _newPasswordController, hintText: 'Min. 8 characters', obscureText: true),
+                _buildInputField(
+                  'CURRENT PASSWORD',
+                  _currentPasswordController,
+                  obscureText: true,
+                ),
+                _buildInputField(
+                  'NEW PASSWORD',
+                  _newPasswordController,
+                  hintText: 'Min. 8 characters',
+                  obscureText: true,
+                ),
 
                 const SizedBox(height: 40),
                 // 5. UPDATE SAVE BUTTON LOGIC
@@ -215,21 +257,32 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                       final uid = FirebaseAuth.instance.currentUser?.uid;
                       if (uid != null) {
                         // Call a new update method in your service
-                        await FirestoreService().updateUserProfile(uid, _usernameController.text);
+                        await FirestoreService().updateUserProfile(
+                          uid,
+                          _usernameController.text,
+                        );
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Profile updated!')),
                           );
-                          context.pop(); 
+                          context.pop();
                         }
                       }
                     },
                     icon: const Icon(Icons.save_outlined),
-                    label: const Text('Save Changes', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    label: const Text(
+                      'Save Changes',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: accentPurple,
                       foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
                     ),
                   ),
                 ),
@@ -311,27 +364,90 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
     );
   }
 
+  // ── Bottom Navigation (UPDATED) ────────────────────────────────────────────
   Widget _buildBottomNav(BuildContext context) {
-    return BottomNavigationBar(
-      backgroundColor: const Color(0xFF0F1130),
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: activeHighlight,
-      unselectedItemColor: textSecondary,
-      currentIndex: 4, // Profile tab is active
-      onTap: (index) {
-        final routes = ['/home', '/search', '/library', '/history', '/profile'];
-        context.go(routes[index]);
-      },
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'HOME'),
-        BottomNavigationBarItem(icon: Icon(Icons.search), label: 'EXPLORE'),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.library_music_outlined),
-          label: 'LIBRARY',
-        ),
-        BottomNavigationBarItem(icon: Icon(Icons.history), label: 'HISTORY'),
-        BottomNavigationBarItem(icon: Icon(Icons.person_pin), label: 'PROFILE'),
-      ],
+    final items = [
+      const _NavItem(icon: Icons.home_rounded, label: 'HOME', route: '/home'),
+      const _NavItem(
+        icon: Icons.search_rounded,
+        label: 'EXPLORE',
+        route: '/search',
+      ),
+      const _NavItem(
+        icon: Icons.library_music_rounded,
+        label: 'LIBRARY',
+        route: '/library',
+      ),
+      const _NavItem(
+        icon: Icons.history_rounded,
+        label: 'HISTORY',
+        route: '/history',
+      ),
+      const _NavItem(
+        icon: Icons.person_rounded,
+        label: 'PROFILE',
+        route: '/profile',
+      ),
+    ];
+
+    // 👇 ONLY THE VISUAL DESIGN CHANGES BELOW 👇
+    return Container(
+      color: const Color(0xFF080716),
+      padding: const EdgeInsets.only(top: 10, bottom: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: List.generate(items.length, (index) {
+          final isSelected =
+              index == 4; // Hardcoded to 4 since this is a sub-page of Profile
+
+          return GestureDetector(
+            onTap: () {
+              if (!isSelected) {
+                context.go(items[index].route);
+              } else {
+                // If they click Profile while in settings, just go back to the main profile page
+                context.pop();
+              }
+            },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  items[index].icon,
+                  color: isSelected
+                      ? const Color(0xFFE040FB)
+                      : Colors.white.withOpacity(0.4),
+                  size: 24,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  items[index].label,
+                  style: TextStyle(
+                    color: isSelected
+                        ? const Color(0xFFE040FB)
+                        : Colors.white.withOpacity(0.4),
+                    fontSize: 9,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+                    letterSpacing: 0.8,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
+      ),
     );
   }
+}
+
+// ── Nav Item Model ─────────────────────────────────────────────────────────────
+class _NavItem {
+  final IconData icon;
+  final String label;
+  final String route;
+  const _NavItem({
+    required this.icon,
+    required this.label,
+    required this.route,
+  });
 }
