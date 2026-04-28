@@ -10,7 +10,7 @@ class LibraryScreen extends StatefulWidget {
 }
 
 class _LibraryScreenState extends State<LibraryScreen> {
-  final int _currentNavIndex = 2; // Library tab active
+  int _selectedIndex = 2; // Library tab active
 
   final List<Map<String, dynamic>> _libraryItems = [
     {
@@ -280,35 +280,34 @@ class _LibraryScreenState extends State<LibraryScreen> {
       {'icon': Icons.person_rounded, 'label': 'PROFILE'},
     ];
 
+    // 👇 ONLY THE VISUAL DESIGN CHANGES BELOW 👇
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      decoration: BoxDecoration(
-        color: const Color(0xFF080716),
-        border: Border(
-          top: BorderSide(color: const Color(0xFF2E2E50).withOpacity(0.5)),
-        ),
-      ),
+      color: const Color(0xFF080716),
+      padding: const EdgeInsets.only(top: 10, bottom: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: List.generate(navItems.length, (index) {
-          final isSelected = _currentNavIndex == index;
+          final isSelected = _selectedIndex == index;
           return GestureDetector(
             onTap: () {
+              setState(() {
+                _selectedIndex = index;
+              });
+
               switch (index) {
                 case 0:
-                  context.go('/home');
+                  context.push('/home'); // HOME
                   break;
                 case 1:
-                  context.go('/search'); // EXPLORE
+                  context.push('/search'); // EXPLORE
                   break;
                 case 2:
-                  // Already on library
                   break;
                 case 3:
-                  context.go('/history'); // HISTORY
+                  context.push('/history'); // HISTORY
                   break;
                 case 4:
-                  context.go('/profile'); // PROFILE
+                  context.push('/profile'); // PROFILE
                   break;
               }
             },

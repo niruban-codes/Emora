@@ -293,19 +293,15 @@ class _HomeScreenState extends State<HomeScreen>
     final navItems = [
       {'icon': Icons.home_rounded, 'label': 'HOME'},
       {'icon': Icons.search_rounded, 'label': 'EXPLORE'},
-      {'icon': Icons.library_music_outlined, 'label': 'LIBRARY'},
+      {'icon': Icons.library_music_rounded, 'label': 'LIBRARY'},
       {'icon': Icons.history_rounded, 'label': 'HISTORY'},
       {'icon': Icons.person_rounded, 'label': 'PROFILE'},
     ];
 
+    // 👇 ONLY THE VISUAL DESIGN CHANGES BELOW 👇
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      decoration: BoxDecoration(
-        color: const Color(0xFF0F1130),
-        border: Border(
-          top: BorderSide(color: const Color(0xFF2E2E50).withOpacity(0.5)),
-        ),
-      ),
+      color: const Color(0xFF080716),
+      padding: const EdgeInsets.only(top: 10, bottom: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: List.generate(navItems.length, (index) {
@@ -336,16 +332,21 @@ class _HomeScreenState extends State<HomeScreen>
               children: [
                 Icon(
                   navItems[index]['icon'] as IconData,
-                  color: isSelected ? const Color(0xFFA7338A) : Colors.white38,
+                  color: isSelected
+                      ? const Color(0xFFE040FB)
+                      : Colors.white.withOpacity(0.4),
                   size: 24,
                 ),
+                const SizedBox(height: 4),
                 Text(
                   navItems[index]['label'] as String,
                   style: GoogleFonts.poppins(
                     color: isSelected
-                        ? const Color(0xFFA7338A)
-                        : Colors.white38,
-                    fontSize: 10,
+                        ? const Color(0xFFE040FB)
+                        : Colors.white.withOpacity(0.4),
+                    fontSize: 9,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+                    letterSpacing: 0.8,
                   ),
                 ),
               ],
@@ -392,4 +393,16 @@ class _HomeScreenState extends State<HomeScreen>
       ),
     );
   }
+}
+
+// ── Nav Item Model ─────────────────────────────────────────────────────────────
+class _NavItem {
+  final IconData icon;
+  final String label;
+  final String route;
+  const _NavItem({
+    required this.icon,
+    required this.label,
+    required this.route,
+  });
 }

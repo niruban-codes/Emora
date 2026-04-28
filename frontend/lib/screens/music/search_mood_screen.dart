@@ -450,7 +450,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
       ),
       _NavItem(
         icon: Icons.history_rounded,
-        label: 'History',
+        label: 'HISTORY',
         route: '/history',
       ),
       _NavItem(icon: Icons.person_rounded, label: 'PROFILE', route: '/profile'),

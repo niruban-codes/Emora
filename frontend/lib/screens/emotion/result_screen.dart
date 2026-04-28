@@ -38,18 +38,20 @@ class _ResultScreenState extends State<ResultScreen>
 
   // 3. Create the save method
   Future<void> _savePlaylistToFirebase() async {
-  final user = FirebaseAuth.instance.currentUser;
-  
-  if (user == null) {
-    print("⚠️ No user logged in. Skipping playlist save.");
-    return;
-  }
+    final user = FirebaseAuth.instance.currentUser;
 
-  // Initialize the service here so it can be used below
+    if (user == null) {
+      print("⚠️ No user logged in. Skipping playlist save.");
+      return;
+    }
+
+    // Initialize the service here so it can be used below
     final firestoreService = FirestoreService();
 
-  // Map your mood data into the format for playlist_history
-  List<Map<String, dynamic>> playlistData = widget.mood.playlistTitles.map((title) {
+    // Map your mood data into the format for playlist_history
+    List<Map<String, dynamic>> playlistData = widget.mood.playlistTitles.map((
+      title,
+    ) {
       return {
         'playlistName': title,
         'mainSong': widget.mood.songTitle,
@@ -57,14 +59,14 @@ class _ResultScreenState extends State<ResultScreen>
       };
     }).toList();
 
-   try {
-  await firestoreService.savePlaylistHistory(
-    emotion: widget.mood.label,
-    songs: playlistData,
-  );
-    print("✅ History saved successfully!");
+    try {
+      await firestoreService.savePlaylistHistory(
+        emotion: widget.mood.label,
+        songs: playlistData,
+      );
+      print("✅ History saved successfully!");
     } catch (e) {
-    print("❌ Error saving history: $e");
+      print("❌ Error saving history: $e");
     }
   }
 
@@ -612,63 +614,89 @@ class _ResultScreenState extends State<ResultScreen>
   // ── Bottom Nav Bar ────────────────────────────────────────────────────────
   // Removed: History
   // Working: Home → /home, Explore → /search, Library → /playlist, Profile → no action yet
+  // ── Bottom Nav Bar (UPDATED) ──────────────────────────────────────────────
   Widget _buildBottomNavBar(BuildContext context) {
     final items = [
-      _NavItem(icon: Icons.home_outlined, label: 'HOME', route: '/home'),
-      _NavItem(icon: Icons.search, label: 'EXPLORE', route: '/search'),
-      _NavItem(
-        icon: Icons.library_music_outlined,
-        label: 'LIBRARY',
-        route: '/playlist',
+      const _NavItem(icon: Icons.home_rounded, label: 'HOME', route: '/home'),
+      const _NavItem(
+        icon: Icons.search_rounded,
+        label: 'EXPLORE',
+        route: '/search',
       ),
-      _NavItem(icon: Icons.person, label: 'PROFILE', route: null),
+      const _NavItem(
+        icon: Icons.library_music_rounded,
+        label: 'LIBRARY',
+        route: '/library',
+      ),
+      const _NavItem(
+        icon: Icons.history_rounded,
+        label: 'HISTORY',
+        route: '/history',
+      ),
+      const _NavItem(
+        icon: Icons.person_rounded,
+        label: 'PROFILE',
+        route: '/profile',
+      ),
     ];
 
+    // 👇 ONLY THE VISUAL DESIGN CHANGES BELOW 👇
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      decoration: BoxDecoration(
-        color: const Color(0xFF0D1135),
-        border: Border(top: BorderSide(color: Colors.white.withOpacity(0.08))),
-      ),
+      color: const Color(0xFF080716),
+      padding: const EdgeInsets.only(top: 10, bottom: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: items.asMap().entries.map((entry) {
-          final i = entry.key;
-          final item = entry.value;
-          final isActive = i == _currentNavIndex;
+        children: List.generate(items.length, (index) {
+          final isSelected = index == _currentNavIndex;
 
           return GestureDetector(
             onTap: () {
-              setState(() => _currentNavIndex = i);
-              if (item.route == '/playlist') {
-                // Pass current mood when going to playlist
-                context.push('/playlist', extra: widget.mood);
-              } else if (item.route != null) {
-                context.push(item.route!);
+              setState(() => _currentNavIndex = index);
+
+              switch (index) {
+                case 0:
+                  context.push('/home');
+                  break;
+                case 1:
+                  context.push('/search'); // EXPLORE
+                  break;
+                case 2:
+                  context.push('/library'); // LIBRARY
+                  break;
+                case 3:
+                  context.push('/history'); // HISTORY
+                  break;
+                case 4:
+                  context.push('/profile'); // PROFILE
+                  break;
               }
-              // Profile: no action yet
             },
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
-                  item.icon,
-                  color: isActive ? _primary : Colors.white.withOpacity(0.4),
-                  size: 22,
+                  items[index].icon,
+                  color: isSelected
+                      ? const Color(0xFFE040FB)
+                      : Colors.white.withOpacity(0.4),
+                  size: 24,
                 ),
-                const SizedBox(height: 3),
+                const SizedBox(height: 4),
                 Text(
-                  item.label,
-                  style: TextStyle(
-                    color: isActive ? _primary : Colors.white.withOpacity(0.4),
+                  items[index].label,
+                  style: GoogleFonts.poppins(
+                    color: isSelected
+                        ? const Color(0xFFE040FB)
+                        : Colors.white.withOpacity(0.4),
                     fontSize: 9,
-                    letterSpacing: 0.5,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+                    letterSpacing: 0.8,
                   ),
                 ),
               ],
             ),
           );
-        }).toList(),
+        }),
       ),
     );
   }
