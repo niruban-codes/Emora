@@ -10,7 +10,6 @@ class SearchMoodScreen extends StatefulWidget {
 
 class _SearchMoodScreenState extends State<SearchMoodScreen> {
   final TextEditingController _searchController = TextEditingController();
-  int _currentNavIndex = 1; // Explore tab active
 
   // Languages data — strongly typed, no map casts needed
   final List<_LanguageItem> _languages = const [
@@ -103,7 +102,6 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
               ),
             ),
           ),
-          _buildBottomNav(),
         ],
       ),
     );
@@ -437,77 +435,6 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
       ),
     );
   }
-
-  // ── Bottom Navigation ──────────────────────────────────────────────────────
-  Widget _buildBottomNav() {
-    final items = [
-      _NavItem(icon: Icons.home_rounded, label: 'HOME', route: '/home'),
-      _NavItem(icon: Icons.search_rounded, label: 'EXPLORE', route: '/search'),
-      _NavItem(
-        icon: Icons.library_music_rounded,
-        label: 'LIBRARY',
-        route: '/library',
-      ),
-      _NavItem(
-        icon: Icons.history_rounded,
-        label: 'HISTORY',
-        route: '/history',
-      ),
-      _NavItem(icon: Icons.person_rounded, label: 'PROFILE', route: '/profile'),
-    ];
-
-    return Container(
-      color: const Color(0xFF080716),
-      padding: const EdgeInsets.only(top: 10, bottom: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: List.generate(items.length, (i) {
-          final isActive = i == _currentNavIndex;
-          return GestureDetector(
-            onTap: () {
-              if (!isActive) context.go(items[i].route);
-            },
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  items[i].icon,
-                  color: isActive
-                      ? const Color(0xFFE040FB)
-                      : Colors.white.withOpacity(0.4),
-                  size: 24,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  items[i].label,
-                  style: TextStyle(
-                    color: isActive
-                        ? const Color(0xFFE040FB)
-                        : Colors.white.withOpacity(0.4),
-                    fontSize: 9,
-                    fontWeight: isActive ? FontWeight.w700 : FontWeight.w400,
-                    letterSpacing: 0.8,
-                  ),
-                ),
-              ],
-            ),
-          );
-        }),
-      ),
-    );
-  }
-}
-
-// ── Nav Item Model ─────────────────────────────────────────────────────────────
-class _NavItem {
-  final IconData icon;
-  final String label;
-  final String route;
-  const _NavItem({
-    required this.icon,
-    required this.label,
-    required this.route,
-  });
 }
 
 // ── Language Item Model ────────────────────────────────────────────────────────

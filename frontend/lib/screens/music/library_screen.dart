@@ -10,8 +10,6 @@ class LibraryScreen extends StatefulWidget {
 }
 
 class _LibraryScreenState extends State<LibraryScreen> {
-  int _selectedIndex = 2; // Library tab active
-
   final List<Map<String, dynamic>> _libraryItems = [
     {
       'title': 'Liked Songs',
@@ -148,9 +146,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
               },
             ),
           ),
-
-          // Bottom Navigation
-          _buildBottomNav(),
         ],
       ),
     );
@@ -266,77 +261,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  // ── Bottom Navigation ─────────────
-  Widget _buildBottomNav() {
-    final navItems = [
-      {'icon': Icons.home_rounded, 'label': 'HOME'},
-      {'icon': Icons.search_rounded, 'label': 'EXPLORE'},
-      {'icon': Icons.library_music_rounded, 'label': 'LIBRARY'},
-      {'icon': Icons.history_rounded, 'label': 'HISTORY'},
-      {'icon': Icons.person_rounded, 'label': 'PROFILE'},
-    ];
-
-    // 👇 ONLY THE VISUAL DESIGN CHANGES BELOW 👇
-    return Container(
-      color: const Color(0xFF080716),
-      padding: const EdgeInsets.only(top: 10, bottom: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: List.generate(navItems.length, (index) {
-          final isSelected = _selectedIndex == index;
-          return GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedIndex = index;
-              });
-
-              switch (index) {
-                case 0:
-                  context.push('/home'); // HOME
-                  break;
-                case 1:
-                  context.push('/search'); // EXPLORE
-                  break;
-                case 2:
-                  break;
-                case 3:
-                  context.push('/history'); // HISTORY
-                  break;
-                case 4:
-                  context.push('/profile'); // PROFILE
-                  break;
-              }
-            },
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  navItems[index]['icon'] as IconData,
-                  color: isSelected
-                      ? const Color(0xFFE040FB)
-                      : Colors.white.withOpacity(0.4),
-                  size: 24,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  navItems[index]['label'] as String,
-                  style: GoogleFonts.poppins(
-                    color: isSelected
-                        ? const Color(0xFFE040FB)
-                        : Colors.white.withOpacity(0.4),
-                    fontSize: 9,
-                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
-                    letterSpacing: 0.8,
-                  ),
-                ),
-              ],
-            ),
-          );
-        }),
       ),
     );
   }

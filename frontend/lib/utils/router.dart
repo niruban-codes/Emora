@@ -1,4 +1,6 @@
 import 'package:go_router/go_router.dart';
+
+// ── Screens ────────────────────────────────────────────────────────────────
 import 'package:frontend/screens/splash_screen.dart';
 import 'package:frontend/screens/launch_screen.dart';
 import 'package:frontend/screens/auth/register_screen.dart';
@@ -16,14 +18,20 @@ import 'package:frontend/screens/profile/profile_screen.dart';
 import 'package:frontend/screens/profile/account_setting.dart';
 import 'package:frontend/screens/profile/insights_screen.dart';
 import 'package:frontend/screens/profile/mood_analysis_screen.dart';
-import 'package:frontend/screens/profile/monthly_analysis_screen.dart'; // 👈 added
-import 'package:frontend/screens/history_screen.dart'; // 👈 added
+import 'package:frontend/screens/profile/monthly_analysis_screen.dart';
+import 'package:frontend/screens/history_screen.dart';
 import 'package:frontend/screens/notification_screen.dart';
 import 'package:frontend/screens/music/library_screen.dart';
+
+// 👇 ADD THIS IMPORT: Point it to wherever you saved main_layout.dart
+import 'package:frontend/screens/main_layout.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/',
   routes: [
+    // ═══════════════════════════════════════════════════════════════════════
+    // FULL SCREEN ROUTES (No Bottom Navigation Bar)
+    // ═══════════════════════════════════════════════════════════════════════
     GoRoute(path: '/', builder: (context, state) => const SplashScreen()),
     GoRoute(path: '/launch', builder: (context, state) => const LaunchScreen()),
     GoRoute(
@@ -35,50 +43,16 @@ final appRouter = GoRouter(
       builder: (context, state) => const RegisterWithEmailScreen(),
     ),
     GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
-    GoRoute(path: '/home', builder: (context, state) => const HomeScreen()),
     GoRoute(
-      path: '/search',
-      builder: (context, state) => const SearchMoodScreen(),
+      path: '/scan',
+      builder: (context, state) => const EmotionDetectionScreen(),
     ),
     GoRoute(
-      path: '/library',
-      builder: (context, state) => const LibraryScreen(),
+      path: '/notifications',
+      builder: (context, state) => const NotificationScreen(),
     ),
-    GoRoute(
-      path: '/history',
-      builder: (context, state) => const HistoryScreen(),
-    ), // 👈 added
-    // ── Profile ───────────────────────────────────────────────────────────
-    GoRoute(
-      path: '/profile',
-      builder: (context, state) => const ProfileSettingsScreen(),
-    ),
-    GoRoute(
-      path: '/account-settings',
-      builder: (context, state) => const AccountSettingScreen(),
-    ),
-    GoRoute(
-      path: '/insights',
-      builder: (context, state) => const InsightsScreen(),
-    ),
-    GoRoute(
-      path: '/mood-analytics',
-      builder: (context, state) => const MoodAnalyticsScreen(),
-    ),
-    GoRoute(
-      path: '/monthly-analytics',
-      builder: (context, state) => const MonthlyAnalysisScreen(),
-    ), // 👈 added
-    // ── Playlist & Player ─────────────────────────────────────────────────
-    GoRoute(
-      path: '/playlist',
-      builder: (context, state) {
-        final mood = state.extra as MoodModel?;
-        return PlaylistDetailsScreen(
-          mood: mood ?? MoodModel.fromString('peaceful'),
-        );
-      },
-    ),
+
+    // Player
     GoRoute(
       path: '/player',
       builder: (context, state) {
@@ -93,23 +67,99 @@ final appRouter = GoRouter(
       },
     ),
 
-    //Notification
-    GoRoute(
-      path: '/notifications',
-      builder: (context, state) => const NotificationScreen(),
-    ),
-
-    // ── Emotion flow ──────────────────────────────────────────────────────
-    GoRoute(
-      path: '/scan',
-      builder: (context, state) => const EmotionDetectionScreen(),
-    ),
-    GoRoute(
-      path: '/result',
-      builder: (context, state) {
-        final mood = state.extra as MoodModel?;
-        return ResultScreen(mood: mood ?? MoodModel.fromString('peaceful'));
+    // ═══════════════════════════════════════════════════════════════════════
+    // SHELL ROUTES (Wrapped in MainLayout with Bottom Navigation Bar)
+    // ═══════════════════════════════════════════════════════════════════════
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, navigationShell) {
+        // Return the MainLayout, passing the shell to display the current tab
+        return MainLayout(navigationShell: navigationShell);
       },
+      branches: [
+        // ── Branch 0: HOME ──
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/home',
+              builder: (context, state) => const HomeScreen(),
+            ),
+          ],
+        ),
+
+        // ── Branch 1: EXPLORE ──
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/search',
+              builder: (context, state) => const SearchMoodScreen(),
+            ),
+          ],
+        ),
+
+        // ── Branch 2: LIBRARY (and its sub-pages) ──
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/library',
+              builder: (context, state) => const LibraryScreen(),
+            ),
+            GoRoute(
+              path: '/result',
+              builder: (context, state) {
+                final mood = state.extra as MoodModel?;
+                return ResultScreen(
+                  mood: mood ?? MoodModel.fromString('peaceful'),
+                );
+              },
+            ),
+            GoRoute(
+              path: '/playlist',
+              builder: (context, state) {
+                final mood = state.extra as MoodModel?;
+                return PlaylistDetailsScreen(
+                  mood: mood ?? MoodModel.fromString('peaceful'),
+                );
+              },
+            ),
+          ],
+        ),
+
+        // ── Branch 3: HISTORY ──
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/history',
+              builder: (context, state) => const HistoryScreen(),
+            ),
+          ],
+        ),
+
+        // ── Branch 4: PROFILE (and its sub-pages) ──
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/profile',
+              builder: (context, state) => const ProfileSettingsScreen(),
+            ),
+            GoRoute(
+              path: '/account-settings',
+              builder: (context, state) => const AccountSettingScreen(),
+            ),
+            GoRoute(
+              path: '/insights',
+              builder: (context, state) => const InsightsScreen(),
+            ),
+            GoRoute(
+              path: '/mood-analytics',
+              builder: (context, state) => const MoodAnalyticsScreen(),
+            ),
+            GoRoute(
+              path: '/monthly-analytics',
+              builder: (context, state) => const MonthlyAnalysisScreen(),
+            ),
+          ],
+        ),
+      ],
     ),
   ],
 );
