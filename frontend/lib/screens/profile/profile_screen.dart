@@ -122,7 +122,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNav(context),
     );
   }
 
@@ -435,89 +434,4 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       child: Icon(icon, color: ProfileSettingsScreen.accentPurple, size: 20),
     );
   }
-
-  Widget _buildBottomNav(BuildContext context) {
-    final items = [
-      const _NavItem(icon: Icons.home_rounded, label: 'HOME', route: '/home'),
-      const _NavItem(
-        icon: Icons.search_rounded,
-        label: 'EXPLORE',
-        route: '/search',
-      ),
-      const _NavItem(
-        icon: Icons.library_music_rounded,
-        label: 'LIBRARY',
-        route: '/library',
-      ),
-      const _NavItem(
-        icon: Icons.history_rounded,
-        label: 'HISTORY',
-        route: '/history',
-      ),
-      const _NavItem(
-        icon: Icons.person_rounded,
-        label: 'PROFILE',
-        route: '/profile',
-      ),
-    ];
-
-    // 👇 ONLY THE VISUAL DESIGN CHANGES BELOW 👇
-    return Container(
-      color: const Color(0xFF080716),
-      padding: const EdgeInsets.only(top: 10, bottom: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: List.generate(items.length, (index) {
-          final isSelected =
-              index == 4; // Hardcoded to 4 since this is the Profile screen
-
-          return GestureDetector(
-            onTap: () {
-              if (!isSelected) {
-                context.go(
-                  items[index].route,
-                ); // 👈 Retained your GoRouter navigation
-              }
-            },
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  items[index].icon,
-                  color: isSelected
-                      ? const Color(0xFFE040FB)
-                      : Colors.white.withOpacity(0.4),
-                  size: 24,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  items[index].label,
-                  style: TextStyle(
-                    color: isSelected
-                        ? const Color(0xFFE040FB)
-                        : Colors.white.withOpacity(0.4),
-                    fontSize: 9,
-                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
-                    letterSpacing: 0.8,
-                  ),
-                ),
-              ],
-            ),
-          );
-        }),
-      ),
-    );
-  }
-}
-
-// ── Nav Item Model ─────────────────────────────────────────────────────────────
-class _NavItem {
-  final IconData icon;
-  final String label;
-  final String route;
-  const _NavItem({
-    required this.icon,
-    required this.label,
-    required this.route,
-  });
 }
