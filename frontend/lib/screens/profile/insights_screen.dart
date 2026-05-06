@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart'; // 👈 added
+import 'package:go_router/go_router.dart'; //  added
 
 class InsightsScreen extends StatelessWidget {
   const InsightsScreen({super.key});
@@ -21,7 +21,7 @@ class InsightsScreen extends StatelessWidget {
             backgroundColor: Color(0xFF2D2B55),
             child: Icon(Icons.arrow_back, color: Colors.white, size: 18),
           ),
-          onPressed: () => context.pop(), // 👈 go_router pop
+          onPressed: () => context.pop(), //  go_router pop
         ),
         title: const Text(
           "Insights",

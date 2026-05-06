@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart'; // 👈 added
+import 'package:go_router/go_router.dart'; //  added
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -33,7 +33,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white70),
-          onPressed: () => context.pop(), // 👈 go_router pop
+          onPressed: () => context.pop(), //  go_router pop
         ),
         title: const Text(
           "History",

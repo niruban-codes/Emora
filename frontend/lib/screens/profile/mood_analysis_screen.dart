@@ -73,7 +73,7 @@ class MoodAnalyticsScreen extends StatelessWidget {
             const SizedBox(height: 30),
             _buildCalendarGrid(),
             const SizedBox(height: 25),
-            _buildViewMonthlyButton(context), // 👈 pass context
+            _buildViewMonthlyButton(context), //  pass context
             const SizedBox(height: 30),
           ],
         ),
@@ -407,10 +407,10 @@ class MoodAnalyticsScreen extends StatelessWidget {
     );
   }
 
-  // 👇 Now navigates to /monthly-analytics
+  //  Now navigates to /monthly-analytics
   Widget _buildViewMonthlyButton(BuildContext context) {
     return GestureDetector(
-      onTap: () => context.push('/monthly-analytics'), // 👈 added navigation
+      onTap: () => context.push('/monthly-analytics'), //  added navigation
       child: Container(
         width: double.infinity,
         height: 55,
