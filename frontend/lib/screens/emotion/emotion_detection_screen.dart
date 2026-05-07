@@ -114,18 +114,22 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
 
     // 2. Logic to pick the mood
     final moodIndex = DateTime.now().millisecond % allMoods.length;
-    final detectedMood = allMoods[moodIndex]; 
+    final detectedMood = allMoods[moodIndex];
     final detectedLabel = detectedMood.label.toLowerCase();
 
-      // 3. Save to Firestore (using the label as "emotion" and a dummy insight)
-      try {
+    // 3. Save to Firestore (using the label as "emotion" and a dummy insight)
+    try {
       await FirestoreService().addEmotion(
-        detectedMood.label, 
+        detectedMood.label,
         detectedMood.description,
       );
-      print("✅ DB Success: Saved '${detectedMood.label}' to emotion_history"); // Log success
-    } catch (e) { 
-      print("❌ Database Error: $e"); // Log any errors but continue navigation regardless, since this is non-critical for the user flow.
+      print(
+        "✅ DB Success: Saved '${detectedMood.label}' to emotion_history",
+      ); // Log success
+    } catch (e) {
+      print(
+        "❌ Database Error: $e",
+      ); // Log any errors but continue navigation regardless, since this is non-critical for the user flow.
     }
 
     if (!mounted) return;
@@ -139,7 +143,7 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
     await Future.delayed(const Duration(milliseconds: 400));
     if (!mounted) return;
 
-    context.push('/result', extra: MoodModel.fromString(detectedLabel));
+    context.go('/result', extra: MoodModel.fromString(detectedLabel));
   }
 
   // ── Build ──────────────────────────────────────────────────────────────────

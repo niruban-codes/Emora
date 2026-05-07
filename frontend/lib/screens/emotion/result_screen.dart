@@ -116,7 +116,6 @@ class _ResultScreenState extends State<ResultScreen>
                     ),
                   ),
                 ),
-                _buildBottomNavBar(context),
               ],
             ),
           ),
@@ -132,7 +131,7 @@ class _ResultScreenState extends State<ResultScreen>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _circleBtn(Icons.arrow_back, onTap: () => context.pop()),
+          _circleBtn(Icons.arrow_back, onTap: () => context.go('/home')),
           Text(
             'AI Insights',
             style: GoogleFonts.poppins(
@@ -611,96 +610,6 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 
-  // ── Bottom Nav Bar ────────────────────────────────────────────────────────
-  // Removed: History
-  // Working: Home → /home, Explore → /search, Library → /playlist, Profile → no action yet
-  // ── Bottom Nav Bar (UPDATED) ──────────────────────────────────────────────
-  Widget _buildBottomNavBar(BuildContext context) {
-    final items = [
-      const _NavItem(icon: Icons.home_rounded, label: 'HOME', route: '/home'),
-      const _NavItem(
-        icon: Icons.search_rounded,
-        label: 'EXPLORE',
-        route: '/search',
-      ),
-      const _NavItem(
-        icon: Icons.library_music_rounded,
-        label: 'LIBRARY',
-        route: '/library',
-      ),
-      const _NavItem(
-        icon: Icons.history_rounded,
-        label: 'HISTORY',
-        route: '/history',
-      ),
-      const _NavItem(
-        icon: Icons.person_rounded,
-        label: 'PROFILE',
-        route: '/profile',
-      ),
-    ];
-
-    // 👇 ONLY THE VISUAL DESIGN CHANGES BELOW 👇
-    return Container(
-      color: const Color(0xFF080716),
-      padding: const EdgeInsets.only(top: 10, bottom: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: List.generate(items.length, (index) {
-          final isSelected = index == _currentNavIndex;
-
-          return GestureDetector(
-            onTap: () {
-              setState(() => _currentNavIndex = index);
-
-              switch (index) {
-                case 0:
-                  context.push('/home');
-                  break;
-                case 1:
-                  context.push('/search'); // EXPLORE
-                  break;
-                case 2:
-                  context.push('/library'); // LIBRARY
-                  break;
-                case 3:
-                  context.push('/history'); // HISTORY
-                  break;
-                case 4:
-                  context.push('/profile'); // PROFILE
-                  break;
-              }
-            },
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  items[index].icon,
-                  color: isSelected
-                      ? const Color(0xFFE040FB)
-                      : Colors.white.withOpacity(0.4),
-                  size: 24,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  items[index].label,
-                  style: GoogleFonts.poppins(
-                    color: isSelected
-                        ? const Color(0xFFE040FB)
-                        : Colors.white.withOpacity(0.4),
-                    fontSize: 9,
-                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
-                    letterSpacing: 0.8,
-                  ),
-                ),
-              ],
-            ),
-          );
-        }),
-      ),
-    );
-  }
-
   // ── Corner Brackets ───────────────────────────────────────────────────────
   List<Widget> _cornerBrackets(Color color) {
     const size = 20.0;
@@ -732,16 +641,4 @@ class _ResultScreenState extends State<ResultScreen>
       Positioned(bottom: 10, right: 10, child: b(false, false)),
     ];
   }
-}
-
-// ── Nav Item Model ────────────────────────────────────────────────────────────
-class _NavItem {
-  final IconData icon;
-  final String label;
-  final String? route; // null = not yet implemented
-  const _NavItem({
-    required this.icon,
-    required this.label,
-    required this.route,
-  });
 }
