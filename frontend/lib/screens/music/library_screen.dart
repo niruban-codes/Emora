@@ -96,8 +96,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   ),
                   Text(
                     'Library',
-                    // 👇 Changed to Arvo for main header
-                    style: GoogleFonts.arvo(
+                    style: GoogleFonts.poppins(
                       color: Colors.white,
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
@@ -105,7 +104,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () => context.go('/search'),
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
@@ -229,8 +228,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     children: [
                       Text(
                         title,
-                        // 👇 Changed to Arvo for Card Title
-                        style: GoogleFonts.arvo(
+                        style: GoogleFonts.poppins(
                           color: Colors.white,
                           fontSize: 18,
                           fontWeight: FontWeight.w600,

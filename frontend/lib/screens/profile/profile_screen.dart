@@ -22,6 +22,19 @@ class ProfileSettingsScreen extends StatefulWidget {
 class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   String userName = "Loading...";
   String userEmail = "";
+  // Define your hardcoded admin emails
+  final List<String> _adminEmails = [
+    'niru2324@gmail.com', // Replace with your actual admin email
+    'admin@emora.com',
+  ];
+
+  // Check if the current logged-in user is an admin
+  bool get _isAdmin {
+    final user = FirebaseAuth.instance.currentUser;
+    return user != null &&
+        user.email != null &&
+        _adminEmails.contains(user.email!.toLowerCase());
+  }
 
   @override
   void initState() {
@@ -113,7 +126,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
             ),
 
             const SizedBox(height: 30),
-            _buildPremiumCard(),
+            if (_isAdmin) _buildAdminCard(context),
 
             const SizedBox(height: 30),
             _buildLogoutButton(context), // 👈 now signs out from Firebase
@@ -168,22 +181,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
           style: const TextStyle(
             color: ProfileSettingsScreen.textSecondary,
             fontSize: 14,
-          ),
-        ),
-        const SizedBox(height: 10),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-          decoration: BoxDecoration(
-            color: ProfileSettingsScreen.accentPurple.withOpacity(0.15),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: const Text(
-            'PREMIUM MEMBER',
-            style: TextStyle(
-              color: ProfileSettingsScreen.accentPurple,
-              fontWeight: FontWeight.bold,
-              fontSize: 11,
-            ),
           ),
         ),
       ],
@@ -309,41 +306,48 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     );
   }
 
-  Widget _buildPremiumCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(25),
-        gradient: const LinearGradient(
-          colors: [Color(0xFF8E24AA), Color(0xFF512DA8)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: const [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Emora Premium',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 4),
-              Text(
-                'Experience music without boundaries.',
-                style: TextStyle(color: Colors.white70, fontSize: 12),
-              ),
-            ],
+  // ── Admin Dashboard Card ──────────────────────────────────────────────────
+  Widget _buildAdminCard(BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.push('/admin-dashboard'),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(25),
+          gradient: const LinearGradient(
+            colors: [
+              Color(0xFFE53935),
+              Color(0xFFB71C1C),
+            ], // Admin Red Gradient
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          Icon(Icons.chevron_right, color: Colors.white, size: 30),
-        ],
+        ),
+        child: const Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Admin Dashboard',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'Manage users, music, and platform analytics.',
+                  style: TextStyle(color: Colors.white70, fontSize: 12),
+                ),
+              ],
+            ),
+            Icon(Icons.admin_panel_settings, color: Colors.white, size: 30),
+          ],
+        ),
       ),
     );
   }
