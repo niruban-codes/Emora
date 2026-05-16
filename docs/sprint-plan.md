@@ -14,8 +14,8 @@
 | Wathsiluni | Phase 2 | Firestore — Build           |
 | Geethma    | Phase 3 | Flask + DeepFace — Build    |
 | Dinithi    | Phase 4 | YouTube API — Build         |
-| Hafsa      | Phase 5 | Flutter Integration — Build |
-| Pending    | Phase 6 | Admin Panel                 |
+| Hafsa      | Phase 5 | Admin Panel                 |
+| Pending    | Phase 6 | Flutter Integration — Build |
 
 **Testing Policy:** No member tests their own phase.
 
