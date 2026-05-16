@@ -2,11 +2,13 @@ from flask import Flask, jsonify, request
 import os
 from dotenv import load_dotenv
 from emotion import detect_emotion
+from history import history_bp
 
 load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
+app.register_blueprint(history_bp)
 
 ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "webp"}
 
