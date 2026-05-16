@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../../services/auth_service.dart'; // 👈 added
+import '../../../services/auth_service.dart'; 
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -12,15 +12,15 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  bool _isGoogleLoading = false; // 👈 loading state for Google button
+  bool _isGoogleLoading = false; 
 
-  // ── Google Sign In ────────────────────────────────────────────────────────
+  //  Google Sign In 
   Future<void> _handleGoogleSignIn() async {
     setState(() => _isGoogleLoading = true);
     try {
       final result = await AuthService.signInWithGoogle();
       if (result != null && mounted) {
-        context.go('/home'); // 👈 navigate to home on success
+        context.go('/home'); 
       }
     } catch (e) {
       if (mounted) {
@@ -95,13 +95,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       )
                     : _googleIcon(),
                 onTap: _isGoogleLoading ? null : _handleGoogleSignIn,
-              ),
-              const SizedBox(height: 16),
-
-              _socialButton(
-                label: 'Continue with Facebook',
-                icon: _facebookIcon(),
-                onTap: () {},
               ),
 
               const SizedBox(height: 24),
@@ -254,7 +247,4 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget _facebookIcon() {
-    return const Icon(Icons.facebook, color: Color(0xFF1877F2), size: 24);
-  }
 }
