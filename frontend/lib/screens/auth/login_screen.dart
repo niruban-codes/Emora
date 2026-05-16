@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+<<<<<<< Updated upstream
+=======
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../../services/auth_service.dart'; 
+>>>>>>> Stashed changes
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,6 +20,12 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _rememberMe = false;
+<<<<<<< Updated upstream
+=======
+  bool _isLoading = false;
+  bool _isGoogleLoading = false; 
+
+>>>>>>> Stashed changes
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
   late Animation<Offset> _slideAnim;
@@ -42,6 +53,80 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     super.dispose();
   }
 
+<<<<<<< Updated upstream
+=======
+  // Email/Password Login 
+  Future<void> _login() async {
+    if (_emailController.text.trim().isEmpty ||
+        _passwordController.text.trim().isEmpty) {
+      _showError('Please enter your email and password.');
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+      if (mounted) context.go('/home');
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case 'user-not-found':
+          _showError('No account found with this email.');
+          break;
+        case 'wrong-password':
+          _showError('Incorrect password. Please try again.');
+          break;
+        case 'invalid-email':
+          _showError('Please enter a valid email address.');
+          break;
+        case 'user-disabled':
+          _showError('This account has been disabled.');
+          break;
+        case 'invalid-credential':
+          _showError('Incorrect email or password. Please try again.');
+          break;
+        default:
+          _showError('Login failed. Please try again.');
+      }
+    } catch (e) {
+      _showError('Something went wrong. Please try again.');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  //Google Sign In
+  Future<void> _handleGoogleSignIn() async {
+    setState(() => _isGoogleLoading = true);
+    try {
+      final result = await AuthService.signInWithGoogle();
+      if (result != null && mounted) {
+        context.go('/home');
+      }
+    } catch (e) {
+      if (mounted) _showError('Google Sign-in failed. Please try again.');
+    } finally {
+      if (mounted) setState(() => _isGoogleLoading = false);
+    }
+  }
+
+  // Show Error Snackbar
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message, style: GoogleFonts.poppins(color: Colors.white)),
+        backgroundColor: const Color(0xFFEF5350),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: const EdgeInsets.all(16),
+      ),
+    );
+  }
+
+>>>>>>> Stashed changes
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,17 +144,16 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                   const SizedBox(height: 56),
                   _buildLogo(),
                   const SizedBox(height: 40),
+<<<<<<< Updated upstream
                   
                   // Social Buttons
+=======
+
+                  // Google button calls _handleGoogleSignIn()
+>>>>>>> Stashed changes
                   _socialButton(
                     icon: _googleIcon(),
                     label: 'Continue with Google',
-                    onTap: () {},
-                  ),
-                  const SizedBox(height: 14),
-                  _socialButton(
-                    icon: _facebookIcon(),
-                    label: 'Continue with Facebook',
                     onTap: () {},
                   ),
 
@@ -314,7 +398,12 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     );
   }
 
+<<<<<<< Updated upstream
   Widget _facebookIcon() {
     return const Icon(Icons.facebook, color: Color(0xFF1877F2), size: 24);
   }
 }
+=======
+  
+}
+>>>>>>> Stashed changes

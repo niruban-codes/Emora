@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+<<<<<<< Updated upstream
+=======
+import 'package:firebase_auth/firebase_auth.dart'; 
+import '../../../services/firestore_service.dart'; 
+>>>>>>> Stashed changes
 
 class RegisterWithEmailScreen extends StatefulWidget {
   const RegisterWithEmailScreen({super.key});
@@ -23,6 +28,10 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _agreeToPolicy = false;
+<<<<<<< Updated upstream
+=======
+  bool _isLoading = false; 
+>>>>>>> Stashed changes
 
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
@@ -56,6 +65,91 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
     super.dispose();
   }
 
+<<<<<<< Updated upstream
+=======
+  // Firebase Register Logic
+  Future<void> _register() async {
+    // 1. Validate fields are not empty
+    if (_emailController.text.trim().isEmpty ||
+        _passwordController.text.trim().isEmpty ||
+        _usernameController.text.trim().isEmpty) {
+      _showError('Please fill in all fields.');
+      return;
+    }
+
+    // 2. Check passwords match
+    if (_passwordController.text != _confirmPasswordController.text) {
+      _showError('Passwords do not match.');
+      return;
+    }
+
+    // 3. Check password length
+    if (_passwordController.text.length < 6) {
+      _showError('Password must be at least 6 characters.');
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      // 4. Create user with Firebase Auth
+      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      // 5. Update display name with username
+      await userCredential.user?.updateDisplayName(
+        _usernameController.text.trim(),
+      );
+
+      // Create user document in Firestore
+      if (userCredential.user != null) {
+        await FirestoreService().createUser(
+          userCredential.user!.uid,            // The unique ID
+          _usernameController.text.trim(),     // The name
+          _emailController.text.trim(),        // The email
+        );
+      }
+
+      // 6. Navigate to home on success
+      if (mounted) context.go('/home');
+    } on FirebaseAuthException catch (e) {
+      // 7. Handle specific Firebase errors
+      switch (e.code) {
+        case 'email-already-in-use':
+          _showError('This email is already registered. Please sign in.');
+          break;
+        case 'invalid-email':
+          _showError('Please enter a valid email address.');
+          break;
+        case 'weak-password':
+          _showError('Password is too weak. Use at least 6 characters.');
+          break;
+        default:
+          _showError('Registration failed. Please try again.');
+      }
+    } catch (e) {
+      _showError('Something went wrong. Please try again.');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  // Show Error Snackbar 
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message, style: GoogleFonts.poppins(color: Colors.white)),
+        backgroundColor: const Color(0xFFEF5350),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: const EdgeInsets.all(16),
+      ),
+    );
+  }
+
+>>>>>>> Stashed changes
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -270,6 +364,10 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
     );
   }
 
+<<<<<<< Updated upstream
+=======
+  // Updated Continue button with loading state and Firebase call
+>>>>>>> Stashed changes
   Widget _buildContinueButton() {
     return GestureDetector(
       onTap: _agreeToPolicy ? () => context.go('/home') : null,

@@ -2,11 +2,55 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+<<<<<<< Updated upstream
+=======
+import '../../../services/auth_service.dart'; 
+>>>>>>> Stashed changes
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
 
   @override
+<<<<<<< Updated upstream
+=======
+  State<RegisterScreen> createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
+  bool _isGoogleLoading = false; // loading state for Google button
+
+  //Google Sign In 
+  Future<void> _handleGoogleSignIn() async {
+    setState(() => _isGoogleLoading = true);
+    try {
+      final result = await AuthService.signInWithGoogle();
+      if (result != null && mounted) {
+        context.go('/home'); // navigate to home on success
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Google Sign-in failed. Please try again.',
+              style: GoogleFonts.poppins(color: Colors.white),
+            ),
+            backgroundColor: const Color(0xFFEF5350),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            margin: const EdgeInsets.all(16),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isGoogleLoading = false);
+    }
+  }
+
+  @override
+>>>>>>> Stashed changes
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF15173D), // Updated to match your primary theme
@@ -41,18 +85,25 @@ class RegisterScreen extends StatelessWidget {
               ),
               const SizedBox(height: 48),
 
+<<<<<<< Updated upstream
               // Social Buttons
+=======
+              // Google button now calls _handleGoogleSignIn()
+>>>>>>> Stashed changes
               _socialButton(
                 label: 'Continue with Google', 
                 icon: _googleIcon(),
                 onTap: () {},
               ),
+<<<<<<< Updated upstream
               const SizedBox(height: 16),
               _socialButton(
                 label: 'Continue with Facebook',
                 icon: _facebookIcon(),
                 onTap: () {},
               ),
+=======
+>>>>>>> Stashed changes
 
               const SizedBox(height: 24),
               _orDivider(),
@@ -200,7 +251,12 @@ class RegisterScreen extends StatelessWidget {
       height: 22,
     );
   }
+<<<<<<< Updated upstream
   Widget _facebookIcon() {
     return const Icon(Icons.facebook, color: Color(0xFF1877F2), size: 24);
   }
 }
+=======
+
+}
+>>>>>>> Stashed changes
