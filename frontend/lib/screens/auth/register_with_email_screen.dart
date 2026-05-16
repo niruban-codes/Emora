@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // 👈 added
-import '../../../services/firestore_service.dart'; // 👈 added
+import 'package:firebase_auth/firebase_auth.dart'; 
+import '../../../services/firestore_service.dart'; 
 
 class RegisterWithEmailScreen extends StatefulWidget {
   const RegisterWithEmailScreen({super.key});
@@ -26,7 +26,7 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _agreeToPolicy = false;
-  bool _isLoading = false; // 👈 added for loading state
+  bool _isLoading = false; 
 
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
@@ -60,7 +60,7 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
     super.dispose();
   }
 
-  // ── Firebase Register Logic ───────────────────────────────────────────────
+  // Firebase Register Logic
   Future<void> _register() async {
     // 1. Validate fields are not empty
     if (_emailController.text.trim().isEmpty ||
@@ -129,7 +129,7 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
     }
   }
 
-  // ── Show Error Snackbar ───────────────────────────────────────────────────
+  // Show Error Snackbar 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -409,7 +409,6 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
     );
   }
 
-  // 👇 Updated Continue button with loading state and Firebase call
   Widget _buildContinueButton() {
     return GestureDetector(
       onTap: (_agreeToPolicy && !_isLoading) ? _register : null,

@@ -3,8 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../../services/auth_service.dart'; // 👈 added
-
+import '../../../services/auth_service.dart'; 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -19,7 +18,7 @@ class _LoginScreenState extends State<LoginScreen>
   bool _obscurePassword = true;
   bool _rememberMe = false;
   bool _isLoading = false;
-  bool _isGoogleLoading = false; // 👈 added
+  bool _isGoogleLoading = false; 
 
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
@@ -48,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen>
     super.dispose();
   }
 
-  // ── Email/Password Login ──────────────────────────────────────────────────
+  // Email/Password Login
   Future<void> _login() async {
     if (_emailController.text.trim().isEmpty ||
         _passwordController.text.trim().isEmpty) {
@@ -91,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen>
     }
   }
 
-  // ── Google Sign In ────────────────────────────────────────────────────────
+  // Google Sign In 
   Future<void> _handleGoogleSignIn() async {
     setState(() => _isGoogleLoading = true);
     try {
@@ -106,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen>
     }
   }
 
-  // ── Show Error Snackbar ───────────────────────────────────────────────────
+  //Show Error Snackbar 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -137,7 +136,7 @@ class _LoginScreenState extends State<LoginScreen>
                   _buildLogo(),
                   const SizedBox(height: 40),
 
-                  // 👇 Google button now calls _handleGoogleSignIn()
+                  // Google button now calls _handleGoogleSignIn()
                   _socialButton(
                     icon: _isGoogleLoading
                         ? const SizedBox(
@@ -153,12 +152,6 @@ class _LoginScreenState extends State<LoginScreen>
                         : _googleIcon(),
                     label: 'Continue with Google',
                     onTap: _isGoogleLoading ? null : _handleGoogleSignIn,
-                  ),
-                  const SizedBox(height: 14),
-                  _socialButton(
-                    icon: _facebookIcon(),
-                    label: 'Continue with Facebook',
-                    onTap: () {},
                   ),
 
                   const SizedBox(height: 24),
@@ -442,7 +435,4 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
-  Widget _facebookIcon() {
-    return const Icon(Icons.facebook, color: Color(0xFF1877F2), size: 24);
-  }
 }
