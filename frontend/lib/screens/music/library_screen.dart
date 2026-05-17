@@ -26,13 +26,19 @@ class _LibraryScreenState extends State<LibraryScreen> {
     {
       'title': 'Sad',
       'subtitle': 'Reflective',
-      'icon': Icons.water_drop_outlined,
+      'icon': Icons.sentiment_dissatisfied_rounded,
       'baseColor': const Color(0xFF64B5F6),
+    },
+    {
+      'title': 'Neutral',
+      'subtitle': 'Ambient',
+      'icon': Icons.lens_blur_rounded,
+      'baseColor': Colors.grey.shade400,
     },
     {
       'title': 'Fear',
       'subtitle': 'Tense',
-      'icon': Icons.dark_mode_outlined,
+      'icon': Icons.sentiment_very_dissatisfied_outlined,
       'baseColor': const Color(0xFF9575CD),
     },
     {
@@ -46,12 +52,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
       'subtitle': 'Ethereal',
       'icon': Icons.flare_rounded,
       'baseColor': const Color(0xFF4DB6AC),
-    },
-    {
-      'title': 'Neutral',
-      'subtitle': 'Ambient',
-      'icon': Icons.lens_blur_rounded,
-      'baseColor': Colors.grey.shade400,
     },
   ];
 
@@ -75,7 +75,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GestureDetector(
-                    onTap: () => context.push('/profile'),
+                    onTap: () => context.go('/profile'),
                     child: Container(
                       width: 40,
                       height: 40,
@@ -98,7 +98,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     'Library',
                     style: GoogleFonts.poppins(
                       color: Colors.white,
-                      fontSize: 22,
+                      fontSize: 20,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 1.5,
                     ),
@@ -230,7 +230,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                         title,
                         style: GoogleFonts.poppins(
                           color: Colors.white,
-                          fontSize: 18,
+                          fontSize: 16,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.5,
                         ),
