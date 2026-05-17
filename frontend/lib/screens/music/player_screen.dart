@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:frontend/models/song_model.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class PlayerScreen extends StatefulWidget {
   final Song currentSong;
@@ -73,7 +74,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0D1135),
+      backgroundColor: const Color(0xFF0D0C1D),
       body: SafeArea(
         child: Column(
           children: [
@@ -135,9 +136,9 @@ class _PlayerScreenState extends State<PlayerScreen>
           ),
           Column(
             children: [
-              const Text(
+              Text(
                 'NOW PLAYING',
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   color: Colors.white54,
                   fontSize: 10,
                   letterSpacing: 2,
@@ -145,7 +146,7 @@ class _PlayerScreenState extends State<PlayerScreen>
               ),
               Text(
                 '${_currentIndex + 1} / ${widget.playlist.length}',
-                style: const TextStyle(color: Colors.white38, fontSize: 11),
+                style: GoogleFonts.poppins(color: Colors.white38, fontSize: 11),
               ),
             ],
           ),
@@ -215,7 +216,7 @@ class _PlayerScreenState extends State<PlayerScreen>
               children: [
                 Text(
                   _song.title,
-                  style: const TextStyle(
+                  style: GoogleFonts.poppins(
                     color: Colors.white,
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
@@ -225,7 +226,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                 const SizedBox(height: 4),
                 Text(
                   _song.artist,
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     color: Colors.white.withOpacity(0.55),
                     fontSize: 15,
                   ),
@@ -438,7 +439,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                       children: [
                         Text(
                           song.title,
-                          style: const TextStyle(
+                          style: GoogleFonts.poppins(
                             color: Colors.white54,
                             fontSize: 13,
                             fontWeight: FontWeight.w500,
@@ -446,7 +447,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                         ),
                         Text(
                           song.artist,
-                          style: TextStyle(
+                          style: GoogleFonts.poppins(
                             color: Colors.white.withOpacity(0.3),
                             fontSize: 11,
                           ),
