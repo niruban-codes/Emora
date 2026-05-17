@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-// ── Mood types ─────────────────────────────────────────────────────────────
+// Mood types 
 // Single enum used everywhere in the app.
 // mood_data.dart's MoodType.neutral and MoodType.excited have been
 // replaced with MoodType.peaceful and MoodType.melancholy.
-enum MoodType { happy, sad, peaceful, energetic, anxious, melancholy }
+enum MoodType { happy, sad, neutral, fear, angry, surprise }
 
-// ── Mood Model ─────────────────────────────────────────────────────────────
+//Mood Model 
 class MoodModel {
   final MoodType type;
   final String label; // uppercase display label  e.g. "HAPPY"
@@ -39,7 +39,7 @@ class MoodModel {
     };
   }
 
-  // ── Colours ───────────────────────────────────────────────────────────────
+  // Colours 
   // Computed from type so callers never need to pass colours manually.
   // Previously mood_data.dart hardcoded Color(0xFF8B2D8B) for every mood —
   // that's now replaced with distinct per-mood palettes.
@@ -48,17 +48,17 @@ class MoodModel {
   Color get primaryColor {
     switch (type) {
       case MoodType.happy:
-        return const Color(0xFFFFB347); // warm amber
+        return const Color(0xFFAB47BC); // warm amber
       case MoodType.sad:
         return const Color(0xFF42A5F5); // cool blue
-      case MoodType.peaceful:
-        return const Color(0xFF64B5F6); // soft sky
-      case MoodType.energetic:
-        return const Color(0xFF66BB6A); // vibrant green
-      case MoodType.anxious:
+      case MoodType.neutral:
+        return const Color(0xFF78909C); // soft sky
+      case MoodType.fear:
+        return const Color(0xFF7E57C2); // vibrant green
+      case MoodType.angry:
         return const Color(0xFFEF5350); // tense red
-      case MoodType.melancholy:
-        return const Color(0xFF9575CD); // muted violet
+      case MoodType.surprise:
+        return const Color(0xFFAB47BC); // muted violet
     }
   }
 
@@ -69,14 +69,14 @@ class MoodModel {
         return const Color(0xFFFFF176); // yellow
       case MoodType.sad:
         return const Color(0xFF7E57C2); // purple-blue
-      case MoodType.peaceful:
-        return const Color(0xFF80DEEA); // teal
-      case MoodType.energetic:
-        return const Color(0xFFFFEE58); // yellow-green
-      case MoodType.anxious:
+      case MoodType.neutral:
+        return const Color(0xFFB0BEC5); // teal
+      case MoodType.fear:
+        return const Color(0xFF4A148C); // yellow-green
+      case MoodType.angry:
         return const Color(0xFFFF7043); // deep orange
-      case MoodType.melancholy:
-        return const Color(0xFFCE93D8); // lavender
+      case MoodType.surprise:
+        return const Color(0xFF00BCD4); // lavender
     }
   }
 
@@ -87,36 +87,36 @@ class MoodModel {
         return const Color(0xFFFFD54F);
       case MoodType.sad:
         return const Color(0xFF90CAF9);
-      case MoodType.peaceful:
-        return const Color(0xFF81D4FA);
-      case MoodType.energetic:
-        return const Color(0xFFA5D6A7);
-      case MoodType.anxious:
+      case MoodType.neutral:
+        return const Color(0xFFCFD8DC);
+      case MoodType.fear:
+        return const Color(0xFFCE93D8);
+      case MoodType.angry:
         return const Color(0xFFFF8A80);
-      case MoodType.melancholy:
-        return const Color(0xFFD4A0D4);
+      case MoodType.surprise:
+        return const Color(0xFFE040FB);
     }
   }
 
-  // ── Playlists ─────────────────────────────────────────────────────────────
+  // Playlists 
   List<String> get playlistTitles {
     switch (type) {
       case MoodType.happy:
         return ['Sunshine Hits', 'Feel Good Vibes', 'Golden Hour'];
       case MoodType.sad:
         return ['Healing Waves', 'Quiet Tears', 'Gentle Ache'];
-      case MoodType.peaceful:
+      case MoodType.neutral:
         return ['Calm Waters', 'Morning Zen', 'Soft Focus'];
-      case MoodType.energetic:
+      case MoodType.fear:
         return ['Midnight Pulse', 'Power Hour', 'Peak Energy'];
-      case MoodType.anxious:
+      case MoodType.angry:
         return ['Steady Ground', 'Breathe Easy', 'Anchor Tones'];
-      case MoodType.melancholy:
+      case MoodType.surprise:
         return ['Rainy Echoes', 'Blue Hours', 'Nostalgic Dreams'];
     }
   }
 
-  // ── fromString ────────────────────────────────────────────────────────────
+  //  fromString
   // Called with the raw string returned by your emotion-detection API.
   // e.g.  MoodModel.fromString('happy')  or  MoodModel.fromString('ENERGETIC')
   factory MoodModel.fromString(String raw) {
@@ -143,7 +143,7 @@ class MoodModel {
         );
       case 'peaceful':
         return const MoodModel(
-          type: MoodType.peaceful,
+          type: MoodType.neutral,
           label: 'PEACEFUL',
           emoji: '☁️',
           songTitle: 'Weightless',
@@ -153,9 +153,9 @@ class MoodModel {
         );
       case 'energetic':
         return const MoodModel(
-          type: MoodType.energetic,
-          label: 'ENERGETIC',
-          emoji: '⚡',
+          type: MoodType.fear,
+          label: 'FEAR',
+          emoji: '😰',
           songTitle: 'Midnight Pulse',
           artist: 'Daft Punk',
           genre: 'Electronic',
@@ -163,20 +163,20 @@ class MoodModel {
         );
       case 'anxious':
         return const MoodModel(
-          type: MoodType.anxious,
-          label: 'ANXIOUS',
-          emoji: '😰',
+          type: MoodType.angry,
+          label: 'ANGRY',
+          emoji: '😠',
           songTitle: 'Breathe (2 AM)',
           artist: 'Anna Nalick',
           genre: 'Acoustic Pop',
           description: 'Your mind is racing. Let the music slow you down.',
         );
-      case 'melancholy':
+      case 'surprise':
       default:
         return const MoodModel(
-          type: MoodType.melancholy,
-          label: 'MELANCHOLY',
-          emoji: '🌙',
+          type: MoodType.surprise,
+          label: 'SURPRISE',
+          emoji: '⚡',
           songTitle: 'The Night We Met',
           artist: 'Lord Huron',
           genre: 'Indie Folk',
@@ -186,9 +186,7 @@ class MoodModel {
   }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ALL MOODS  —  replaces mood_data.dart entirely.
-//
+
 // Use [allMoods] anywhere you need to iterate over every mood:
 //   • Mood grid on HomeScreen
 //   • Detectable-emotions legend on EmotionDetectionScreen
@@ -196,7 +194,6 @@ class MoodModel {
 //
 // Use [getMoodByType] for a direct type → MoodModel lookup.
 // Use [MoodModel.fromString] when handling an API response string.
-// ═══════════════════════════════════════════════════════════════════════════
 
 const List<MoodModel> allMoods = [
   MoodModel(
@@ -218,8 +215,8 @@ const List<MoodModel> allMoods = [
     description: 'Feeling low. These songs understand.',
   ),
   MoodModel(
-    type: MoodType.peaceful,
-    label: 'PEACEFUL',
+    type: MoodType.neutral,
+    label: 'NEUTRAL',
     emoji: '☁️',
     songTitle: 'Weightless',
     artist: 'Marconi Union',
@@ -227,27 +224,27 @@ const List<MoodModel> allMoods = [
     description: 'Calm and centred. Lean into the tranquility.',
   ),
   MoodModel(
-    type: MoodType.energetic,
-    label: 'ENERGETIC',
-    emoji: '⚡',
+    type: MoodType.fear,
+    label: 'FEAR',
+    emoji: '😰',
     songTitle: 'Midnight Pulse',
     artist: 'Daft Punk',
     genre: 'Electronic',
     description: "You're buzzing. Time to turn it up.",
   ),
   MoodModel(
-    type: MoodType.anxious,
-    label: 'ANXIOUS',
-    emoji: '😰',
+    type: MoodType.angry,
+    label: 'ANGRY',
+    emoji: '😠',
     songTitle: 'Breathe (2 AM)',
     artist: 'Anna Nalick',
     genre: 'Acoustic Pop',
     description: 'Your mind is racing. Let the music slow you down.',
   ),
   MoodModel(
-    type: MoodType.melancholy,
-    label: 'MELANCHOLY',
-    emoji: '🌙',
+    type: MoodType.surprise,
+    label: 'SURPRISE',
+    emoji: '⚡',
     songTitle: 'The Night We Met',
     artist: 'Lord Huron',
     genre: 'Indie Folk',

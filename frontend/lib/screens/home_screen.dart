@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF15173D),
+      backgroundColor: const Color(0xFF0D0C1D),
       body: FadeTransition(
         opacity: _fadeAnim,
         child: SafeArea(
@@ -59,11 +59,13 @@ class _HomeScreenState extends State<HomeScreen>
                       const SizedBox(height: 16),
                       _buildTopBar(),
                       const SizedBox(height: 28),
-                      _buildAnalyzeButton(), // 👈 now navigates to /scan
+                      _buildAnalyzeButton(), 
                       const SizedBox(height: 32),
                       _sectionHeader('Search by Mood'),
                       const SizedBox(height: 16),
                       _buildMoodGrid(),
+                      const SizedBox(height: 12),
+                      _buildViewFavoritesButton(),
                       const SizedBox(height: 32),
                       _sectionHeader('Trending Playlists', showSeeAll: false),
                       const SizedBox(height: 16),
@@ -80,8 +82,7 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  // ── UI Components ──────────────────────────────────────────────────────────
-
+  //UI Components 
   Widget _buildTopBar() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -172,6 +173,29 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
+  Widget _buildViewFavoritesButton() {
+    return OutlinedButton(
+      onPressed: () => context.push('/favorites'),
+      style: OutlinedButton.styleFrom(
+        backgroundColor: const Color(0xFF1E1A35),
+        side: const BorderSide(color: Colors.white38),
+        minimumSize: const Size(double.infinity, 45),
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(100),
+        ),
+      ),
+      child: Text(
+        'View Favorites',
+        style: GoogleFonts.poppins(
+          color: Colors.white,
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
   Widget _moodCard(MoodModel mood) {
     // changed the icons
     IconData moodIcon;
@@ -179,20 +203,20 @@ class _HomeScreenState extends State<HomeScreen>
       case 'happy':
         moodIcon = Icons.wb_sunny_outlined;
         break;
-      case 'peaceful':
-        moodIcon = Icons.cloud_outlined;
-        break;
-      case 'melancholy':
-        moodIcon = Icons.nightlight_round_outlined;
-        break;
-      case 'anxious':
-        moodIcon = Icons.air_rounded;
-        break;
-      case 'energetic':
-        moodIcon = Icons.bolt_rounded;
-        break;
       case 'sad':
         moodIcon = Icons.water_drop_outlined;
+        break;
+      case 'neutral':
+        moodIcon = Icons.sentiment_neutral_outlined;
+        break;
+      case 'fear':
+        moodIcon = Icons.visibility_outlined;
+        break;
+      case 'angry':
+        moodIcon = Icons.local_fire_department_outlined;
+        break;
+      case 'surprise':
+        moodIcon = Icons.auto_awesome_outlined;
         break;
       default:
         moodIcon = Icons.face;
@@ -287,8 +311,6 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  // ── Helpers ────────────────────────────────────────────────────────────────
-
   Widget _circularIconButton(IconData icon) {
     return Container(
       width: 38,
@@ -324,5 +346,3 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 }
-
-// ── Nav Item Model ─────────────────────────────────────────────────────────────
