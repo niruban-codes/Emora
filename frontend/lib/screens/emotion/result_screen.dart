@@ -79,7 +79,7 @@ class _ResultScreenState extends State<ResultScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0D1135),
+      backgroundColor: const Color(0xFF0D0C1D),
       body: FadeTransition(
         opacity: _fadeAnim,
         child: Container(
@@ -87,7 +87,7 @@ class _ResultScreenState extends State<ResultScreen>
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [Color(0xFF0D1135), Color(0xFF0D1135)],
+              colors: [Color(0xFF0D0C1D), Color(0xFF0D0C1D)],
             ),
           ),
           child: SafeArea(
@@ -170,7 +170,7 @@ class _ResultScreenState extends State<ResultScreen>
         height: 280,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: const Color(0xFF151830),
+          color: const Color(0xFF0D0C1D).withOpacity(0.5),
           border: Border.all(color: _primary.withOpacity(0.4), width: 1.5),
         ),
         child: Stack(
@@ -188,7 +188,7 @@ class _ResultScreenState extends State<ResultScreen>
                         radius: 1.2,
                         colors: [
                           _primary.withOpacity(0.15),
-                          const Color(0xFF0D1135),
+                          const Color(0xFF0D0C1D),
                         ],
                       ),
                     ),
@@ -256,7 +256,7 @@ class _ResultScreenState extends State<ResultScreen>
               left: 14,
               child: Text(
                 'STATUS: COMPLETE',
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   color: Colors.white.withOpacity(0.5),
                   fontSize: 9,
                   letterSpacing: 1,
@@ -309,7 +309,7 @@ class _ResultScreenState extends State<ResultScreen>
                 children: [
                   Text(
                     'X: 42.1  Y: 88.4',
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       color: Colors.white.withOpacity(0.6),
                       fontSize: 9,
                       letterSpacing: 0.5,
@@ -333,7 +333,7 @@ class _ResultScreenState extends State<ResultScreen>
         children: [
           Text(
             'CURRENT MOOD',
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               color: Colors.white.withOpacity(0.5),
               fontSize: 12,
               letterSpacing: 2.5,
@@ -385,7 +385,7 @@ class _ResultScreenState extends State<ResultScreen>
         children: [
           Text(
             'RECOMMENDED FOR YOU',
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               color: Colors.white.withOpacity(0.85),
               fontSize: 12,
               fontWeight: FontWeight.bold,
@@ -435,7 +435,7 @@ class _ResultScreenState extends State<ResultScreen>
                       const SizedBox(height: 3),
                       Text(
                         '${widget.mood.artist} • ${widget.mood.genre}',
-                        style: TextStyle(
+                        style: GoogleFonts.poppins(
                           color: Colors.white.withOpacity(0.5),
                           fontSize: 12,
                         ),
@@ -474,7 +474,7 @@ class _ResultScreenState extends State<ResultScreen>
         children: [
           Text(
             'MOOD PLAYLISTS',
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               color: Colors.white.withOpacity(0.85),
               fontSize: 12,
               fontWeight: FontWeight.bold,
@@ -597,12 +597,12 @@ class _ResultScreenState extends State<ResultScreen>
               ),
               label: Text(
                 'Recalibrate Scan',
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   color: Colors.white.withOpacity(0.65),
                   fontSize: 14,
                 ),
               ),
-              onPressed: () => context.pop(),
+              onPressed: () => context.push('/scan'),
             ),
           ),
         ],
