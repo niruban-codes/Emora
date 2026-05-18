@@ -256,7 +256,7 @@ class InsightsScreen extends StatelessWidget {
                         style: GoogleFonts.poppins(
                           color: pinkAccent,
                           fontSize: 13,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w500,
                           letterSpacing: 0.5,
                         ),
                       ),
@@ -372,8 +372,8 @@ class InsightsScreen extends StatelessWidget {
                   title,
                   style: GoogleFonts.poppins(
                     color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -389,7 +389,7 @@ class InsightsScreen extends StatelessWidget {
             style:GoogleFonts.poppins(
               color: pinkAccent,
               fontSize: 13,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
