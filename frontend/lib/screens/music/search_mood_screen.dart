@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SearchMoodScreen extends StatefulWidget {
   const SearchMoodScreen({super.key});
@@ -129,12 +130,12 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
       ),
       child: TextField(
         controller: _searchController,
-        style: const TextStyle(color: Colors.white, fontSize: 14),
+        style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
         decoration: InputDecoration(
           hintText: 'Artists, songs, or podcasts',
-          hintStyle: TextStyle(
+          hintStyle: GoogleFonts.poppins(
             color: Colors.white.withOpacity(0.35),
-            fontSize: 14,
+            fontSize: 13,
           ),
           prefixIcon: Icon(
             Icons.search_rounded,
@@ -159,7 +160,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
       children: [
         Text(
           title,
-          style: const TextStyle(
+          style: GoogleFonts.poppins(
             color: Colors.white,
             fontSize: 20,
             fontWeight: FontWeight.w800,
@@ -171,7 +172,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
             onTap: onAction,
             child: Text(
               actionLabel,
-              style: const TextStyle(
+              style: GoogleFonts.poppins(
                 color: Color(0xFFCE93D8),
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
@@ -213,7 +214,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
             ).createShader(bounds),
             child: Text(
               lang.symbol,
-              style: const TextStyle(
+              style: GoogleFonts.poppins(
                 color: Colors.white,
                 fontSize: 26,
                 fontWeight: FontWeight.w700,
@@ -224,7 +225,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
           const SizedBox(height: 10),
           Text(
             lang.label,
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               color: Colors.white.withOpacity(0.85),
               fontSize: 13,
               fontWeight: FontWeight.w500,
@@ -287,9 +288,9 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
                 children: [
                   Text(
                     _featuredVibe['label'] as String,
-                    style: const TextStyle(
+                    style: GoogleFonts.poppins(
                       color: Color(0xFFFF6EC7),
-                      fontSize: 17,
+                      fontSize: 16,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 0.2,
                     ),
@@ -297,7 +298,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
                   const SizedBox(height: 4),
                   Text(
                     _featuredVibe['subtitle'] as String,
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       color: Colors.white.withOpacity(0.75),
                       fontSize: 13,
                       fontWeight: FontWeight.w400,
@@ -376,7 +377,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
               right: 8,
               child: Text(
                 vibe['label'] as String,
-                style: const TextStyle(
+                style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
@@ -426,7 +427,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
         ),
         child: Text(
           genre,
-          style: TextStyle(
+          style: GoogleFonts.poppins(
             color: Colors.white.withOpacity(0.85),
             fontSize: 13,
             fontWeight: FontWeight.w500,
