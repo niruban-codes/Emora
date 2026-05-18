@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MoodAnalyticsScreen extends StatelessWidget {
   const MoodAnalyticsScreen({super.key});
@@ -21,9 +22,13 @@ class MoodAnalyticsScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => context.pop(),
         ),
-        title: const Text(
+        title:  Text(
           "Mood Analytics",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: GoogleFonts.poppins(
+            color: Colors.white, 
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+            ),
         ),
         centerTitle: true,
       ),
@@ -38,7 +43,7 @@ class MoodAnalyticsScreen extends StatelessWidget {
               children: [
                 Expanded(
                   child: _buildStateCard(
-                    "TODAY'S PEAK",
+                    "Today's Peak",
                     "Peaceful",
                     "Maintained for 6 hours",
                     Icons.wb_sunny_outlined,
@@ -48,7 +53,7 @@ class MoodAnalyticsScreen extends StatelessWidget {
                 const SizedBox(width: 15),
                 Expanded(
                   child: _buildStateCard(
-                    "ACTIVE STATE",
+                    "Active State",
                     "Creative",
                     "Higher than yesterday",
                     Icons.auto_awesome,
@@ -58,11 +63,11 @@ class MoodAnalyticsScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 30),
-            const Text(
+            Text (
               "Mood Distribution",
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 color: Colors.white,
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -94,9 +99,9 @@ class MoodAnalyticsScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+               Text(
                 "Daily Mood Average",
-                style: TextStyle(color: Colors.white54, fontSize: 13),
+                style: GoogleFonts.poppins(color: Colors.white54, fontSize: 16),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -104,25 +109,25 @@ class MoodAnalyticsScreen extends StatelessWidget {
                   color: greenAccent.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Text(
+                child:  Text(
                   "↗ 12%",
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     color: greenAccent,
-                    fontSize: 11,
+                    fontSize: 13,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
             ],
           ),
-          const Row(
+           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
                 "7.8",
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   color: Colors.white,
-                  fontSize: 42,
+                  fontSize: 30,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -130,7 +135,7 @@ class MoodAnalyticsScreen extends StatelessWidget {
                 padding: EdgeInsets.only(bottom: 8, left: 4),
                 child: Text(
                   "/10",
-                  style: TextStyle(color: Colors.white38, fontSize: 18),
+                  style: GoogleFonts.poppins(color: Colors.white38, fontSize: 13),
                 ),
               ),
             ],
@@ -141,24 +146,24 @@ class MoodAnalyticsScreen extends StatelessWidget {
             width: double.infinity,
             child: CustomPaint(painter: WavePainter(pinkAccent)),
           ),
-          const Row(
+           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 "DAY 1",
-                style: TextStyle(color: Colors.white24, fontSize: 9),
+                style: GoogleFonts.poppins(color: Colors.white24, fontSize: 11),
               ),
               Text(
                 "DAY 10",
-                style: TextStyle(color: Colors.white24, fontSize: 9),
+                style: GoogleFonts.poppins(color: Colors.white24, fontSize: 11),
               ),
               Text(
                 "DAY 20",
-                style: TextStyle(color: Colors.white24, fontSize: 9),
+                style: GoogleFonts.poppins(color: Colors.white24, fontSize: 11),
               ),
               Text(
                 "DAY 30",
-                style: TextStyle(color: Colors.white24, fontSize: 9),
+                style: GoogleFonts.poppins(color: Colors.white24, fontSize: 11),
               ),
             ],
           ),
@@ -186,9 +191,9 @@ class MoodAnalyticsScreen extends StatelessWidget {
         children: [
           Text(
             label,
-            style: const TextStyle(
+            style: GoogleFonts.poppins(
               color: Colors.white60,
-              fontSize: 10,
+              fontSize: 13,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -197,16 +202,16 @@ class MoodAnalyticsScreen extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             value,
-            style: const TextStyle(
+            style:  GoogleFonts.poppins(
               color: Colors.white,
-              fontSize: 18,
+              fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             sub,
-            style: const TextStyle(color: Colors.white38, fontSize: 10),
+            style: GoogleFonts.poppins(color: Colors.white38, fontSize: 11),
           ),
         ],
       ),
@@ -218,17 +223,12 @@ class MoodAnalyticsScreen extends StatelessWidget {
       spacing: 10,
       runSpacing: 10,
       children: [
-        _moodChip(
-          "Happy",
-          "42%",
-          Colors.purple,
-          Icons.sentiment_very_satisfied,
-        ),
-        _moodChip("Peaceful", "28%", Colors.green, Icons.eco),
-        _moodChip("Sad", "15%", Colors.blue, Icons.sentiment_dissatisfied),
-        _moodChip("Anxious", "15%", Colors.orange, Icons.warning_amber_rounded),
-        _moodChip("Melancholy", "18%", Colors.indigo, Icons.opacity),
-        _moodChip("Energetic", "40%", Colors.teal, Icons.bolt),
+        _moodChip("Happy", "42%", Color(0xFFFFB347), Icons.sentiment_very_satisfied_rounded,),
+        _moodChip("Sad", "15%", Color(0xFF42A5F5), Icons.sentiment_dissatisfied_rounded,),
+        _moodChip("Neutral", "28%", Color(0xFF78909C), Icons.lens_blur_rounded,),
+        _moodChip("Fear", "12%", Color(0xFF7E57C2), Icons.sentiment_very_dissatisfied_outlined,),
+        _moodChip("Angry", "8%", Color(0xFFEF5350), Icons.local_fire_department_outlined,),
+        _moodChip("Surprised", "20%", Color(0xFF4DB6AC), Icons.flare_rounded,),
       ],
     );
   }
@@ -248,12 +248,12 @@ class MoodAnalyticsScreen extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             label,
-            style: const TextStyle(color: Colors.white, fontSize: 13),
+            style: GoogleFonts.poppins(color: Colors.white, fontSize: 13),
           ),
           const SizedBox(width: 6),
           Text(
             percent,
-            style: const TextStyle(color: Colors.white38, fontSize: 11),
+            style: GoogleFonts.poppins(color: Colors.white38, fontSize: 11),
           ),
         ],
       ),
@@ -270,28 +270,28 @@ class MoodAnalyticsScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 "Weekly Trend",
-                style: TextStyle(color: Colors.white54, fontSize: 12),
+                style: GoogleFonts.poppins(color: Colors.white54, fontSize: 16),
               ),
               Text(
                 "+12% Positive",
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   color: greenAccent,
-                  fontSize: 11,
+                  fontSize: 13,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ],
           ),
-          const Text(
+           Text(
             "Stable & Growing",
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               color: pinkAccent,
-              fontSize: 22,
+              fontSize: 13,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -302,9 +302,9 @@ class MoodAnalyticsScreen extends StatelessWidget {
             child: CustomPaint(painter: WavePainter(purpleAccent)),
           ),
           const SizedBox(height: 10),
-          const Text(
+           Text(
             "You stayed calm for most of the day",
-            style: TextStyle(color: Colors.white70, fontSize: 13),
+            style: GoogleFonts.poppins(color: Colors.white70, fontSize: 13),
           ),
         ],
       ),
@@ -323,9 +323,9 @@ class MoodAnalyticsScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 "October 2023",
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -340,7 +340,7 @@ class MoodAnalyticsScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 15),
-          const Row(
+           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _DayHeader("S"),
@@ -418,10 +418,10 @@ class MoodAnalyticsScreen extends StatelessWidget {
           color: const Color(0xFF24224D),
           borderRadius: BorderRadius.circular(16),
         ),
-        child: const Center(
+        child:  Center(
           child: Text(
             "View Monthly Analytics",
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               color: Colors.white,
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -443,11 +443,11 @@ class _DayHeader extends StatelessWidget {
       child: Center(
         child: Text(
           label,
-          style: const TextStyle(
+          style: GoogleFonts.poppins(
             color: Colors.white24,
-            fontSize: 11,
+            fontSize: 13, 
             fontWeight: FontWeight.bold,
-          ),
+          ), //calender day heads
         ),
       ),
     );
@@ -486,11 +486,11 @@ class _DateCircle extends StatelessWidget {
       child: Center(
         child: Text(
           text,
-          style: TextStyle(
+          style: GoogleFonts.poppins(
             color: isMuted ? Colors.white12 : Colors.white,
-            fontSize: 12,
+            fontSize: 13,
             fontWeight: FontWeight.bold,
-          ),
+          ), //calender numbers
         ),
       ),
     );
