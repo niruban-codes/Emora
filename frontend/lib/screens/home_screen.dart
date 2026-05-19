@@ -61,10 +61,10 @@ class _HomeScreenState extends State<HomeScreen>
                       const SizedBox(height: 28),
                       _buildAnalyzeButton(), 
                       const SizedBox(height: 32),
-                      _sectionHeader('Search by Mood'),
+                      _sectionHeader('Search by Mood', showSeeAll: false),
                       const SizedBox(height: 16),
                       _buildMoodGrid(),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 18),
                       _buildViewFavoritesButton(),
                       const SizedBox(height: 32),
                       _sectionHeader('Trending Playlists', showSeeAll: false),
@@ -108,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen>
       onPressed: () => context.push('/scan'),
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.white,
-        minimumSize: const Size(double.infinity, 56),
+        minimumSize: const Size(double.infinity, 45),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
       ),
       child: Row(
@@ -116,14 +116,14 @@ class _HomeScreenState extends State<HomeScreen>
         children: [
           const Icon(
             Icons.bar_chart_rounded,
-            color: Color(0xFF15173D),
+            color: Colors.black,
             size: 22,
           ),
           const SizedBox(width: 10),
           Text(
             'Analyze Mood',
             style: GoogleFonts.poppins(
-              color: const Color(0xFF15173D),
+              color: Colors.black,
               fontSize: 16,
               fontWeight: FontWeight.w700,
             ),
@@ -173,22 +173,23 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
+//view fav button 
   Widget _buildViewFavoritesButton() {
     return OutlinedButton(
       onPressed: () => context.push('/favorites'),
       style: OutlinedButton.styleFrom(
-        backgroundColor: const Color(0xFF1E1A35),
-        side: const BorderSide(color: Colors.white38),
+        backgroundColor: const Color(0xFF301a50).withOpacity(0.2),
+        //side: const BorderSide(color: Colors.white38),
         minimumSize: const Size(double.infinity, 45),
         padding: const EdgeInsets.symmetric(vertical: 12),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(100),
+          borderRadius: BorderRadius.circular(18),
         ),
       ),
       child: Text(
         'View Favorites',
         style: GoogleFonts.poppins(
-          color: Colors.white,
+          color: Colors.black,
           fontSize: 16,
           fontWeight: FontWeight.w600,
         ),
@@ -196,27 +197,35 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
+  //emotion icon colors
   Widget _moodCard(MoodModel mood) {
-    // changed the icons
     IconData moodIcon;
-    switch (mood.label.toLowerCase()) {
+    Color moodColor = Colors.white;
+
+    switch (mood.label.toLowerCase()) { 
       case 'happy':
-        moodIcon = Icons.wb_sunny_outlined;
+        moodIcon = Icons.sentiment_very_satisfied_rounded;
+        moodColor = const Color(0xFFFFB74D);
         break;
       case 'sad':
-        moodIcon = Icons.water_drop_outlined;
+        moodIcon = Icons.sentiment_dissatisfied_rounded;
+        moodColor = const Color(0xFF64B5F6);
         break;
       case 'neutral':
-        moodIcon = Icons.sentiment_neutral_outlined;
+        moodIcon = Icons.lens_blur_rounded;
+        moodColor = Colors.grey.shade400;
         break;
       case 'fear':
-        moodIcon = Icons.visibility_outlined;
+        moodIcon = Icons.sentiment_very_dissatisfied_outlined;
+        moodColor = const Color(0xFF9575CD);
         break;
       case 'angry':
         moodIcon = Icons.local_fire_department_outlined;
+        moodColor = const Color(0xFFE57373);
         break;
       case 'surprise':
-        moodIcon = Icons.auto_awesome_outlined;
+        moodIcon = Icons.flare_rounded;
+        moodColor = const Color(0xFF4DB6AC);
         break;
       default:
         moodIcon = Icons.face;
@@ -224,16 +233,16 @@ class _HomeScreenState extends State<HomeScreen>
 
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF1E1A35), // Dark purple background
-        borderRadius: BorderRadius.circular(24), // Softer rounded corners
+        color: const Color(0xFF1E1A35), 
+        borderRadius: BorderRadius.circular(24), 
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
             moodIcon,
-            color: const Color(0xFFA7338A), // Pinkish-purple icon color
-            size: 32,
+            color: moodColor, 
+            size: 30,
           ),
           const SizedBox(height: 12),
           Text(
