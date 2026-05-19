@@ -79,7 +79,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
                     _buildBackButton(),
                     const SizedBox(height: 20),
                     _buildSearchBar(),
@@ -111,11 +111,16 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
   // ── Back Button ────────────────────────────────────────────────────────────
   Widget _buildBackButton() {
     return GestureDetector(
-      onTap: () => Navigator.maybePop(context),
-      child: const Icon(
-        Icons.arrow_back_rounded,
-        color: Colors.white,
-        size: 24,
+      onTap: () => context.go('/home'),
+      child: Container(
+        width: 40,
+        height: 40,
+        alignment: Alignment.centerLeft,
+        child: const Icon(
+          Icons.arrow_back_rounded,
+          color: Colors.white,
+          size: 22,
+        ),
       ),
     );
   }

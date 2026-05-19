@@ -75,22 +75,15 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GestureDetector(
-                    onTap: () => context.go('/profile'),
+                    onTap: () => context.go('/home'),
                     child: Container(
                       width: 40,
                       height: 40,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.15),
-                          width: 1.5,
-                        ),
-                        image: const DecorationImage(
-                          image: NetworkImage(
-                            'https://via.placeholder.com/150',
-                          ), // Replace with actual user profile image
-                          fit: BoxFit.cover,
-                        ),
+                      alignment: Alignment.centerLeft,
+                      child: const Icon(
+                        Icons.arrow_back_rounded,
+                        color: Colors.white,
+                        size: 22,
                       ),
                     ),
                   ),
@@ -188,7 +181,11 @@ class _LibraryScreenState extends State<LibraryScreen> {
             child: Container(
               decoration: BoxDecoration(
                 gradient: RadialGradient(
-                  colors: [baseColor.withOpacity(0.15), Colors.transparent],
+                  colors: [
+                    baseColor.withOpacity(0.9),
+                    Colors.transparent,
+                    baseColor.withOpacity(0.0),
+                  ],
                   center: Alignment.centerRight,
                   radius: 0.8,
                 ),
