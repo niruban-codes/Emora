@@ -18,10 +18,10 @@ class _HomeScreenState extends State<HomeScreen>
   // Mood grid now driven by allMoods from mood_model.dart — no local list needed.
 
   final List<Map<String, String>> _playlists = [
-    {'title': 'Midnight Pulse', 'mood': 'ENERGETIC'},
-    {'title': 'Ocean Breeze', 'mood': 'PEACEFUL'},
-    {'title': 'Urban Night', 'mood': 'HAPPY'},
-    {'title': 'Rainy Echoes', 'mood': 'SAD'},
+    {'title': 'Midnight Pulse', 'mood': 'HAPPY'},
+    {'title': 'Ocean Breeze', 'mood': 'NEUTRAL'},
+    {'title': 'Urban Night', 'mood': 'SAD'},
+    {'title': 'Rainy Echoes', 'mood': 'ANGRY'},
   ];
 
   @override
@@ -178,21 +178,32 @@ class _HomeScreenState extends State<HomeScreen>
     return OutlinedButton(
       onPressed: () => context.push('/favorites'),
       style: OutlinedButton.styleFrom(
-        backgroundColor: const Color(0xFF301a50).withOpacity(0.2),
-        //side: const BorderSide(color: Colors.white38),
+        backgroundColor: const Color(0xFF1E1A35),
+        side: const BorderSide(color: Color.fromARGB(29, 255, 255, 255)), 
         minimumSize: const Size(double.infinity, 45),
         padding: const EdgeInsets.symmetric(vertical: 12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
         ),
       ),
-      child: Text(
-        'View Favorites',
-        style: GoogleFonts.poppins(
-          color: Colors.black,
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.favorite_rounded,
+            color: const Color(0xFFE040FB),
+            size: 18,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            'View Favorites',
+            style: GoogleFonts.poppins(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -231,6 +242,7 @@ class _HomeScreenState extends State<HomeScreen>
         moodIcon = Icons.face;
     }
 
+    //6 emotions containers  --------------------------------------------------
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFF1E1A35), 
