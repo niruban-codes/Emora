@@ -20,11 +20,13 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
   // Build a Song list from MoodModel data
   List<Song> get _songs {
     final playlists = _mood.playlistTitles;
+    final durations = ['3:45', '4:12', '2:58', '5:30', '3:22', '4:45'];
     return List.generate(playlists.length, (i) {
       return Song(
         id: '${_mood.type.name}_$i',
         title: i == 0 ? _mood.songTitle : playlists[i],
         artist: i == 0 ? _mood.artist : _mood.label,
+        duration: durations[i % durations.length],
         coverUrl: 'https://picsum.photos/200?${_mood.type.index * 10 + i}',
       );
     });
