@@ -25,6 +25,7 @@ import 'package:frontend/screens/notification_screen.dart';
 import 'package:frontend/screens/music/library_screen.dart';
 import 'package:frontend/screens/main_layout.dart';
 import 'package:frontend/screens/admin_dashboard/dashboard_screen.dart';
+import 'package:frontend/screens/favorite_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'root',
@@ -76,6 +77,11 @@ final appRouter = GoRouter(
       path: '/admin-dashboard',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const DashboardScreen(),
+    ),
+    GoRoute(
+      path: '/favorites',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const FavoritesScreen(),
     ),
     // Player
     GoRoute(

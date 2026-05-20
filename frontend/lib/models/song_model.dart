@@ -4,6 +4,7 @@ class Song {
   final String artist;
   final String coverUrl;
   final bool isFavorite;
+  final String duration;
 
   Song({
     required this.id,
@@ -11,6 +12,7 @@ class Song {
     required this.artist,
     required this.coverUrl,
     this.isFavorite = false,
+    this.duration = '',
   });
 
   // Dummy Data
