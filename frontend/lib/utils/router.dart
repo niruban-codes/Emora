@@ -81,7 +81,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/favorites',
       parentNavigatorKey: _rootNavigatorKey,
-      builder: (context, state) => const FavoritesScreen(),
+      builder: (context, state) {
+        final mood = state.extra as String? ?? 'All';
+        return FavoritesScreen(initialMood: mood);
+      },
     ),
     // Player
     GoRoute(
