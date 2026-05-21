@@ -14,8 +14,8 @@
 | Wathsiluni | Phase 2 | Firestore — Build           |
 | Geethma    | Phase 3 | Flask + DeepFace — Build    |
 | Dinithi    | Phase 4 | YouTube API — Build         |
-| Hafsa      | Phase 5 | Flutter Integration — Build |
-| Pending    | Phase 6 | Admin Panel                 |
+| Hafsa      | Phase 5 | Admin Panel                 |
+| Pending    | Phase 6 | Flutter Integration — Build |
 
 **Testing Policy:** No member tests their own phase.
 
@@ -38,16 +38,16 @@
 | 3      | Week 3  | UI Design & Prototyping          | Pre-Dev     | All Members                       | —           | ✅ Done         |
 | 4      | Week 4  | Flutter Learning & Dev Start     | Pre-Dev     | All Members                       | —           | ✅ Done         |
 | 5      | Week 5  | Frontend Development & GitHub    | Pre-Dev     | All Members                       | —           | ✅ Done         |
-| 6      | Week 6  | Phase 1 Complete + Phase 2 Start | Phase 1 & 2 | Niruban (P1), Wathsiluni (P2)     | Hafsa (P1)  | ✅ Done         |
-| 7      | Week 7  | Phase 2 Complete + Testing       | Phase 2     | Wathsiluni                        | Dinithi     | 🔄 In Progress  |
-| 8      | Week 8  | Phase 3 — Flask + DeepFace       | Phase 3     | Geethma                           | Niruban     | ⏳ Upcoming     |
-| 9      | Week 9  | Phase 4 — YouTube API            | Phase 4     | Dinithi                           | Geethma     | ⏳ Upcoming     |
-| 10     | Week 10 | Phase 5 — Flutter Integration    | Phase 5     | Hafsa                             | Wathsiluni  | ⏳ Upcoming     |
-| 11     | Week 11 | Phase 6 — Admin Panel            | Phase 6     | Pending                           | Pending     | ⏳ Upcoming     |
-| 12     | Week 12 | Full Integration & Final Setup   | Phase 6     | All Members                       | All Members | ⏳ Upcoming     |
-| 13     | Week 13 | Buffer Week                      | —           | All Members                       | —           | ⏳ Upcoming     |
-| 14     | Week 14 | Demo Prep + UAT                  | —           | All Members                       | —           | ⏳ Upcoming     |
-| 15     | Week 15 | Journal + Submission             | —           | All Members                       | —           | ⏳ Upcoming     |
+| 6      | Week 6  | Phase 1 Complete + Testing       | Phase 1     | Niruban                           | Hafsa       | ✅ Done         |
+| 7      | Week 7  | Phase 2 Complete + Testing       | Phase 2     | Wathsiluni                        | Dinithi     | ✅ Done         |
+| 8      | Week 8  | Phase 3 — Flask + DeepFace       | Phase 3     | Geethma                           | Niruban     | ✅ Done         |
+| 9      | Week 9  | Phase 4 — YouTube API            | Phase 4     | Dinithi                           | Geethma     | ⏳ In Progress  |
+| 10     | Week 10 | Phase 4 and UI updates           | Phase 4     | Dinithi , All members             | Geethma     | ⏳ Upcoming     |
+| 11     | Week 11 | Phase 4 complete                 | Phase 4     | Dinithi                           | Pending     | ⏳ Upcoming     |
+| 12     | Week 12 | Phase 5 -Admin Panel             | Phase 5     | Geethma , Niruban                 | Dinithi     | ⏳ Upcoming     |
+| 13     | Week 13 | Phase 6 - Full Integration       | Phase 6     | Hafsa                             | Wathsiluni  | ⏳ Upcoming     |
+| 14     | Week 14 | Buffer Week                      | All Members | All Members                       | All Members | ⏳ Upcoming     |
+| 15     | Week 15 | Demo Prep + UAT                  | All Members | All Members                       | All Members | ⏳ Upcoming     |
 
 ---
 
@@ -166,7 +166,7 @@
 - Admin panel built and tested
 - Phase 6 signed off
 
-> ⚠️ Admin panel ownership and testing assignment pending team decision.
+> ⚠️ Admin panel ownership and testing assignment.
 
 ---
 

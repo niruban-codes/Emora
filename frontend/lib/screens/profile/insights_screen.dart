@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart'; // 👈 added
+import 'package:go_router/go_router.dart'; 
+import 'package:google_fonts/google_fonts.dart';
 
 class InsightsScreen extends StatelessWidget {
   const InsightsScreen({super.key});
@@ -21,13 +22,13 @@ class InsightsScreen extends StatelessWidget {
             backgroundColor: Color(0xFF2D2B55),
             child: Icon(Icons.arrow_back, color: Colors.white, size: 18),
           ),
-          onPressed: () => context.pop(), // 👈 go_router pop
+          onPressed: () => context.pop(), //  go_router pop
         ),
-        title: const Text(
+        title: Text(
           "Insights",
-          style: TextStyle(
+          style: GoogleFonts.poppins(
             color: textCream,
-            fontSize: 18,
+            fontSize: 20,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -39,17 +40,19 @@ class InsightsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 10),
-            const Text(
+            Text(
               "Weekly Mood Trend",
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 color: Colors.white,
-                fontSize: 26,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Text(
+             Text(
               "How you've been feeling this week",
-              style: TextStyle(color: Colors.white54, fontSize: 15),
+              style: GoogleFonts.poppins(
+                color: Colors.white54, 
+                fontSize: 13),
             ),
             const SizedBox(height: 25),
             _buildMostFrequentCard(),
@@ -57,30 +60,30 @@ class InsightsScreen extends StatelessWidget {
             _buildMoodLogCard(
               icon: Icons.eco,
               mood: "Peaceful",
-              time: "TODAY, 2:45 PM",
+              time: "Today, 2:45 PM",
               mixName: "Morning Zen & Lo-fi Chill",
               mixColor: Colors.tealAccent,
             ),
             _buildMoodLogCard(
               icon: Icons.celebration,
               mood: "Happy",
-              time: "PEAK: MORNINGS",
+              time: "Peak: Mornings",
               mixName: "Golden Hour Energy",
               mixColor: Colors.pinkAccent,
             ),
             _buildMoodLogCard(
               icon: Icons.water_drop,
               mood: "Melancholy",
-              time: "PEAK: AFTERNOONS",
+              time: "Peak: Afternoons",
               mixName: "Rainy Day Acoustic Essentials",
               mixColor: Colors.blueAccent,
             ),
             const SizedBox(height: 25),
-            const Text(
+             Text(
               "Deep Insights",
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 color: Colors.white,
-                fontSize: 22,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -90,19 +93,19 @@ class InsightsScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                 Text(
                   "Top Mood-Boosting Tracks",
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     color: Colors.white,
-                    fontSize: 20,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
                   "View All",
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     color: pinkAccent.withOpacity(0.8),
-                    fontSize: 16,
+                    fontSize: 13,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -144,19 +147,19 @@ class InsightsScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             "Most Frequent",
-            style: TextStyle(color: Colors.white70, fontSize: 15),
+            style: GoogleFonts.poppins(color: Colors.white70, fontSize: 13),
           ),
           const SizedBox(height: 4),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 "Peaceful",
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   color: Color(0xFFA555EC),
-                  fontSize: 34,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -169,13 +172,13 @@ class InsightsScreen extends StatelessWidget {
                   color: const Color(0xFF1DB954).withOpacity(0.15),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Row(
+                child:  Row(
                   children: [
                     Icon(Icons.trending_up, color: Color(0xFF1DB954), size: 18),
                     SizedBox(width: 6),
                     Text(
                       "12%",
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         color: Color(0xFF1DB954),
                         fontWeight: FontWeight.bold,
                       ),
@@ -214,14 +217,15 @@ class InsightsScreen extends StatelessWidget {
             ),
             title: Text(
               mood,
-              style: const TextStyle(
+              style: GoogleFonts.poppins(
                 color: Colors.white,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
             subtitle: Text(
               time,
-              style: const TextStyle(color: Colors.white54, fontSize: 12),
+              style: GoogleFonts.poppins(color: Colors.white54, fontSize: 13),
             ),
             trailing: const Icon(Icons.more_vert, color: Colors.white54),
           ),
@@ -247,20 +251,20 @@ class InsightsScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "RECOMMENDED MIX",
-                        style: TextStyle(
+                      Text(
+                        "Recommended Mix",
+                        style: GoogleFonts.poppins(
                           color: pinkAccent,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
                           letterSpacing: 0.5,
                         ),
                       ),
                       Text(
                         mixName,
-                        style: const TextStyle(
+                        style:GoogleFonts.poppins(
                           color: Colors.white,
-                          fontSize: 14,
+                          fontSize: 13,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -303,24 +307,24 @@ class InsightsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 18),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   "Caffeine Sensitivity",
-                  style: TextStyle(
+                  style:GoogleFonts.poppins(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   "Anxiety peaks noted 2 hours after caffeine intake.",
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     color: Colors.white60,
-                    fontSize: 14,
+                    fontSize: 13,
                     height: 1.3,
                   ),
                 ),
@@ -366,26 +370,26 @@ class InsightsScreen extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: GoogleFonts.poppins(
                     color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   sub,
-                  style: const TextStyle(color: Colors.white54, fontSize: 14),
+                  style: GoogleFonts.poppins(color: Colors.white54, fontSize: 13),
                 ),
               ],
             ),
           ),
           Text(
             moodImpact,
-            style: const TextStyle(
+            style:GoogleFonts.poppins(
               color: pinkAccent,
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],

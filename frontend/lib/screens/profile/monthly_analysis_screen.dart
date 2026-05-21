@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart'; // 👈 added
+import 'package:go_router/go_router.dart'; //  added
 import 'dart:math' as math;
+import 'package:google_fonts/google_fonts.dart';
 
 class MonthlyAnalysisScreen extends StatefulWidget {
   const MonthlyAnalysisScreen({super.key});
@@ -15,12 +16,10 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
   static const Color pinkAccent = Color(0xFFE598D0);
   static const Color purpleAccent = Color(0xFF8E248D);
 
-  static const Color happyColor = Color(0xFFAB47BC);
-  static const Color peacefulColor = Color(0xFF66BB6A);
+  static const Color happyColor = Color(0xFFFFB347);
+  static const Color neutralColor = Color(0xFF78909C);
   static const Color sadColor = Color(0xFF42A5F5);
   static const Color energeticColor = Color(0xFFEF5350);
-
-  int _selectedIndex = 4;
 
   @override
   Widget build(BuildContext context) {
@@ -31,13 +30,13 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white70),
-          onPressed: () => context.pop(), // 👈 go_router pop
+          onPressed: () => context.pop(), //  go_router pop
         ),
-        title: const Text(
+        title: Text(
           "Monthly Mood Analysis",
-          style: TextStyle(
+          style: GoogleFonts.poppins(
             color: Colors.white,
-            fontSize: 18,
+            fontSize: 20,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -48,11 +47,11 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+             Text(
               "Monthly Emotional Profile",
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 color: Colors.white,
-                fontSize: 24,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -61,11 +60,11 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
             const SizedBox(height: 25),
             _buildComparisonCard(),
             const SizedBox(height: 35),
-            const Text(
+             Text(
               "Emotion Accuracy per Category",
-              style: TextStyle(
+              style:GoogleFonts.poppins(
                 color: Colors.white,
-                fontSize: 20,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -77,7 +76,6 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNav(context), // 👈 pass context
     );
   }
 
@@ -90,13 +88,13 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
       ),
       child: Column(
         children: [
-          const Row(
+           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Icon(Icons.chevron_left, color: Colors.white30),
               Text(
                 "October 2023",
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -115,9 +113,10 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
                     child: Center(
                       child: Text(
                         d,
-                        style: const TextStyle(
+                        style: GoogleFonts.poppins(
                           color: Color(0xFF5C5992),
                           fontWeight: FontWeight.bold,
+                          fontSize: 13,
                         ),
                       ),
                     ),
@@ -196,9 +195,9 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
                   ),
                   child: Text(
                     days[i],
-                    style: const TextStyle(
+                    style: GoogleFonts.poppins(
                       color: Colors.white,
-                      fontSize: 12,
+                      fontSize: 13, //calendernumber
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -206,11 +205,11 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
               else
                 Text(
                   days[i],
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     color: days[i].isEmpty
                         ? Colors.transparent
                         : Colors.white60,
-                    fontSize: 12,
+                    fontSize: 13, //calender number
                   ),
                 ),
               const SizedBox(height: 4),
@@ -251,7 +250,7 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
           const SizedBox(height: 35),
           _trackRow("Happy Tracks", 0.82, "10", happyColor),
           const SizedBox(height: 20),
-          _trackRow("Peaceful Tracks", 0.45, "8", pinkAccent),
+          _trackRow("Sad Tracks", 0.45, "8", sadColor),
         ],
       ),
     );
@@ -265,21 +264,24 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
         alignment: Alignment.center,
         children: [
           CustomPaint(size: const Size(110, 110), painter: DonutPainter()),
-          const Column(
+           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 "94.2%",
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   color: Colors.white,
-                  fontSize: 18,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               Text(
                 "Avg",
-                style: TextStyle(color: Colors.white54, fontSize: 11),
-              ),
+                style: GoogleFonts.poppins(
+                  color: Colors.white54, 
+                  fontSize: 12,
+                  ),
+                ),
             ],
           ),
         ],
@@ -295,13 +297,16 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
           children: [
             Text(
               label,
-              style: const TextStyle(color: Colors.white70, fontSize: 12),
+              style: GoogleFonts.poppins(
+                color: Colors.white70, 
+                fontSize: 13
+                ),
             ),
             Text(
               count,
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 color: color,
-                fontSize: 12,
+                fontSize: 13,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -313,7 +318,7 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
           child: LinearProgressIndicator(
             value: val,
             minHeight: 7,
-            color: color,
+            color: color.withOpacity(0.9),
             backgroundColor: Colors.white.withOpacity(0.05),
           ),
         ),
@@ -335,15 +340,15 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
             child: Icon(Icons.trending_up, color: Colors.white, size: 20),
           ),
           const SizedBox(width: 15),
-          const Expanded(
+           Expanded(
             child: Text.rich(
               TextSpan(
-                style: TextStyle(color: Colors.white70, fontSize: 13),
+                style: GoogleFonts.poppins(color: Colors.white70, fontSize: 13),
                 children: [
                   TextSpan(text: "You were "),
                   TextSpan(
                     text: "15% more Peaceful ",
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       color: Color(0xFFE598D0),
                       fontWeight: FontWeight.bold,
                     ),
@@ -365,7 +370,7 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
         color: cardBg.withOpacity(0.4),
         borderRadius: BorderRadius.circular(24),
       ),
-      child: const Row(
+      child:  Row(
         children: [
           Icon(Icons.verified, color: Color(0xFFE598D0), size: 26),
           SizedBox(width: 15),
@@ -374,56 +379,25 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
             children: [
               Text(
                 "MOOD CONSISTENCY",
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   color: purpleAccent,
-                  fontSize: 10,
+                  fontSize: 13,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               SizedBox(height: 2),
               Text(
                 "Oct 12th: 98% Accuracy",
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildBottomNav(BuildContext context) {
-    return BottomNavigationBar(
-      currentIndex: _selectedIndex,
-      onTap: (i) {
-        setState(() => _selectedIndex = i);
-        const routes = [
-          '/home',
-          '/search',
-          '/playlist',
-          '/history',
-          '/profile',
-        ];
-        context.go(routes[i]); // 👈 go_router navigation
-      },
-      backgroundColor: bgColor,
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: const Color(0xFFE598D0),
-      unselectedItemColor: Colors.white24,
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "HOME"),
-        BottomNavigationBarItem(icon: Icon(Icons.search), label: "EXPLORE"),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.library_music_outlined),
-          label: "LIBRARY",
-        ),
-        BottomNavigationBarItem(icon: Icon(Icons.history), label: "HISTORY"),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: "PROFILE"),
-      ],
     );
   }
 }
@@ -442,10 +416,10 @@ class DonutPainter extends CustomPainter {
     p.color = Colors.white.withOpacity(0.05);
     canvas.drawArc(rect, 0, 2 * math.pi, false, p);
 
-    p.color = const Color(0xFF8E24AA);
+    p.color = const Color(0xFFFFB347).withOpacity(0.9);
     canvas.drawArc(rect, -math.pi / 2, 1.7 * math.pi, false, p);
 
-    p.color = const Color(0xFF1E88E5);
+    p.color = const Color(0xFF1E88E5).withOpacity(0.9);
     canvas.drawArc(rect, 0.8 * math.pi, 0.5 * math.pi, false, p);
   }
 
@@ -460,12 +434,12 @@ class _ChartLegend extends StatelessWidget {
     return const Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _LItem(Color(0xFFAB47BC), "Happy: 98%"),
-        _LItem(Color(0xFF66BB6A), "Peaceful: 92%"),
+        _LItem(Color(0xFFFFB347), "Happy: 98%"),
+        _LItem(Color(0xFF78909C), "Neutral: 92%"),
         _LItem(Color(0xFF42A5F5), "Sad: 89%"),
-        _LItem(Color(0xFFEF5350), "Energetic: 85%"),
-        _LItem(Color(0xFFFFA726), "Melancholy: 40%"),
-        _LItem(Color(0xFF8D6E63), "Anxious: 25%"),
+        _LItem(Color(0xFF4DB6AC), "Surprised: 85%"),
+        _LItem(Color(0xFF7E57C2), "Fear: 40%"),
+        _LItem(Color(0xFFEF5350), "Angry: 25%"),
       ],
     );
   }
@@ -483,7 +457,11 @@ class _LItem extends StatelessWidget {
         children: [
           CircleAvatar(radius: 3, backgroundColor: c),
           const SizedBox(width: 8),
-          Text(t, style: const TextStyle(color: Colors.white54, fontSize: 10)),
+          Text(
+            t,
+           style: GoogleFonts.poppins(
+            color: Colors.white54, 
+            fontSize: 13)),
         ],
       ),
     );

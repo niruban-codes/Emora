@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class NotificationScreen extends StatelessWidget {
   const NotificationScreen({super.key});
@@ -6,7 +7,7 @@ class NotificationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF120C3E), // Dark purple background
+      backgroundColor: const Color(0xFF0D0C1D), // Dark purple background
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -14,7 +15,7 @@ class NotificationScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text("Notifications", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: Text("Notifications", style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -100,10 +101,10 @@ class NotificationTile extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                    Text(title, style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16)),
                     Row(
                       children: [
-                        Text(time, style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12)),
+                        Text(time, style: GoogleFonts.poppins(color: Colors.white.withOpacity(0.5), fontSize: 14)),
                         if (isNew) ...[
                           const SizedBox(width: 4),
                           const CircleAvatar(radius: 4, backgroundColor: Colors.purpleAccent),
@@ -113,7 +114,7 @@ class NotificationTile extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 8),
-                Text(subtitle, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 14, height: 1.4)),
+                Text(subtitle, style: GoogleFonts.poppins(color: Colors.white.withOpacity(0.7), fontSize: 13, height: 1.4)),
               ],
             ),
           ),

@@ -38,18 +38,20 @@ class _ResultScreenState extends State<ResultScreen>
 
   // 3. Create the save method
   Future<void> _savePlaylistToFirebase() async {
-  final user = FirebaseAuth.instance.currentUser;
-  
-  if (user == null) {
-    print("⚠️ No user logged in. Skipping playlist save.");
-    return;
-  }
+    final user = FirebaseAuth.instance.currentUser;
 
-  // Initialize the service here so it can be used below
+    if (user == null) {
+      print("⚠️ No user logged in. Skipping playlist save.");
+      return;
+    }
+
+    // Initialize the service here so it can be used below
     final firestoreService = FirestoreService();
 
-  // Map your mood data into the format for playlist_history
-  List<Map<String, dynamic>> playlistData = widget.mood.playlistTitles.map((title) {
+    // Map your mood data into the format for playlist_history
+    List<Map<String, dynamic>> playlistData = widget.mood.playlistTitles.map((
+      title,
+    ) {
       return {
         'playlistName': title,
         'mainSong': widget.mood.songTitle,
@@ -57,14 +59,14 @@ class _ResultScreenState extends State<ResultScreen>
       };
     }).toList();
 
-   try {
-  await firestoreService.savePlaylistHistory(
-    emotion: widget.mood.label,
-    songs: playlistData,
-  );
-    print("✅ History saved successfully!");
+    try {
+      await firestoreService.savePlaylistHistory(
+        emotion: widget.mood.label,
+        songs: playlistData,
+      );
+      print("✅ History saved successfully!");
     } catch (e) {
-    print("❌ Error saving history: $e");
+      print("❌ Error saving history: $e");
     }
   }
 
@@ -77,7 +79,7 @@ class _ResultScreenState extends State<ResultScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0D1135),
+      backgroundColor: const Color(0xFF0D0C1D),
       body: FadeTransition(
         opacity: _fadeAnim,
         child: Container(
@@ -85,7 +87,7 @@ class _ResultScreenState extends State<ResultScreen>
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [Color(0xFF0D1135), Color(0xFF0D1135)],
+              colors: [Color(0xFF0D0C1D), Color(0xFF0D0C1D)],
             ),
           ),
           child: SafeArea(
@@ -114,7 +116,6 @@ class _ResultScreenState extends State<ResultScreen>
                     ),
                   ),
                 ),
-                _buildBottomNavBar(context),
               ],
             ),
           ),
@@ -130,7 +131,7 @@ class _ResultScreenState extends State<ResultScreen>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _circleBtn(Icons.arrow_back, onTap: () => context.pop()),
+          _circleBtn(Icons.arrow_back, onTap: () => context.go('/home')),
           Text(
             'AI Insights',
             style: GoogleFonts.poppins(
@@ -169,7 +170,7 @@ class _ResultScreenState extends State<ResultScreen>
         height: 280,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: const Color(0xFF151830),
+          color: const Color(0xFF0D0C1D).withOpacity(0.5),
           border: Border.all(color: _primary.withOpacity(0.4), width: 1.5),
         ),
         child: Stack(
@@ -187,7 +188,7 @@ class _ResultScreenState extends State<ResultScreen>
                         radius: 1.2,
                         colors: [
                           _primary.withOpacity(0.15),
-                          const Color(0xFF0D1135),
+                          const Color(0xFF0D0C1D),
                         ],
                       ),
                     ),
@@ -255,7 +256,7 @@ class _ResultScreenState extends State<ResultScreen>
               left: 14,
               child: Text(
                 'STATUS: COMPLETE',
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   color: Colors.white.withOpacity(0.5),
                   fontSize: 9,
                   letterSpacing: 1,
@@ -308,7 +309,7 @@ class _ResultScreenState extends State<ResultScreen>
                 children: [
                   Text(
                     'X: 42.1  Y: 88.4',
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       color: Colors.white.withOpacity(0.6),
                       fontSize: 9,
                       letterSpacing: 0.5,
@@ -332,7 +333,7 @@ class _ResultScreenState extends State<ResultScreen>
         children: [
           Text(
             'CURRENT MOOD',
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               color: Colors.white.withOpacity(0.5),
               fontSize: 12,
               letterSpacing: 2.5,
@@ -384,7 +385,7 @@ class _ResultScreenState extends State<ResultScreen>
         children: [
           Text(
             'RECOMMENDED FOR YOU',
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               color: Colors.white.withOpacity(0.85),
               fontSize: 12,
               fontWeight: FontWeight.bold,
@@ -434,7 +435,7 @@ class _ResultScreenState extends State<ResultScreen>
                       const SizedBox(height: 3),
                       Text(
                         '${widget.mood.artist} • ${widget.mood.genre}',
-                        style: TextStyle(
+                        style: GoogleFonts.poppins(
                           color: Colors.white.withOpacity(0.5),
                           fontSize: 12,
                         ),
@@ -473,7 +474,7 @@ class _ResultScreenState extends State<ResultScreen>
         children: [
           Text(
             'MOOD PLAYLISTS',
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               color: Colors.white.withOpacity(0.85),
               fontSize: 12,
               fontWeight: FontWeight.bold,
@@ -596,79 +597,15 @@ class _ResultScreenState extends State<ResultScreen>
               ),
               label: Text(
                 'Recalibrate Scan',
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   color: Colors.white.withOpacity(0.65),
                   fontSize: 14,
                 ),
               ),
-              onPressed: () => context.pop(),
+              onPressed: () => context.push('/scan'),
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  // ── Bottom Nav Bar ────────────────────────────────────────────────────────
-  // Removed: History
-  // Working: Home → /home, Explore → /search, Library → /playlist, Profile → no action yet
-  Widget _buildBottomNavBar(BuildContext context) {
-    final items = [
-      _NavItem(icon: Icons.home_outlined, label: 'HOME', route: '/home'),
-      _NavItem(icon: Icons.search, label: 'EXPLORE', route: '/search'),
-      _NavItem(
-        icon: Icons.library_music_outlined,
-        label: 'LIBRARY',
-        route: '/playlist',
-      ),
-      _NavItem(icon: Icons.person, label: 'PROFILE', route: null),
-    ];
-
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      decoration: BoxDecoration(
-        color: const Color(0xFF0D1135),
-        border: Border(top: BorderSide(color: Colors.white.withOpacity(0.08))),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: items.asMap().entries.map((entry) {
-          final i = entry.key;
-          final item = entry.value;
-          final isActive = i == _currentNavIndex;
-
-          return GestureDetector(
-            onTap: () {
-              setState(() => _currentNavIndex = i);
-              if (item.route == '/playlist') {
-                // Pass current mood when going to playlist
-                context.push('/playlist', extra: widget.mood);
-              } else if (item.route != null) {
-                context.push(item.route!);
-              }
-              // Profile: no action yet
-            },
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  item.icon,
-                  color: isActive ? _primary : Colors.white.withOpacity(0.4),
-                  size: 22,
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  item.label,
-                  style: TextStyle(
-                    color: isActive ? _primary : Colors.white.withOpacity(0.4),
-                    fontSize: 9,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ],
-            ),
-          );
-        }).toList(),
       ),
     );
   }
@@ -704,16 +641,4 @@ class _ResultScreenState extends State<ResultScreen>
       Positioned(bottom: 10, right: 10, child: b(false, false)),
     ];
   }
-}
-
-// ── Nav Item Model ────────────────────────────────────────────────────────────
-class _NavItem {
-  final IconData icon;
-  final String label;
-  final String? route; // null = not yet implemented
-  const _NavItem({
-    required this.icon,
-    required this.label,
-    required this.route,
-  });
 }

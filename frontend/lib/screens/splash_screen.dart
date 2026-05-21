@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -34,9 +35,18 @@ class _SplashScreenState extends State<SplashScreen>
       CurvedAnimation(parent: _glowController, curve: Curves.easeInOut),
     );
 
-    // 3. Navigate to the next screen after 3.5 seconds
+    // 3. Check Auth state and navigate after 3.5 seconds
     Future.delayed(const Duration(milliseconds: 3500), () {
-      if (mounted) {
+      if (!mounted) return;
+
+      // Ask Firebase if a user is currently signed in
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        // User is remembered, skip the launch screen!
+        context.go('/home');
+      } else {
+        // Nobody is logged in, show the launch/login flow
         context.go('/launch');
       }
     });

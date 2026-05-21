@@ -1,0 +1,186 @@
+"""
+history.py
+----------
+Blueprint: history_bp
+Prefix:    /history
+
+Endpoints:
+  GET    /history/<uid>         — fetch all detections, newest first
+  POST   /history/<uid>         — save a new detection
+  DELETE /history/<uid>/<id>    — delete one detection
+
+Firestore path:
+  emotion_history/{uid}/detections/{detectionId}
+
+Each document fields:
+  emotion    : str
+  confidence : float
+  timestamp  : Firestore SERVER_TIMESTAMP (stored as DatetimeWithNanoseconds)
+  tracks     : list of dicts  [{ videoId, title, artist, thumbnail }]
+"""
+
+from datetime import timezone
+from flask import Blueprint, jsonify, request
+from google.cloud.firestore_v1 import SERVER_TIMESTAMP
+from google.api_core.exceptions import NotFound, GoogleAPICallError
+
+from firebase_config import db  # single shared Firestore client
+
+#  Blueprint setup
+history_bp = Blueprint("history", __name__, url_prefix="/history")
+#helperss
+def _detections_ref(uid: str):
+    """Shortcut: returns the 'detections' subcollection reference for a uid."""
+    return db.collection("emotion_history").document(uid).collection("detections")
+
+
+def _format_doc(doc) -> dict:
+    """
+    Convert a Firestore document snapshot into a JSON-serialisable dict.
+    Timestamps are converted to 'YYYY-MM-DD HH:MM:SS' strings (UTC).
+    """
+    data = doc.to_dict()
+
+    # Convert Firestore Timestamp → readable string
+    ts = data.get("timestamp")
+    if ts is not None:
+        try:
+            # Firestore timestamps expose .ToDatetime() or are datetime objects
+            dt = ts.ToDatetime() if hasattr(ts, "ToDatetime") else ts
+            dt_utc = dt.replace(tzinfo=timezone.utc) if dt.tzinfo is None else dt
+            data["timestamp"] = dt_utc.strftime("%Y-%m-%d %H:%M:%S")
+        except Exception:
+            data["timestamp"] = str(ts)  # fallback: raw string
+
+    return {"id": doc.id, **data}
+
+
+# GET /history/<uid> 
+
+@history_bp.route("/<uid>", methods=["GET"])
+def get_history(uid: str):
+    """
+    Return all emotion detections for a user, sorted newest → oldest.
+
+    Success 200:
+      [ { id, emotion, confidence, timestamp, tracks }, ... ]
+
+    Errors:
+      500 — Firestore unreachable
+    """
+    try:
+        docs = (
+            _detections_ref(uid)
+            .order_by("timestamp", direction="DESCENDING")
+            .stream()
+        )
+        history = [_format_doc(doc) for doc in docs]
+        # Returns an empty list (not 404) when a user has no history yet —
+        # that's valid: the user simply hasn't made any detections.
+        return jsonify(history), 200
+
+    except GoogleAPICallError as e:
+        return jsonify({"error": "Firestore connection failed", "details": str(e)}), 500
+
+    except Exception as e:
+        return jsonify({"error": "Unexpected server error", "details": str(e)}), 500
+
+
+# POST /history/<uid>
+
+@history_bp.route("/<uid>", methods=["POST"])
+def save_history(uid: str):
+    """
+    Save a new detection for a user.
+
+    Request body (JSON):
+      {
+        "emotion":    "happy",
+        "confidence": 92.5,
+        "tracks":     [ { videoId, title, artist, thumbnail }, ... ]
+      }
+
+    Success 201:
+      { "id": "<new_doc_id>" }
+
+    Errors:
+      400 — missing required fields
+      500 — Firestore write failed
+    """
+    body = request.get_json(silent=True)
+
+    # Validate required fields 
+    if not body:
+        return jsonify({"error": "Request body must be JSON"}), 400
+
+    missing = [f for f in ("emotion", "confidence") if f not in body]
+    if missing:
+        return jsonify({"error": f"Missing required fields: {missing}"}), 400
+
+    emotion    = body["emotion"]
+    confidence = body["confidence"]
+    tracks     = body.get("tracks", [])  # optional — defaults to empty list
+
+    # Type checks 
+    if not isinstance(emotion, str) or not emotion.strip():
+        return jsonify({"error": "'emotion' must be a non-empty string"}), 400
+
+    if not isinstance(confidence, (int, float)):
+        return jsonify({"error": "'confidence' must be a number"}), 400
+
+    if not isinstance(tracks, list):
+        return jsonify({"error": "'tracks' must be a list"}), 400
+
+    # Write to Firestore 
+    try:
+        doc_data = {
+            "emotion":    emotion.strip().lower(),
+            "confidence": float(confidence),
+            "tracks":     tracks,
+            "timestamp":  SERVER_TIMESTAMP,  # Firestore fills this in server-side
+        }
+
+        # add() auto-generates a document ID
+        _, new_doc_ref = _detections_ref(uid).add(doc_data)
+
+        return jsonify({"id": new_doc_ref.id}), 201
+
+    except GoogleAPICallError as e:
+        return jsonify({"error": "Firestore write failed", "details": str(e)}), 500
+
+    except Exception as e:
+        return jsonify({"error": "Unexpected server error", "details": str(e)}), 500
+
+
+#  DELETE /history/<uid>/<id> 
+
+@history_bp.route("/<uid>/<doc_id>", methods=["DELETE"])
+def delete_history(uid: str, doc_id: str):
+    """
+    Delete a single detection document.
+
+    Success 200:
+      { "status": "deleted" }
+
+    Errors:
+      404 — document does not exist
+      500 — Firestore error
+    """
+    try:
+        doc_ref = _detections_ref(uid).document(doc_id)
+
+        # Check existence before deleting so we can return a proper 404
+        snapshot = doc_ref.get()
+        if not snapshot.exists:
+            return jsonify({
+                "error": f"Detection '{doc_id}' not found for user '{uid}'"
+            }), 404
+
+        doc_ref.delete()
+        return jsonify({"status": "deleted"}), 200
+
+    except GoogleAPICallError as e:
+        return jsonify({"error": "Firestore error", "details": str(e)}), 500
+
+    except Exception as e:
+        return jsonify({"error": "Unexpected server error", "details": str(e)}), 500

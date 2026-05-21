@@ -12,17 +12,16 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
-  int _selectedIndex = 0;
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
 
   // Mood grid now driven by allMoods from mood_model.dart — no local list needed.
 
   final List<Map<String, String>> _playlists = [
-    {'title': 'Midnight Pulse', 'mood': 'ENERGETIC'},
-    {'title': 'Ocean Breeze', 'mood': 'PEACEFUL'},
-    {'title': 'Urban Night', 'mood': 'HAPPY'},
-    {'title': 'Rainy Echoes', 'mood': 'SAD'},
+    {'title': 'Midnight Pulse', 'mood': 'HAPPY'},
+    {'title': 'Ocean Breeze', 'mood': 'NEUTRAL'},
+    {'title': 'Urban Night', 'mood': 'SAD'},
+    {'title': 'Rainy Echoes', 'mood': 'ANGRY'},
   ];
 
   @override
@@ -45,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF15173D),
+      backgroundColor: const Color(0xFF0D0C1D),
       body: FadeTransition(
         opacity: _fadeAnim,
         child: SafeArea(
@@ -60,11 +59,13 @@ class _HomeScreenState extends State<HomeScreen>
                       const SizedBox(height: 16),
                       _buildTopBar(),
                       const SizedBox(height: 28),
-                      _buildAnalyzeButton(), // 👈 now navigates to /scan
+                      _buildAnalyzeButton(), 
                       const SizedBox(height: 32),
-                      _sectionHeader('Search by Mood'),
+                      _sectionHeader('Search by Mood', showSeeAll: false),
                       const SizedBox(height: 16),
                       _buildMoodGrid(),
+                      const SizedBox(height: 18),
+                      _buildViewFavoritesButton(),
                       const SizedBox(height: 32),
                       _sectionHeader('Trending Playlists', showSeeAll: false),
                       const SizedBox(height: 16),
@@ -74,7 +75,6 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                 ),
               ),
-              _buildBottomNav(),
             ],
           ),
         ),
@@ -82,18 +82,13 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  // ── UI Components ──────────────────────────────────────────────────────────
-
+  //UI Components 
   Widget _buildTopBar() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         _buildLogoIcon(),
-        Row(
-          children: [
-            _notificationButton(),
-          ],
-        ),
+        Row(children: [_notificationButton()]),
       ],
     );
   }
@@ -101,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen>
   Widget _buildLogoIcon() {
     return Image.asset(
       'assets/images/logo.png',
-      width: 40,  
+      width: 40,
       height: 40,
       fit: BoxFit.contain,
     );
@@ -113,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen>
       onPressed: () => context.push('/scan'),
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.white,
-        minimumSize: const Size(double.infinity, 56),
+        minimumSize: const Size(double.infinity, 45),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
       ),
       child: Row(
@@ -121,14 +116,14 @@ class _HomeScreenState extends State<HomeScreen>
         children: [
           const Icon(
             Icons.bar_chart_rounded,
-            color: Color(0xFF15173D),
+            color: Colors.black,
             size: 22,
           ),
           const SizedBox(width: 10),
           Text(
             'Analyze Mood',
             style: GoogleFonts.poppins(
-              color: const Color(0xFF15173D),
+              color: Colors.black,
               fontSize: 16,
               fontWeight: FontWeight.w700,
             ),
@@ -164,59 +159,116 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildMoodGrid() {
-  return GridView.builder(
-    shrinkWrap: true,
-    physics: const NeverScrollableScrollPhysics(),
-    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-      crossAxisCount: 3, 
-      crossAxisSpacing: 16,
-      mainAxisSpacing: 16,
-      childAspectRatio: 1.1, 
-    ),
-    itemCount: allMoods.length,
-    itemBuilder: (context, index) => _moodCard(allMoods[index]),
-  );
-}
-
-  Widget _moodCard(MoodModel mood) {
-  // changed the icons
-  IconData moodIcon;
-  switch (mood.label.toLowerCase()) {
-    case 'happy': moodIcon = Icons.wb_sunny_outlined; break;
-    case 'peaceful': moodIcon = Icons.cloud_outlined; break;
-    case 'melancholy': moodIcon = Icons.nightlight_round_outlined; break;
-    case 'anxious': moodIcon = Icons.air_rounded; break;
-    case 'energetic': moodIcon = Icons.bolt_rounded; break;
-    case 'sad': moodIcon = Icons.water_drop_outlined; break;
-    default: moodIcon = Icons.face;
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+        childAspectRatio: 1.1,
+      ),
+      itemCount: allMoods.length,
+      itemBuilder: (context, index) => _moodCard(allMoods[index]),
+    );
   }
 
-  return Container(
-    decoration: BoxDecoration(
-      color: const Color(0xFF1E1A35), // Dark purple background
-      borderRadius: BorderRadius.circular(24), // Softer rounded corners
-    ),
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(
-          moodIcon,
-          color: const Color(0xFFA7338A), // Pinkish-purple icon color
-          size: 32,
+//view fav button 
+  Widget _buildViewFavoritesButton() {
+    return OutlinedButton(
+      onPressed: () => context.push('/favorites'),
+      style: OutlinedButton.styleFrom(
+        backgroundColor: const Color(0xFF1E1A35),
+        side: const BorderSide(color: Color.fromARGB(29, 255, 255, 255)), 
+        minimumSize: const Size(double.infinity, 45),
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
         ),
-        const SizedBox(height: 12),
-        Text(
-          mood.label,
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.favorite_rounded,
+            color: const Color(0xFFE040FB),
+            size: 18,
           ),
-        ),
-      ],
-    ),
-  );
-}
+          const SizedBox(width: 8),
+          Text(
+            'View Favorites',
+            style: GoogleFonts.poppins(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  //emotion icon colors
+  Widget _moodCard(MoodModel mood) {
+    IconData moodIcon;
+    Color moodColor = Colors.white;
+
+    switch (mood.label.toLowerCase()) { 
+      case 'happy':
+        moodIcon = Icons.sentiment_very_satisfied_rounded;
+        moodColor = const Color(0xFFFFB74D);
+        break;
+      case 'sad':
+        moodIcon = Icons.sentiment_dissatisfied_rounded;
+        moodColor = const Color(0xFF64B5F6);
+        break;
+      case 'neutral':
+        moodIcon = Icons.lens_blur_rounded;
+        moodColor = Colors.grey.shade400;
+        break;
+      case 'fear':
+        moodIcon = Icons.sentiment_very_dissatisfied_outlined;
+        moodColor = const Color(0xFF9575CD);
+        break;
+      case 'angry':
+        moodIcon = Icons.local_fire_department_outlined;
+        moodColor = const Color(0xFFE57373);
+        break;
+      case 'surprise':
+        moodIcon = Icons.flare_rounded;
+        moodColor = const Color(0xFF4DB6AC);
+        break;
+      default:
+        moodIcon = Icons.face;
+    }
+
+    //6 emotions containers  --------------------------------------------------
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E1A35), 
+        borderRadius: BorderRadius.circular(24), 
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            moodIcon,
+            color: moodColor, 
+            size: 30,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            mood.label,
+            style: GoogleFonts.poppins(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildPlaylistGrid() {
     return GridView.builder(
@@ -280,75 +332,6 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _buildBottomNav() {
-    final navItems = [
-      {'icon': Icons.home_rounded, 'label': 'HOME'},
-      {'icon': Icons.search_rounded, 'label': 'EXPLORE'},
-      {'icon': Icons.library_music_outlined, 'label': 'LIBRARY'},
-      {'icon': Icons.history_rounded, 'label': 'HISTORY'},
-      {'icon': Icons.person_rounded, 'label': 'PROFILE'},
-    ];
-
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      decoration: BoxDecoration(
-        color: const Color(0xFF0F1130),
-        border: Border(
-          top: BorderSide(color: const Color(0xFF2E2E50).withOpacity(0.5)),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: List.generate(navItems.length, (index) {
-          final isSelected = _selectedIndex == index;
-          return GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedIndex = index;
-              });
-
-              switch (index) {
-                case 1:
-                  context.push('/search'); // EXPLORE
-                  break;
-                case 2:
-                  context.push('/playlist'); 
-                  break;
-                case 3:
-                  context.push('/history'); // HISTORY
-                  break;
-                case 4:
-                  context.push('/profile'); // PROFILE
-                  break;
-              }
-            },
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  navItems[index]['icon'] as IconData,
-                  color: isSelected ? const Color(0xFFA7338A) : Colors.white38,
-                  size: 24,
-                ),
-                Text(
-                  navItems[index]['label'] as String,
-                  style: GoogleFonts.poppins(
-                    color: isSelected
-                        ? const Color(0xFFA7338A)
-                        : Colors.white38,
-                    fontSize: 10,
-                  ),
-                ),
-              ],
-            ),
-          );
-        }),
-      ),
-    );
-  }
-
-  // ── Helpers ────────────────────────────────────────────────────────────────
-
   Widget _circularIconButton(IconData icon) {
     return Container(
       width: 38,
@@ -382,5 +365,5 @@ class _HomeScreenState extends State<HomeScreen>
         ],
       ),
     );
-  } 
+  }
 }

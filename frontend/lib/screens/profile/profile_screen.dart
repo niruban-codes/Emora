@@ -18,15 +18,28 @@ class ProfileSettingsScreen extends StatefulWidget {
   State<ProfileSettingsScreen> createState() => _ProfileSettingsScreenState();
 }
 
-  //  Added the State class 
-  class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
+//  Added the State class
+class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   String userName = "Loading...";
   String userEmail = "";
+  // Define your hardcoded admin emails
+  final List<String> _adminEmails = [
+    'niru2324@gmail.com', // Replace with your actual admin email
+    'admin@emora.com',
+  ];
+
+  // Check if the current logged-in user is an admin
+  bool get _isAdmin {
+    final user = FirebaseAuth.instance.currentUser;
+    return user != null &&
+        user.email != null &&
+        _adminEmails.contains(user.email!.toLowerCase());
+  }
 
   @override
   void initState() {
     super.initState();
-    _fetchUserData(); 
+    _fetchUserData();
   }
 
   Future<void> _fetchUserData() async {
@@ -113,7 +126,7 @@ class ProfileSettingsScreen extends StatefulWidget {
             ),
 
             const SizedBox(height: 30),
-            _buildPremiumCard(),
+            if (_isAdmin) _buildAdminCard(context),
 
             const SizedBox(height: 30),
             _buildLogoutButton(context), // 👈 now signs out from Firebase
@@ -122,68 +135,57 @@ class ProfileSettingsScreen extends StatefulWidget {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNav(context),
     );
   }
 
-  
-Widget _buildProfileHeader() {
-  return Column(
-    children: [
-      Stack(
-        alignment: Alignment.bottomRight,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: ProfileSettingsScreen.accentPurple, width: 3),
+  Widget _buildProfileHeader() {
+    return Column(
+      children: [
+        Stack(
+          alignment: Alignment.bottomRight,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: ProfileSettingsScreen.accentPurple,
+                  width: 3,
+                ),
+              ),
+              child: const CircleAvatar(
+                radius: 55,
+                backgroundImage: NetworkImage(
+                  'https://i.imgur.com/8Km9t9S.png',
+                ),
+              ),
             ),
-            child: const CircleAvatar(
-              radius: 55,
-              backgroundImage: NetworkImage('https://i.imgur.com/8Km9t9S.png'),
+            const CircleAvatar(
+              radius: 16,
+              backgroundColor: ProfileSettingsScreen.accentPurple,
+              child: Icon(Icons.edit, size: 16, color: Colors.white),
             ),
-          ),
-          const CircleAvatar(
-            radius: 16,
-            backgroundColor: ProfileSettingsScreen.accentPurple,
-            child: Icon(Icons.edit, size: 16, color: Colors.white),
-          ),
-        ],
-      ),
-      const SizedBox(height: 15),
-      Text(
-        userName, // 👈 Uses the variable from Firestore
-        style: const TextStyle(
-          fontSize: 22,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
+          ],
         ),
-      ),
-      Text(
-        userEmail, // 👈 Uses the variable from Firestore
-        style: const TextStyle(color: ProfileSettingsScreen.textSecondary, fontSize: 14),
-      ),
-      const SizedBox(height: 10),
-      Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-        decoration: BoxDecoration(
-          color: ProfileSettingsScreen.accentPurple.withOpacity(0.15),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: const Text(
-          'PREMIUM MEMBER',
-          style: TextStyle(
-            color: ProfileSettingsScreen.accentPurple,
+        const SizedBox(height: 15),
+        Text(
+          userName, // 👈 Uses the variable from Firestore
+          style: const TextStyle(
+            fontSize: 22,
             fontWeight: FontWeight.bold,
-            fontSize: 11,
+            color: Colors.white,
           ),
         ),
-      ),
-    ],
-  );
-}
-
+        Text(
+          userEmail, // 👈 Uses the variable from Firestore
+          style: const TextStyle(
+            color: ProfileSettingsScreen.textSecondary,
+            fontSize: 14,
+          ),
+        ),
+      ],
+    );
+  }
 
   Widget _buildSectionLabel(String label) {
     return Align(
@@ -193,7 +195,7 @@ Widget _buildProfileHeader() {
         child: Text(
           label,
           style: const TextStyle(
-            color: ProfileSettingsScreen.textSecondary, 
+            color: ProfileSettingsScreen.textSecondary,
             fontSize: 11,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.1,
@@ -203,87 +205,90 @@ Widget _buildProfileHeader() {
     );
   }
 
- Widget _buildSimpleTile(BuildContext context, IconData icon, String title) {
-  return ListTile(
-    contentPadding: EdgeInsets.zero,
-    leading: _iconBox(icon),
-    title: Text(
-      title,
-      style: const TextStyle(color: Colors.white, fontSize: 15),
-    ),
-    trailing: const Icon(
-      Icons.chevron_right, 
-      color: ProfileSettingsScreen.textSecondary
-    ),
-    onTap: () async { // 👈 Added async
-      if (title == 'Edit Profile') {
-        // 1. Wait for the user to return from Account Settings
-        await context.push('/account-settings');
-        
-        // 2. Refresh data from Firestore automatically
-        _fetchUserData(); 
-        
-      } else if (title == 'Insights') {
-        context.push('/insights');
-      } else if (title == 'Mood Analytics') {
-        context.push('/mood-analytics');
-      }
-    },
-  );
-}
+  Widget _buildSimpleTile(BuildContext context, IconData icon, String title) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: _iconBox(icon),
+      title: Text(
+        title,
+        style: const TextStyle(color: Colors.white, fontSize: 15),
+      ),
+      trailing: const Icon(
+        Icons.chevron_right,
+        color: ProfileSettingsScreen.textSecondary,
+      ),
+      onTap: () async {
+        // 👈 Added async
+        if (title == 'Edit Profile') {
+          // 1. Wait for the user to return from Account Settings
+          await context.push('/account-settings');
+
+          // 2. Refresh data from Firestore automatically
+          _fetchUserData();
+        } else if (title == 'Insights') {
+          context.push('/insights');
+        } else if (title == 'Mood Analytics') {
+          context.push('/mood-analytics');
+        }
+      },
+    );
+  }
+
   Widget _buildIntegrationCard(
-  String title,
-  String sub,
-  String action,
-  IconData icon,
-  bool connected,
-) {
-  return Container(
-    padding: const EdgeInsets.all(12),
-    decoration: BoxDecoration(
-      color: ProfileSettingsScreen.cardColor, // 👈 1. Added Prefix
-      borderRadius: BorderRadius.circular(15),
-      border: connected ? null : Border.all(color: Colors.white10, width: 1),
-    ),
-    child: Row(
-      children: [
-        _iconBox(icon),
-        const SizedBox(width: 15),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              if (sub.isNotEmpty)
+    String title,
+    String sub,
+    String action,
+    IconData icon,
+    bool connected,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: ProfileSettingsScreen.cardColor, // 👈 1. Added Prefix
+        borderRadius: BorderRadius.circular(15),
+        border: connected ? null : Border.all(color: Colors.white10, width: 1),
+      ),
+      child: Row(
+        children: [
+          _iconBox(icon),
+          const SizedBox(width: 15),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Text(
-                  sub,
-                  // 👈 2. Added Prefix & removed 'const'
-                  style: const TextStyle(
-                    color: ProfileSettingsScreen.textSecondary, 
-                    fontSize: 12,
+                  title,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-            ],
+                if (sub.isNotEmpty)
+                  Text(
+                    sub,
+                    // 👈 2. Added Prefix & removed 'const'
+                    style: const TextStyle(
+                      color: ProfileSettingsScreen.textSecondary,
+                      fontSize: 12,
+                    ),
+                  ),
+              ],
+            ),
           ),
-        ),
-        Text(
-          action,
-          // 👈 3. Added Prefix & removed 'const'
-          style: TextStyle(
-            color: connected ? ProfileSettingsScreen.textSecondary : Colors.white,
-            fontSize: connected ? 12 : 20,
+          Text(
+            action,
+            // 👈 3. Added Prefix & removed 'const'
+            style: TextStyle(
+              color: connected
+                  ? ProfileSettingsScreen.textSecondary
+                  : Colors.white,
+              fontSize: connected ? 12 : 20,
+            ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 
   Widget _buildSwitchTile(IconData icon, String title, bool value) {
     return ListTile(
@@ -296,46 +301,53 @@ Widget _buildProfileHeader() {
       trailing: Switch(
         value: value,
         onChanged: (v) {},
-        activeColor: ProfileSettingsScreen.accentPurple, 
+        activeColor: ProfileSettingsScreen.accentPurple,
       ),
     );
   }
 
-  Widget _buildPremiumCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(25),
-        gradient: const LinearGradient(
-          colors: [Color(0xFF8E24AA), Color(0xFF512DA8)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: const [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Emora Premium',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 4),
-              Text(
-                'Experience music without boundaries.',
-                style: TextStyle(color: Colors.white70, fontSize: 12),
-              ),
-            ],
+  // ── Admin Dashboard Card ──────────────────────────────────────────────────
+  Widget _buildAdminCard(BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.push('/admin-dashboard'),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(25),
+          gradient: const LinearGradient(
+            colors: [
+              Color(0xFFE53935),
+              Color(0xFFB71C1C),
+            ], // Admin Red Gradient
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          Icon(Icons.chevron_right, color: Colors.white, size: 30),
-        ],
+        ),
+        child: const Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Admin Dashboard',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'Manage users, music, and platform analytics.',
+                  style: TextStyle(color: Colors.white70, fontSize: 12),
+                ),
+              ],
+            ),
+            Icon(Icons.admin_panel_settings, color: Colors.white, size: 30),
+          ],
+        ),
       ),
     );
   }
@@ -399,7 +411,11 @@ Widget _buildProfileHeader() {
             if (context.mounted) context.go('/login');
           }
         },
-        icon: Icon(Icons.logout, color: ProfileSettingsScreen.logoutTextRed, size: 20),
+        icon: Icon(
+          Icons.logout,
+          color: ProfileSettingsScreen.logoutTextRed,
+          size: 20,
+        ),
         label: Text(
           'Log Out',
           style: TextStyle(
@@ -420,36 +436,6 @@ Widget _buildProfileHeader() {
         borderRadius: BorderRadius.circular(10),
       ),
       child: Icon(icon, color: ProfileSettingsScreen.accentPurple, size: 20),
-    );
-  }
-
-  Widget _buildBottomNav(BuildContext context) {
-    return BottomNavigationBar(
-      backgroundColor: const Color(0xFF0F1130),
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: ProfileSettingsScreen.activeHighlight,
-      unselectedItemColor: ProfileSettingsScreen.textSecondary,
-      currentIndex: 4,
-      onTap: (index) {
-        const routes = [
-          '/home',
-          '/search',
-          '/playlist',
-          '/history',
-          '/profile',
-        ];
-        context.go(routes[index]);
-      },
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'HOME'),
-        BottomNavigationBarItem(icon: Icon(Icons.search), label: 'EXPLORE'),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.library_music_outlined),
-          label: 'LIBRARY',
-        ),
-        BottomNavigationBarItem(icon: Icon(Icons.history), label: 'HISTORY'),
-        BottomNavigationBarItem(icon: Icon(Icons.person_pin), label: 'PROFILE'),
-      ],
     );
   }
 }

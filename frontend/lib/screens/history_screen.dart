@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart'; // 👈 added
+import 'package:go_router/go_router.dart'; //  added
+import 'package:google_fonts/google_fonts.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -9,19 +10,21 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
-  static const Color bgColor = Color(0xFF13112B);
+  static const Color bgColor = Color(0xFF0D0C1D);
   static const Color cardBg = Color(0xFF1D1B3E);
   static const Color pinkAccent = Color(0xFFE598D0);
   static const Color purpleAccent = Color(0xFF8E248D);
-  static const Color chipActive = Color(0xFF7986CB);
+  static const Color chipActive = Color(0xFFAB47BC);
 
   int _selectedFilterIndex = 0;
   final List<String> _filters = [
     "All",
     "Happy",
     "Sad",
-    "Melancholic",
-    "Energetic",
+    "Neutral",
+    "Fear",
+    "Anger",
+    "Surprised",
   ];
 
   @override
@@ -33,13 +36,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white70),
-          onPressed: () => context.pop(), // 👈 go_router pop
+          onPressed: () => context.pop(), //  go_router pop
         ),
-        title: const Text(
+        title:  Text(
           "History",
-          style: TextStyle(
+          style: GoogleFonts.poppins(
             color: Colors.white,
-            fontSize: 22,
+            fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -56,41 +59,41 @@ class _HistoryScreenState extends State<HistoryScreen> {
               children: [
                 _sectionHeader("Today", showViewAll: true),
                 _buildHistoryCard(
-                  mood: "Peaceful",
-                  time: "TODAY, 2:45 PM",
+                  mood: "Neutral",
+                  time: "Today, 2:45 PM",
                   trackName: "Neon Sunsets & Lo-fi Chill",
-                  subText: "MEDITATION SESSION",
-                  moodIcon: Icons.eco_outlined,
-                  iconColor: Colors.tealAccent,
+                  subText: "Meditation Session",
+                  moodIcon: Icons.lens_blur_rounded,
+                  iconColor: Color(0xFF78909C),
                   trackImage: Icons.wb_twilight,
                 ),
                 _buildHistoryCard(
-                  mood: "Energetic",
-                  time: "TODAY, 11:20 AM",
+                  mood: "Fear",
+                  time: "Today, 11:20 AM",
                   trackName: "Pulse of Night Energy",
-                  subText: "BOOSTED YOUR FOCUS",
-                  moodIcon: Icons.bolt,
-                  iconColor: Colors.purpleAccent,
+                  subText: "Boosted Your Focus",
+                  moodIcon: Icons.sentiment_very_dissatisfied_outlined,
+                  iconColor: Color(0xFF7E57C2),
                   trackImage: Icons.graphic_eq,
                 ),
                 _sectionHeader("Yesterday"),
                 _buildHistoryCard(
                   mood: "Happy",
-                  time: "YESTERDAY, 6:12 PM",
+                  time: "Yesterday, 6:12 PM",
                   trackName: "Golden Hour Vibes",
-                  subText: "YOU WERE FEELING HAPPY",
-                  moodIcon: Icons.celebration_outlined,
-                  iconColor: Colors.deepPurpleAccent,
+                  subText: "You Were Feeling Happy",
+                  moodIcon: Icons.sentiment_very_satisfied_rounded,
+                  iconColor: Color(0xFFFFB347),
                   trackImage: Icons.wb_sunny_outlined,
                 ),
                 _sectionHeader("Earlier"),
                 _buildHistoryCard(
-                  mood: "Melancholy",
-                  time: "OCT 24, 9:00 AM",
+                  mood: "Sad",
+                  time: "Oct 24, 9:00 AM",
                   trackName: "Rainy Day Acoustic",
-                  subText: "RECOMMENDED MIX",
-                  moodIcon: Icons.water_drop_outlined,
-                  iconColor: Colors.blueAccent,
+                  subText: "Recommended Mix",
+                  moodIcon: Icons.sentiment_dissatisfied_rounded,
+                  iconColor: Color(0xFF42A5F5),
                   trackImage: Icons.park,
                 ),
                 const SizedBox(height: 100),
@@ -99,7 +102,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: _buildBottomNav(context), // 👈 pass context
     );
   }
 
@@ -109,7 +111,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.only(left: 20),
-        itemCount: _filters.length,
+        itemCount: _filters.length, //buttons
         itemBuilder: (context, index) {
           bool isSelected = _selectedFilterIndex == index;
           return GestureDetector(
@@ -125,11 +127,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
               child: Center(
                 child: Text(
                   _filters[index],
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     color: isSelected ? Colors.white : Colors.white60,
                     fontWeight: isSelected
                         ? FontWeight.bold
                         : FontWeight.normal,
+                        fontSize: 13,
                   ),
                 ),
               ),
@@ -148,18 +151,18 @@ class _HistoryScreenState extends State<HistoryScreen> {
         children: [
           Text(
             title,
-            style: const TextStyle(
+            style: GoogleFonts.poppins(
               color: Colors.white,
-              fontSize: 20,
+              fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),
           if (showViewAll)
-            const Text(
+            Text(
               "View All",
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 color: pinkAccent,
-                fontSize: 14,
+                fontSize: 13,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -200,7 +203,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   children: [
                     Text(
                       mood,
-                      style: const TextStyle(
+                      style: GoogleFonts.poppins(
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -208,9 +211,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     ),
                     Text(
                       time,
-                      style: const TextStyle(
+                      style: GoogleFonts.poppins(
                         color: Colors.white38,
-                        fontSize: 10,
+                        fontSize: 13,
                       ),
                     ),
                   ],
@@ -244,7 +247,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     children: [
                       Text(
                         trackName,
-                        style: const TextStyle(
+                        style: GoogleFonts.poppins(
                           color: Colors.white,
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
@@ -253,10 +256,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       const SizedBox(height: 2),
                       Text(
                         subText,
-                        style: const TextStyle(
+                        style: GoogleFonts.poppins(
                           color: purpleAccent,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
@@ -275,33 +278,5 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
-  Widget _buildBottomNav(BuildContext context) {
-    return BottomNavigationBar(
-      currentIndex: 3,
-      backgroundColor: bgColor,
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: pinkAccent,
-      unselectedItemColor: Colors.white24,
-      onTap: (index) {
-        const routes = [
-          '/home',
-          '/search',
-          '/playlist',
-          '/history',
-          '/profile',
-        ];
-        context.go(routes[index]); // 👈 go_router navigation
-      },
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "HOME"),
-        BottomNavigationBarItem(icon: Icon(Icons.search), label: "EXPLORE"),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.library_music_outlined),
-          label: "LIBRARY",
-        ),
-        BottomNavigationBarItem(icon: Icon(Icons.history), label: "HISTORY"),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: "PROFILE"),
-      ],
-    );
-  }
+  // ── Bottom Navigation (UPDATED) ────────────────────────────────────────────
 }
