@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:frontend/models/song_model.dart';
 
-// ── Dummy song model (replace with your real Song/model import) ────────────
+// Dummy song model 
 class _FavSong {
   final String title;
   final String artist;
@@ -11,6 +11,7 @@ class _FavSong {
   final String mood;
   final Color moodColor;
   final IconData icon;
+  final String coverUrl;
 
   const _FavSong({
     required this.title,
@@ -19,10 +20,11 @@ class _FavSong {
     required this.mood,
     required this.moodColor,
     required this.icon,
+    required this.coverUrl,
   });
 }
 
-// ── Mood filter chip data ──────────────────────────────────────────────────
+// mood buttons
 const _kMoods = ['All', 'Happy', 'Sad', 'Neutral', 'Fear', 'Angry', 'Surprise'];
 
 class FavoritesScreen extends StatefulWidget {
@@ -40,7 +42,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
   String _selectedMood = 'All';
   int? _playingIndex;
 
-  // ── Sample data — swap out for real data source ──────────────────────────
+  // swap out for real data source
   final List<_FavSong> _allSongs = const [
     _FavSong(
       title: 'Morning Zen',
@@ -49,6 +51,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
       mood: 'Happy',
       moodColor: Color(0xFFFFB74D),
       icon: Icons.sentiment_very_satisfied_rounded,
+      coverUrl: 'https://picsum.photos/seed/morningzen/100/100',
     ),
     _FavSong(
       title: 'Quiet Waters',
@@ -57,6 +60,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
       mood: 'Neutral',
       moodColor: Color(0xFF90A4AE),
       icon: Icons.lens_blur_rounded,
+      coverUrl: 'https://picsum.photos/seed/quietwaters/100/100',
     ),
     _FavSong(
       title: 'First Light',
@@ -65,6 +69,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
       mood: 'Happy',
       moodColor: Color(0xFFFFB74D),
       icon: Icons.sentiment_very_satisfied_rounded,
+      coverUrl: 'https://picsum.photos/seed/firstlight/100/100',
     ),
     _FavSong(
       title: 'Soft Horizon',
@@ -73,6 +78,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
       mood: 'Sad',
       moodColor: Color(0xFF64B5F6),
       icon: Icons.sentiment_dissatisfied_rounded,
+      coverUrl: 'https://picsum.photos/seed/softhorizon/100/100',
     ),
     _FavSong(
       title: 'Dew Drops',
@@ -81,6 +87,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
       mood: 'Neutral',
       moodColor: Color(0xFF90A4AE),
       icon: Icons.lens_blur_rounded,
+      coverUrl: 'https://picsum.photos/seed/dewdrops/100/100',
     ),
     _FavSong(
       title: 'Velvet Thunder',
@@ -89,6 +96,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
       mood: 'Angry',
       moodColor: Color(0xFFE57373),
       icon: Icons.local_fire_department_outlined,
+      coverUrl: 'https://picsum.photos/seed/velvetthunder/100/100',
     ),
     _FavSong(
       title: 'Shadow Walk',
@@ -97,6 +105,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
       mood: 'Fear',
       moodColor: Color(0xFF9575CD),
       icon: Icons.sentiment_very_dissatisfied_outlined,
+      coverUrl: 'https://picsum.photos/seed/shadowwalk/100/100',
     ),
     _FavSong(
       title: 'Electric Spark',
@@ -105,6 +114,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
       mood: 'Surprise',
       moodColor: Color(0xFF4DB6AC),
       icon: Icons.flare_rounded,
+      coverUrl: 'https://picsum.photos/seed/electricspark/100/100',
     ),
   ];
 
@@ -112,7 +122,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
       ? _allSongs
       : _allSongs.where((s) => s.mood == _selectedMood).toList();
 
-  // ── Convert _FavSong → real Song for PlayerScreen ─────────────────────────
+  // Convert _FavSong → real Song for PlayerScreen 
   // Adjust field names to match your actual Song model constructor.
   Song _toSong(_FavSong s) => Song(
         id: 'default-id',
@@ -122,7 +132,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
         coverUrl: 'default-cover-url',
       );
 
-  // ── Push /player and keep mini-player in sync ─────────────────────────────
+  // Push /player and keep mini-player in sync 
   void _navigateToPlayer(List<_FavSong> songs, int index) {
     setState(() => _playingIndex = index);
     final realSongs = songs.map(_toSong).toList();
@@ -147,7 +157,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     super.dispose();
   }
 
-  // ── Build ────────────────────────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
     final songs = _filtered;
@@ -172,7 +182,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     );
   }
 
-  // ── App bar ──────────────────────────────────────────────────────────────
+  // App bar
   Widget _buildAppBar(List<_FavSong> songs) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -224,7 +234,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     );
   }
 
-  // ── Mood filter chips ─────────────────────────────────────────────────────
+  //Mood filter chips
   Widget _buildMoodFilter() {
     return SizedBox(
       height: 36,
@@ -267,7 +277,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     );
   }
 
-  // ── Song list ─────────────────────────────────────────────────────────────
+  // song list
   Widget _buildSongList(List<_FavSong> songs) {
     if (songs.isEmpty) {
       return Center(
@@ -297,13 +307,13 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     );
   }
 
-  // ── Single song tile — tap opens full PlayerScreen ────────────────────────
+  //  Single song tile — tap opens full PlayerScreen 
   Widget _buildSongTile(List<_FavSong> songs, int index) {
     final song = songs[index];
     final isPlaying = _playingIndex == index;
 
     return GestureDetector(
-      onTap: () => _navigateToPlayer(songs, index), // ← full screen player
+      onTap: () => _navigateToPlayer(songs, index), //  full screen player
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         margin: const EdgeInsets.only(bottom: 10),
@@ -321,18 +331,17 @@ class _FavoritesScreenState extends State<FavoritesScreen>
         child: Row(
           children: [
             // Thumbnail / icon
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: const Color(0xFF0D0C1D),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                isPlaying ? Icons.equalizer_rounded : song.icon,
-                color:
-                    isPlaying ? const Color(0xFFA7338A) : song.moodColor,
-                size: 26,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.network(
+                song.coverUrl,
+                width: 48,
+                height: 48,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => const Icon(
+                  Icons.music_note_rounded,
+                  color: Color(0xFFA7338A),
+                ),
               ),
             ),
             const SizedBox(width: 12),
@@ -403,14 +412,18 @@ class _FavoritesScreenState extends State<FavoritesScreen>
         ),
         child: Row(
           children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.white12,
-                borderRadius: BorderRadius.circular(10),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.network(
+                song.coverUrl,
+                width: 40,
+                height: 40,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => const Icon(
+                  Icons.music_note_rounded,
+                  color: Colors.white,
+                ),
               ),
-              child: Icon(song.icon, color: Colors.white, size: 22),
             ),
             const SizedBox(width: 12),
             Expanded(
