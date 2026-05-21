@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // 👈 added
 import '../../../services/firestore_service.dart'; // 👈 added
 import 'package:cloud_firestore/cloud_firestore.dart'; // 👈 added
+import 'package:google_fonts/google_fonts.dart';
 
 class AccountSettingScreen extends StatefulWidget {
   const AccountSettingScreen({super.key});
@@ -13,7 +14,7 @@ class AccountSettingScreen extends StatefulWidget {
 
 class _AccountSettingScreenState extends State<AccountSettingScreen> {
   // Theme Colors - Syncing with your Home & Profile screens
-  static const Color bgColor = Color(0xFF15173D);
+  static const Color bgColor = Color(0xFF0D0C1D);
   static const Color accentPurple = Color(0xFF9C27B0);
   static const Color activeHighlight = Color(0xFFA7338A);
   static const Color textSecondary = Colors.white38;
@@ -96,11 +97,11 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => context.pop(),
         ),
-        title: const Text(
+        title:  Text(
           'Account Settings',
-          style: TextStyle(
+          style: GoogleFonts.poppins(
             fontWeight: FontWeight.bold,
-            fontSize: 18,
+            fontSize: 20,
             color: Colors.white,
           ),
         ),
@@ -158,8 +159,8 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                 // 4. DISPLAY REAL NAME
                 Text(
                   _usernameController.text,
-                  style: const TextStyle(
-                    fontSize: 26,
+                  style: GoogleFonts.poppins(
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
@@ -170,9 +171,9 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                   snapshot.hasData && snapshot.data?['createdAt'] != null
                       ? 'Member since ${(snapshot.data!['createdAt'] as Timestamp).toDate().year}'
                       : 'Member since 2026', // Fallback while loading or if null
-                  style: const TextStyle(
+                  style: GoogleFonts.poppins(
                     color: accentPurple,
-                    fontSize: 14,
+                    fontSize: 13,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -185,7 +186,13 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                       child: OutlinedButton.icon(
                         onPressed: () {}, // Future task: Image upload
                         icon: const Icon(Icons.upload, size: 18),
-                        label: const Text('Upload New'),
+                        label:  Text(
+                          'Upload New',
+                        style: GoogleFonts.poppins(
+                          fontSize: 13, 
+                          fontWeight: FontWeight.w600,
+                          ),
+                        ),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.white,
                           side: const BorderSide(
@@ -204,7 +211,9 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                       child: TextButton.icon(
                         onPressed: () {},
                         icon: const Icon(Icons.delete_outline, size: 18),
-                        label: const Text('Remove'),
+                        label:  Text('Remove',
+                        style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600),
+                        ),
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.white,
                           backgroundColor: buttonRed.withOpacity(0.15),
@@ -263,16 +272,17 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                         );
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Profile updated!')),
+                             SnackBar(content: Text('Profile updated!',
+                           style: GoogleFonts.poppins(fontSize: 13), )),
                           );
                           context.pop();
                         }
                       }
                     },
                     icon: const Icon(Icons.save_outlined),
-                    label: const Text(
+                    label:  Text(
                       'Save Changes',
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -304,9 +314,9 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
         const SizedBox(width: 8),
         Text(
           label,
-          style: const TextStyle(
+          style: GoogleFonts.poppins (
             color: accentPurple,
-            fontSize: 12,
+            fontSize: 16,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.1,
           ),
@@ -327,9 +337,9 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: GoogleFonts.poppins(
             color: textSecondary,
-            fontSize: 11,
+            fontSize: 13,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.1,
           ),
@@ -338,10 +348,10 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
         TextField(
           controller: controller,
           obscureText: obscureText,
-          style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 15),
+          style: GoogleFonts.poppins(color: Colors.white.withOpacity(0.7), fontSize: 13),
           decoration: InputDecoration(
             hintText: hintText,
-            hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
+            hintStyle: GoogleFonts.poppins(color: Colors.grey, fontSize: 13),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 20,
               vertical: 18,
