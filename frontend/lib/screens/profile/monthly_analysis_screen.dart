@@ -11,7 +11,7 @@ class MonthlyAnalysisScreen extends StatefulWidget {
 }
 
 class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
-  static const Color bgColor = Color(0xFF13112B);
+  static const Color bgColor = Color(0xFF0D0C1D);
   static const Color cardBg = Color(0xFF1D1B3E);
   static const Color pinkAccent = Color(0xFFE598D0);
   static const Color purpleAccent = Color(0xFF8E248D);
