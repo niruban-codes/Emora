@@ -7,13 +7,17 @@ class UserEngagementScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF131429),
+      backgroundColor: const Color(0xFF0D0C1D),
       appBar: AppBar(
-        title: const Text("User Engagement", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        leading: const Icon(Icons.arrow_back),
+        backgroundColor: const Color(0xFF0D0C1D),
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        automaticallyImplyLeading: false,
+        title: const Text("User Engagement", style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold)),
+        leading: const Icon(Icons.arrow_back, color: Colors.white),
         actions: [
-          IconButton(icon: const Icon(Icons.search), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.search, color: Colors.white), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.settings, color: Colors.white), onPressed: () {}),
           const SizedBox(width: 8),
         ],
       ),
@@ -23,7 +27,7 @@ class UserEngagementScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 1. ALL 4 QUICK STAT CARDS (Horizontal Scrollable)
-            const Text("Overview", style: TextStyle(fontSize: 14, color: Colors.white70)),
+            const Text("Overview", style: TextStyle(fontSize: 16, color: Colors.white70)),
             const SizedBox(height: 12),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -119,7 +123,7 @@ class UserEngagementScreen extends StatelessWidget {
         children: [
           Text(title, style: const TextStyle(fontSize: 11, color: Colors.white54)),
           const SizedBox(height: 4),
-          Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
           const SizedBox(height: 2),
           Text(sub, style: TextStyle(fontSize: 9, color: accent.withOpacity(0.9))),
         ],
@@ -137,7 +141,7 @@ class UserEngagementScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+          Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)),
           if (subtitle != null) Text(subtitle, style: const TextStyle(fontSize: 10, color: Colors.white54)),
           const SizedBox(height: 15),
           height != null ? SizedBox(height: height, child: child) : child,
@@ -153,6 +157,19 @@ class UserEngagementScreen extends StatelessWidget {
         titlesData: FlTitlesData(
           topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
           rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 30, 
+              getTitlesWidget: (val, meta) {
+               
+                return Text(
+                  val.toInt().toString(), 
+                  style: const TextStyle(fontSize: 9, color: Colors.white54),
+                );
+              },
+            ),
+          ),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
@@ -201,7 +218,7 @@ class UserEngagementScreen extends StatelessWidget {
         children: [
           Text(flag, style: const TextStyle(fontSize: 16)),
           const SizedBox(width: 10),
-          Expanded(child: Text(name, style: const TextStyle(fontSize: 12))),
+          Expanded(child: Text(name, style: const TextStyle(fontSize: 12, color: Colors.white))),
           Text(pct, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF00FFCC))),
         ],
       ),
