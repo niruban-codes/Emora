@@ -24,8 +24,13 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   String userEmail = "";
   // Define your hardcoded admin emails
   final List<String> _adminEmails = [
-    'niru2324@gmail.com', // Replace with your actual admin email
+    'niru2324@gmail.com',
+    'sparkswills40@gmail.com', // Replace with your actual admin email
     'admin@emora.com',
+    'geethmapiyaratne285@gmail.com',
+    'nirubannallirajah@gmail.com',
+    'hafsanafli2003@gmail.com',
+    'dinithia962@gmail.com', 
   ];
 
   // Check if the current logged-in user is an admin
