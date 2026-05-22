@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // 👈 added
-import '../../../services/firestore_service.dart'; // 👈 added
+import 'package:firebase_auth/firebase_auth.dart'; 
+import '../../../services/firestore_service.dart'; 
 
 class ProfileSettingsScreen extends StatefulWidget {
   const ProfileSettingsScreen({super.key});
 
-  static const Color bgColor = Color(0xFF15173D);
+  static const Color bgColor = Color(0xFF0D0C1D);
   static const Color accentPurple = Color(0xFF9C27B0);
   static const Color cardColor = Color(0xFF1E1A35);
   static const Color textSecondary = Colors.white38;
