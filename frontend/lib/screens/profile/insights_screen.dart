@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 class InsightsScreen extends StatelessWidget {
   const InsightsScreen({super.key});
 
-  static const Color bgColor = Color(0xFF13112B);
+  static const Color bgColor = Color(0xFF0D0C1D);
   static const Color cardBg = Color(0xFF1D1B3E);
   static const Color pinkAccent = Color(0xFFE598D0);
   static const Color textCream = Color(0xFFF4EBEB);

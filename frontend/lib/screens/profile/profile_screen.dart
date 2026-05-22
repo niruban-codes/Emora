@@ -26,6 +26,9 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   final List<String> _adminEmails = [
     'niru2324@gmail.com', 
     'sparkswills40@gmail.com',
+    'admin@emora.com',
+    'geethmapiyaratne285@gmail.com',
+    'nirubannallirajah@gmail.com',
   ];
 
   // Check if the current logged-in user is an admin

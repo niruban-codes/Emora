@@ -128,12 +128,21 @@ class _LibraryScreenState extends State<LibraryScreen> {
               separatorBuilder: (context, index) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
                 final item = _libraryItems[index];
-                return _buildMoodCard(
-                  title: item['title'],
-                  subtitle: item['subtitle'],
-                  icon: item['icon'],
-                  baseColor: item['baseColor'],
-                  isHighlight: index == 0, // Highlight the "Liked Songs"
+                return GestureDetector(
+                  onTap: () {
+                    // Pass 'All' if it's Liked Songs, otherwise pass the specific mood
+                    final moodToPass = item['title'] == 'Liked Songs'
+                        ? 'All'
+                        : item['title'];
+                    context.push('/favorites', extra: moodToPass);
+                  },
+                  child: _buildMoodCard(
+                    title: item['title'],
+                    subtitle: item['subtitle'],
+                    icon: item['icon'],
+                    baseColor: item['baseColor'],
+                    isHighlight: index == 0,
+                  ),
                 );
               },
             ),
