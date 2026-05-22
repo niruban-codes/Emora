@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:frontend/models/song_model.dart';
 
 class SearchMoodScreen extends StatefulWidget {
   const SearchMoodScreen({super.key});
@@ -14,7 +15,6 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
 
   // Languages data — strongly typed, no map casts needed
   final List<_LanguageItem> _languages = const [
-    _LanguageItem(label: 'English', symbol: 'Aa'),
     _LanguageItem(label: 'Tamil', symbol: 'த'),
     _LanguageItem(label: 'Sinhala', symbol: 'ස'),
     _LanguageItem(label: 'Korean', symbol: '한'),
@@ -54,9 +54,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
     'Rap',
     'Jazz',
     'Classical',
-    'R&B',
-    'Metal',
-    'Pop',
+    'Motivational',
   ];
 
   @override
@@ -203,7 +201,14 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
   }
 
   Widget _buildLanguageCard(_LanguageItem lang) {
-    return Container(
+  return GestureDetector(
+    onTap: () {
+      context.push('/genre-playlist', extra: {
+        'genre': lang.label,
+        'songs': <Song>[],
+      });
+    },
+    child: Container(
       width: 100,
       decoration: BoxDecoration(
         color: const Color(0xFF14122A),
@@ -238,15 +243,21 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   // ── Featured Vibe Card (large) ─────────────────────────────────────────────
   Widget _buildFeaturedVibeCard() {
     final colors = _featuredVibe['gradientColors'] as List<Color>;
 
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        context.push('/genre-playlist', extra: {
+          'genre': _featuredVibe['label'] as String,
+          'songs': <Song>[],
+        });
+      },
       child: Container(
         width: double.infinity,
         height: 160,
@@ -294,7 +305,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
                   Text(
                     _featuredVibe['label'] as String,
                     style: GoogleFonts.poppins(
-                      color: Color(0xFFFF6EC7),
+                      color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 0.2,
@@ -340,7 +351,12 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
     final colors = vibe['gradientColors'] as List<Color>;
 
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        context.push('/genre-playlist', extra: {
+          'genre': vibe['label'] as String,
+          'songs': <Song>[],
+        });
+      },
       child: Container(
         height: 130,
         decoration: BoxDecoration(
@@ -422,7 +438,12 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
 
   Widget _buildGenreChip(String genre) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        context.push('/genre-playlist', extra: {
+          'genre': genre,
+          'songs': <Song>[],
+        });
+      },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
