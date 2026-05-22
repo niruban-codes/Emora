@@ -7,18 +7,7 @@ explore_bp = Blueprint("explore", __name__, url_prefix="/explore")
 
 # PERFECTLY MAPPED STATIC CODES FOR ZERO-QUOTA INSTANT LOADING
 EXPLORE_STATIC_MAP = {
-    "sinhala": [
-        {"videoId": "heKksPAwfeE", "title": "Sansarini", "artist": "Yasas Medagedara", "thumbnail": "https://img.youtube.com/vi/heKksPAwfeE/mqdefault.jpg", "duration": "3:30"},
-        {"videoId": "-Bqdiuy5tTM", "title": "Meedum Dumariye", "artist": "Kasun Kalhara", "thumbnail": "https://img.youtube.com/vi/-Bqdiuy5tTM/mqdefault.jpg", "duration": "3:30"},
-        {"videoId": "oJYPppbnt1c", "title": "Ehem Beluwama Maa Diha", "artist": "Yasas Medagedara", "thumbnail": "https://img.youtube.com/vi/oJYPppbnt1c/mqdefault.jpg", "duration": "3:30"},
-        {"videoId": "vsRQnDiIg2Y", "title": "Prathihari", "artist": "Supun Perera", "thumbnail": "https://img.youtube.com/vi/vsRQnDiIg2Y/mqdefault.jpg", "duration": "3:30"},
-        {"videoId": "iIm4gcybpsI", "title": "Kuweni", "artist": "Ridma Weerawardena", "thumbnail": "https://img.youtube.com/vi/iIm4gcybpsI/mqdefault.jpg", "duration": "3:30"},
-        {"videoId": "GAoVQbWRdyc", "title": "Kanda Gena", "artist": "Yasas Medagedara", "thumbnail": "https://img.youtube.com/vi/GAoVQbWRdyc/mqdefault.jpg", "duration": "3:30"},
-        {"videoId": "Z42aFor5MiM", "title": "Thamarasa", "artist": "Ridma Weerawardena", "thumbnail": "https://img.youtube.com/vi/Z42aFor5MiM/mqdefault.jpg", "duration": "3:30"},
-        {"videoId": "6V62okYjrCc", "title": "Mandaram Kathawe", "artist": "Anushka Udana (Wasthi)", "thumbnail": "https://img.youtube.com/vi/6V62okYjrCc/mqdefault.jpg", "duration": "3:30"},
-        {"videoId": "V5IZR7-MWko", "title": "Tharumal Kada Gannemi", "artist": "Kasun Kalhara", "thumbnail": "https://img.youtube.com/vi/V5IZR7-MWko/mqdefault.jpg", "duration": "3:30"},
-        {"videoId": "G-IS-scTJDo", "title": "Kohe Ho Maa", "artist": "Dinesh Gamage", "thumbnail": "https://img.youtube.com/vi/G-IS-scTJDo/mqdefault.jpg", "duration": "3:30"}
-    ],
+    
     "tamil": [
         {"videoId": "yKDWXC4o5nA", "title": "Pookkalae Sattru Oyivedungal", "artist": "A. R. Rahman ft. Haricharan & Shreya Ghoshal", "thumbnail": "https://img.youtube.com/vi/yKDWXC4o5nA/mqdefault.jpg", "duration": "3:30"},
         {"videoId": "Wxqu1eVJ4Vs", "title": "Mersal Arasan", "artist": "A. R. Rahman ft. G.V. Prakash Kumar", "thumbnail": "https://img.youtube.com/vi/Wxqu1eVJ4Vs/mqdefault.jpg", "duration": "3:30"},
@@ -151,16 +140,14 @@ def get_vibe_genre():
 
     print(f"📡 Requesting official live Google servers for custom query search input: '{query_input}'")
     
-    # Strictly filtering to force individual music video outputs only (videoCategoryId=10 & type=video)
-    # Adding videoDuration='short' limits searches to standalone tracks under 4 minutes, blocking multi-hour loops!
+# Broaden lookup params and fetch 25 records so filter cuts don't kill list length
     google_url = (
         f"https://www.googleapis.com/youtube/v3/search"
         f"?part=snippet"
-        f"&q={query_input}+official+audio+song"
+        f"&q={query_input}+music"
         f"&type=video"
         f"&videoCategoryId=10"
-        f"&videoDuration=short"
-        f"&maxResults=10"
+        f"&maxResults=25"
         f"&key={api_key}"
     )
 
@@ -169,18 +156,17 @@ def get_vibe_genre():
         data = response.json()
 
         if "items" not in data or not data["items"]:
-            return jsonify(EXPLORE_STATIC_MAP["sinhala"]), 200  # Safe fallback map
+            return jsonify(EXPLORE_STATIC_MAP["sinhala"]), 200
 
         recommended_songs = []
         for item in data["items"]:
-            if "videoId" not in item["id"]:
+            if "id" not in item or "videoId" not in item["id"]:
                 continue
 
             video_id = item["id"]["videoId"]
             snippet = item["snippet"]
             title = snippet.get("title", "Unknown Title")
             
-            # Anti-junk filter block: Reject live streams or obvious multi-hour compilations
             lower_title = title.lower()
             if "live" in lower_title or "loop" in lower_title or "hours" in lower_title or "compilation" in lower_title:
                 continue
@@ -193,11 +179,17 @@ def get_vibe_genre():
                 "duration": "3:30"
             })
 
-        # Double check that we have entries, otherwise serve the fallback
-        if not recommended_songs:
-            return jsonify(EXPLORE_STATIC_MAP["sinhala"]), 200
+        # REINFORCEMENT FILLER: If strict filters leave us short, inject steady records from the neutral pool to hold 10 elements
+        if len(recommended_songs) < 10:
+            from youtube import EMOTION_HARDCODED_MAP
+            backup_pool = EMOTION_HARDCODED_MAP.get("neutral", [])
+            for backup_track in backup_pool:
+                if len(recommended_songs) >= 10:
+                    break
+                if backup_track["videoId"] not in [s["videoId"] for s in recommended_songs]:
+                    recommended_songs.append(backup_track)
 
-        return jsonify(recommended_songs), 200
+        return jsonify(recommended_songs[:10]), 200    
 
     except Exception as e:
         print(f"❌ Explore System Exception Error: {str(e)}")
