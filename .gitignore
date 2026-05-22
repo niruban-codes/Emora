@@ -18,6 +18,8 @@ backend/*.json
 # Virtual Environment
 env/
 backend/env/
+venv/
+backend/venv/
 
 #vscode
 .vscode/

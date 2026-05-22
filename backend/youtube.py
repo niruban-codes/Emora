@@ -186,10 +186,6 @@ def recommend_more_songs():
 # FIRESTORE RECENT SEARCHES ENDPOINTS (Kept fully intact)
 
 
-#@youtube_bp.route("/search", methods=["GET"])
-#def search_music():
- #   return jsonify([]), 200
-
 @youtube_bp.route("/recent-searches/<uid>", methods=["POST"])
 def save_recent_search(uid: str):
     body = request.get_json(silent=True)
