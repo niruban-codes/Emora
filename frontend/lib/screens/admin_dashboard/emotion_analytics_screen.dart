@@ -14,10 +14,14 @@ class _EmotionAnalyticsScreenState extends State<EmotionAnalyticsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF131429),
+      backgroundColor: const Color(0xFF0D0C1D),
       appBar: AppBar(
-        title: const Text("Emotion Analytics", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        leading: const Icon(Icons.arrow_back),
+        backgroundColor: const Color(0xFF0D0C1D),
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        automaticallyImplyLeading: false,
+        title: const Text("Emotion Analytics", style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold)),
+        leading: const Icon(Icons.arrow_back, color: Colors.white),
         actions: [
           // 1. THE DROPDOWN BOX (Timeframe Selector)
           Container(
@@ -120,7 +124,7 @@ class _EmotionAnalyticsScreenState extends State<EmotionAnalyticsScreen> {
       decoration: BoxDecoration(color: const Color(0xFF252648), borderRadius: BorderRadius.circular(20)),
       child: Column(
         children: [
-          const Text("Mood Distribution", style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+          const Text("Mood Distribution", style: TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.bold)),
           Expanded(child: PieChart(PieChartData(sectionsSpace: 0, centerSpaceRadius: 35, sections: [
             PieChartSectionData(color: Colors.orange, value: 34, radius: 10, showTitle: false),
             PieChartSectionData(color: Colors.greenAccent, value: 22, radius: 10, showTitle: false),
@@ -140,7 +144,7 @@ class _EmotionAnalyticsScreenState extends State<EmotionAnalyticsScreen> {
       decoration: BoxDecoration(color: const Color(0xFF252648), borderRadius: BorderRadius.circular(20)),
       child: Column(
         children: [
-          const Text("Top Genre by Emotion", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+          const Text("Top Genre by Emotion", style: TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold)),
           const SizedBox(height: 15),
           Expanded(child: BarChart(BarChartData(
             gridData: const FlGridData(show: false),
