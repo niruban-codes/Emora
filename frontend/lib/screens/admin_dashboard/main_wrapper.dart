@@ -17,7 +17,7 @@ class _MainWrapperState extends State<MainWrapper> {
 
   // The 5 screens mapped to the icons
   final List<Widget> _screens = [
-    const DashboardScreen(),        // Panel 1
+    const DashboardScreen(),        // Panel 1 (Dashboard)
     const EmotionAnalyticsScreen(), // Panel 3 (Logs)
     const UserEngagementScreen(),   // Panel 2 (Users)
     const MusicAnalyticsScreen(),   // Panel 4 (Music)
@@ -28,17 +28,37 @@ class _MainWrapperState extends State<MainWrapper> {
   Widget build(BuildContext context) {
     return Scaffold(
       // This holds the state of all 5 panels
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
+      backgroundColor: const Color(0xFF0D0C1D),
+      body: Column(
+        children: [
+          Expanded(
+            child: IndexedStack(
+              index: _currentIndex,
+              children: _screens,
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
         type: BottomNavigationBarType.fixed,
-        backgroundColor: const Color(0xFF1E1F3D),
+        backgroundColor: const Color(0xFF0D0C1D),
         selectedItemColor: const Color(0xFFD43FB1),
         unselectedItemColor: Colors.white54,
+
+        selectedLabelStyle: const TextStyle(
+          fontSize: 10, 
+          fontWeight: FontWeight.bold,
+          letterSpacing: 0.5,
+        ),
+
+        unselectedLabelStyle: const TextStyle(
+          fontSize: 10, 
+          fontWeight: FontWeight.normal,
+          letterSpacing: 0.5,
+        ),
+
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.grid_view_rounded), label: 'DASHBOARD'),
           BottomNavigationBarItem(icon: Icon(Icons.history_rounded), label: 'LOGS'),
