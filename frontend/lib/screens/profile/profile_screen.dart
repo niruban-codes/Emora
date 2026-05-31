@@ -104,23 +104,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
               'Mood Analytics',
             ),
 
-            const SizedBox(height: 25),
-            _buildSectionLabel('MUSIC INTEGRATION'),
-            _buildIntegrationCard(
-              'Spotify',
-              'Connected as @sarahj_music',
-              'Disconnect',
-              Icons.grid_view_rounded,
-              true,
-            ),
-            const SizedBox(height: 12),
-            _buildIntegrationCard(
-              'Connect YouTube Music',
-              '',
-              '+',
-              Icons.play_circle_fill,
-              false,
-            ),
+            
 
             const SizedBox(height: 25),
             _buildSectionLabel('APP PREFERENCES'),
@@ -134,7 +118,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
             if (_isAdmin) _buildAdminCard(context),
 
             const SizedBox(height: 30),
-            _buildLogoutButton(context), // 👈 now signs out from Firebase
+            _buildLogoutButton(context), // 
 
             const SizedBox(height: 40),
           ],
@@ -174,7 +158,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         ),
         const SizedBox(height: 15),
         Text(
-          userName, // 👈 Uses the variable from Firestore
+          userName, //  Uses the variable from Firestore
           style: const TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
@@ -182,7 +166,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
           ),
         ),
         Text(
-          userEmail, // 👈 Uses the variable from Firestore
+          userEmail, // Uses the variable from Firestore
           style: const TextStyle(
             color: ProfileSettingsScreen.textSecondary,
             fontSize: 14,
@@ -196,14 +180,14 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     return Align(
       alignment: Alignment.centerLeft,
       child: Padding(
-        padding: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.only(bottom: 12, top: 12), 
         child: Text(
           label,
           style: const TextStyle(
-            color: ProfileSettingsScreen.textSecondary,
-            fontSize: 11,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1.1,
+            color: Colors.white,           
+            fontSize: 13,                  
+            fontWeight: FontWeight.w900,  
+            letterSpacing: 1.3,           
           ),
         ),
       ),
@@ -214,16 +198,21 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: _iconBox(icon),
-      title: Text(
+     title: Text(
         title,
-        style: const TextStyle(color: Colors.white, fontSize: 15),
+        style: const TextStyle(
+          color: Colors.white, 
+          fontSize: 16,                    
+          fontWeight: FontWeight.w500,      
+          letterSpacing: 0.5,
+        ),
       ),
       trailing: const Icon(
         Icons.chevron_right,
         color: ProfileSettingsScreen.textSecondary,
       ),
       onTap: () async {
-        // 👈 Added async
+        // Added async
         if (title == 'Edit Profile') {
           // 1. Wait for the user to return from Account Settings
           await context.push('/account-settings');
@@ -249,7 +238,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: ProfileSettingsScreen.cardColor, // 👈 1. Added Prefix
+        color: ProfileSettingsScreen.cardColor, //  1. Added Prefix
         borderRadius: BorderRadius.circular(15),
         border: connected ? null : Border.all(color: Colors.white10, width: 1),
       ),
@@ -271,7 +260,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                 if (sub.isNotEmpty)
                   Text(
                     sub,
-                    // 👈 2. Added Prefix & removed 'const'
+                    //  2. Added Prefix & removed 'const'
                     style: const TextStyle(
                       color: ProfileSettingsScreen.textSecondary,
                       fontSize: 12,
@@ -282,7 +271,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
           ),
           Text(
             action,
-            // 👈 3. Added Prefix & removed 'const'
+            //  3. Added Prefix & removed 'const'
             style: TextStyle(
               color: connected
                   ? ProfileSettingsScreen.textSecondary
@@ -301,7 +290,12 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       leading: _iconBox(icon),
       title: Text(
         title,
-        style: const TextStyle(color: Colors.white, fontSize: 15),
+        style: const TextStyle(
+          color: Colors.white, 
+          fontSize: 16, 
+          fontWeight: FontWeight.w500,     
+          letterSpacing: 0.5,
+        ),
       ),
       trailing: Switch(
         value: value,
@@ -311,7 +305,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     );
   }
 
-  // ── Admin Dashboard Card ──────────────────────────────────────────────────
+  // Admin Dashboard Card 
   Widget _buildAdminCard(BuildContext context) {
     return GestureDetector(
       onTap: () => context.push('/admin-dashboard'),
@@ -357,7 +351,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     );
   }
 
-  // ── Logout Button with Firebase Sign Out ──────────────────────────────────
+  //  Logout Button with Firebase Sign Out 
   Widget _buildLogoutButton(BuildContext context) {
     return Container(
       width: double.infinity,
@@ -412,7 +406,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
           // 2. If confirmed sign out from Firebase and navigate to login
           if (confirm == true) {
             await FirebaseAuth.instance
-                .signOut(); // 👈 actual Firebase sign out
+                .signOut(); //  actual Firebase sign out
             if (context.mounted) context.go('/login');
           }
         },
