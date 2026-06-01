@@ -12,7 +12,7 @@ import os
 import firebase_admin
 from firebase_admin import credentials, firestore
 from dotenv import load_dotenv
- 
+
 load_dotenv()
 _KEY_PATH = os.path.join(os.path.dirname(__file__), "serviceAccountKey.json")
 
@@ -20,16 +20,24 @@ def _initialize_firebase() -> firestore.Client:
     """
     Initialize Firebase only once, even if this module is imported
     multiple times. Returns a Firestore client.
+    Supports both local (serviceAccountKey.json) and Render (env var).
     """
-    if not firebase_admin._apps:  # Guard: don't initialize twice
-        if not os.path.exists(_KEY_PATH):
-            raise FileNotFoundError(
-                f"serviceAccountKey.json not found at: {_KEY_PATH}\n"
-                "Download it from Firebase Console → Project Settings → Service Accounts."
-            )
-        cred = credentials.Certificate(_KEY_PATH)
+    if not firebase_admin._apps:
+        key_json = os.environ.get("FIREBASE_SERVICE_ACCOUNT_JSON")
+        if key_json:
+            # Running on Render — key passed as environment variable
+            import json
+            cred = credentials.Certificate(json.loads(key_json))
+        else:
+            # Running locally — use the JSON file
+            if not os.path.exists(_KEY_PATH):
+                raise FileNotFoundError(
+                    f"serviceAccountKey.json not found at: {_KEY_PATH}\n"
+                    "Download it from Firebase Console → Project Settings → Service Accounts."
+                )
+            cred = credentials.Certificate(_KEY_PATH)
         firebase_admin.initialize_app(cred)
- 
+
     return firestore.client()
 
 # Module-level Firestore client — import this in other files:
