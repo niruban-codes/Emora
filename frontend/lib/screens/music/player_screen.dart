@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:frontend/models/song_model.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class PlayerScreen extends StatefulWidget {
   final Song currentSong;
@@ -32,10 +31,6 @@ class _PlayerScreenState extends State<PlayerScreen>
   late AnimationController _animCtrl;
   late Animation<double> _scaleAnim;
 
-  late YoutubePlayerController _ytController;
-  bool _isLoading = true;
-  bool _hasError = false;
-  final Set<String> _favorites = {};
   Song get _song => widget.playlist[_currentIndex];
 
   @override
@@ -48,19 +43,11 @@ class _PlayerScreenState extends State<PlayerScreen>
     );
     _scaleAnim = CurvedAnimation(parent: _animCtrl, curve: Curves.easeOutBack);
     _animCtrl.forward();
-    _ytController = YoutubePlayerController(
-      initialVideoId: _song.id,  //video id
-      flags: const YoutubePlayerFlags(
-        autoPlay: true,
-        mute: false,
-      ),
-    );
   }
 
   @override
   void dispose() {
     _animCtrl.dispose();
-    _ytController.dispose();
     super.dispose();
   }
 
@@ -70,8 +57,7 @@ class _PlayerScreenState extends State<PlayerScreen>
         _currentIndex++;
         _sliderValue = 0;
       });
-        _ytController.load(_song.id); // the videoId gotta be here
-        _animCtrl.forward(from: 0);
+      _animCtrl.forward(from: 0);
     }
   }
 
@@ -81,62 +67,50 @@ class _PlayerScreenState extends State<PlayerScreen>
         _currentIndex--;
         _sliderValue = 0;
       });
-      _ytController.load(_song.id);   // id = videoid
       _animCtrl.forward(from: 0);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return YoutubePlayerBuilder(
-      player: YoutubePlayer(
-        controller: _ytController,
-        showVideoProgressIndicator: true,
-        progressIndicatorColor: const Color(0xFFA7338A),
-        onReady: () => setState(() => _isLoading = false),
+    return Scaffold(
+      backgroundColor: const Color(0xFF0D0C1D),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // ── Top Bar ──
+            _buildTopBar(context),
+
+            const SizedBox(height: 24),
+
+            // ── Album Art ──
+            _buildAlbumArt(),
+
+            const SizedBox(height: 32),
+
+            // ── Song Info ──
+            _buildSongInfo(),
+
+            const SizedBox(height: 28),
+
+            // ── Progress Slider ──
+            _buildProgressSlider(),
+
+            const SizedBox(height: 24),
+
+            // ── Controls ──
+            _buildControls(),
+
+            const SizedBox(height: 32),
+
+            // ── Playlist Queue Preview ──
+            _buildQueuePreview(),
+          ],
+        ),
       ),
-      builder: (context, player) {
-        return Scaffold(
-          backgroundColor: const Color(0xFF0D0C1D),
-          body: SafeArea(
-            child: Column(
-              children: [
-                // ── Top Bar ──
-                _buildTopBar(context),
-
-                const SizedBox(height: 24),
-
-                // ── Album Art ──
-                _buildAlbumArt(),
-
-                const SizedBox(height: 32),
-
-                // ── Song Info ──
-                _buildSongInfo(),
-
-                const SizedBox(height: 28),
-
-                // ── Progress Slider ──
-                _buildProgressSlider(),
-
-                const SizedBox(height: 24),
-
-                // ── Controls ──
-                _buildControls(),
-
-                const SizedBox(height: 32),
-
-                // ── Playlist Queue Preview ──
-                _buildQueuePreview(),
-              ],
-            ),
-          ),
-        );
-      }
     );
   }
-      
-      
+
   // ── Top Bar ───────────────────────────────────────────────────────────────
   Widget _buildTopBar(BuildContext context) {
     return Padding(
@@ -191,53 +165,39 @@ class _PlayerScreenState extends State<PlayerScreen>
   }
 
   // ── Album Art ─────────────────────────────────────────────────────────────
-  // Widget _buildAlbumArt() {
-  //   return ScaleTransition(
-  //     scale: _scaleAnim,
-  //     child: Hero(
-  //       tag: 'album_art_${_song.id}',
-  //       child: Container(
-  //         height: 280,
-  //         width: 280,
-  //         decoration: BoxDecoration(
-  //           borderRadius: BorderRadius.circular(24),
-  //           boxShadow: [
-  //             BoxShadow(
-  //               color: Colors.black.withOpacity(0.5),
-  //               blurRadius: 30,
-  //               offset: const Offset(0, 16),
-  //             ),
-  //           ],
-  //         ),
-  //         child: ClipRRect(
-  //           borderRadius: BorderRadius.circular(24),
-  //           child: Image.network(
-  //             _song.coverUrl,
-  //             fit: BoxFit.cover,
-  //             errorBuilder: (_, __, ___) => Container(
-  //               color: const Color(0xFF1E1E3A),
-  //               child: const Icon(
-  //                 Icons.music_note,
-  //                 color: Colors.white24,
-  //                 size: 80,
-  //               ),
-  //             ),
-  //           ),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
   Widget _buildAlbumArt() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: YoutubePlayer(
-          controller: _ytController,
-          showVideoProgressIndicator: true,
-          progressIndicatorColor: const Color(0xFFA7338A),
-          onReady: () => setState(() => _isLoading = false),
+    return ScaleTransition(
+      scale: _scaleAnim,
+      child: Hero(
+        tag: 'album_art_${_song.id}',
+        child: Container(
+          height: 280,
+          width: 280,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.5),
+                blurRadius: 30,
+                offset: const Offset(0, 16),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: Image.network(
+              _song.coverUrl,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
+                color: const Color(0xFF1E1E3A),
+                child: const Icon(
+                  Icons.music_note,
+                  color: Colors.white24,
+                  size: 80,
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -375,10 +335,7 @@ class _PlayerScreenState extends State<PlayerScreen>
 
           // Play / Pause
           GestureDetector(
-            onTap: () {
-              _isPlaying ? _ytController.pause() : _ytController.play();
-              setState(() => _isPlaying = !_isPlaying);
-            },
+            onTap: () => setState(() => _isPlaying = !_isPlaying),
             child: Container(
               width: 68,
               height: 68,

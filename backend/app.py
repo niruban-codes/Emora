@@ -3,18 +3,12 @@ import os
 from dotenv import load_dotenv
 from emotion import detect_emotion
 from history import history_bp
-from flask_cors import CORS
-from youtube import youtube_bp
-from explore import explore_bp
 
 load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 app.register_blueprint(history_bp)
-CORS(app)
-app.register_blueprint(youtube_bp)
-app.register_blueprint(explore_bp)
 
 ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "webp"}
 
@@ -66,5 +60,4 @@ def server_error(e):
     return jsonify({"error": "Internal server error"}), 500
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=False)
+    app.run(debug=True)

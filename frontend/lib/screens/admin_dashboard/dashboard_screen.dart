@@ -7,12 +7,11 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0D0C1D), 
+      backgroundColor: const Color(0xFF131429), // Deep Midnight Blue
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        automaticallyImplyLeading: false,
-        title: const Text("Admin Dashboard", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+        title: const Text("Admin Dashboard", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         leading: const Icon(Icons.arrow_back, color: Colors.white),
         actions: [
           IconButton(icon: const Icon(Icons.search, color: Colors.white), onPressed: () {}),
@@ -26,7 +25,7 @@ class DashboardScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text("Welcome Back, Admin!", 
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white)),
             const Text("Overview of system activity", 
               style: TextStyle(color: Colors.white54, fontSize: 13)),
             const SizedBox(height: 20),
@@ -38,7 +37,7 @@ class DashboardScreen extends StatelessWidget {
               crossAxisCount: 2,
               mainAxisSpacing: 15,
               crossAxisSpacing: 15,
-              childAspectRatio: 1.5,
+              childAspectRatio: 1.6,
               children: [
                 _buildStatCard("Active Users", "5,320", "Online now", Icons.person, const Color(0xFF6C5CE7)),
                 _buildStatCard("Song Sessions", "780", "", Icons.music_note, const Color(0xFFD43FB1)),
