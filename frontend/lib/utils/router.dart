@@ -26,9 +26,6 @@ import 'package:frontend/screens/music/library_screen.dart';
 import 'package:frontend/screens/main_layout.dart';
 import 'package:frontend/screens/admin_dashboard/dashboard_screen.dart';
 import 'package:frontend/screens/favorite_screen.dart';
-import 'package:frontend/screens/admin_dashboard/main_wrapper.dart';
-import 'package:frontend/screens/music/genre_playlist_screen.dart';
-import 'package:frontend/screens/admin_dashboard/main_wrapper.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'root',
@@ -62,17 +59,6 @@ final appRouter = GoRouter(
       builder: (context, state) => const RegisterWithEmailScreen(),
     ),
     GoRoute(
-      path: '/genre-playlist',
-      parentNavigatorKey: _rootNavigatorKey,
-      builder: (context, state) {
-        final extra = state.extra as Map<String, dynamic>;
-        return GenrePlaylistScreen(
-          genre: extra['genre'] as String,
-          songs: extra['songs'] as List<Song>,
-        );
-      },
-    ),
-    GoRoute(
       path: '/login',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const LoginScreen(),
@@ -90,15 +76,12 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/admin-dashboard',
       parentNavigatorKey: _rootNavigatorKey,
-      builder: (context, state) => const MainWrapper(),
+      builder: (context, state) => const DashboardScreen(),
     ),
     GoRoute(
       path: '/favorites',
       parentNavigatorKey: _rootNavigatorKey,
-      builder: (context, state) {
-        final mood = state.extra as String? ?? 'All';
-        return FavoritesScreen(initialMood: mood);
-      },
+      builder: (context, state) => const FavoritesScreen(),
     ),
     // Player
     GoRoute(

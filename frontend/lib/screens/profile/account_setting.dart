@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // 👈 added
 import '../../../services/firestore_service.dart'; // 👈 added
 import 'package:cloud_firestore/cloud_firestore.dart'; // 👈 added
-import 'package:google_fonts/google_fonts.dart';
 
 class AccountSettingScreen extends StatefulWidget {
   const AccountSettingScreen({super.key});
@@ -14,7 +13,7 @@ class AccountSettingScreen extends StatefulWidget {
 
 class _AccountSettingScreenState extends State<AccountSettingScreen> {
   // Theme Colors - Syncing with your Home & Profile screens
-  static const Color bgColor = Color(0xFF0D0C1D);
+  static const Color bgColor = Color(0xFF15173D);
   static const Color accentPurple = Color(0xFF9C27B0);
   static const Color activeHighlight = Color(0xFFA7338A);
   static const Color textSecondary = Colors.white38;
@@ -23,7 +22,9 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
   // Controllers to handle text input
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _currentPasswordController = TextEditingController();
+  final _currentPasswordController = TextEditingController(
+    text: '************',
+  );
   final _newPasswordController = TextEditingController();
 
   bool _isLoading = true; // Added loading state
@@ -75,33 +76,6 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
     }
   }
 
-  Future<void> _handleForgotPassword() async {
-    final email = _emailController.text.trim();
-    if (email.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please wait for your email to load first.'),
-        ),
-      );
-      return;
-    }
-
-    try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Reset link sent! Check your inbox.')),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
-      }
-    }
-  }
-
   @override
   void dispose() {
     _usernameController.dispose();
@@ -122,11 +96,11 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => context.pop(),
         ),
-        title: Text(
+        title: const Text(
           'Account Settings',
-          style: GoogleFonts.poppins(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: 20,
+            fontSize: 18,
             color: Colors.white,
           ),
         ),
@@ -184,8 +158,8 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                 // 4. DISPLAY REAL NAME
                 Text(
                   _usernameController.text,
-                  style: GoogleFonts.poppins(
-                    fontSize: 20,
+                  style: const TextStyle(
+                    fontSize: 26,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
@@ -196,9 +170,9 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                   snapshot.hasData && snapshot.data?['createdAt'] != null
                       ? 'Member since ${(snapshot.data!['createdAt'] as Timestamp).toDate().year}'
                       : 'Member since 2026', // Fallback while loading or if null
-                  style: GoogleFonts.poppins(
+                  style: const TextStyle(
                     color: accentPurple,
-                    fontSize: 13,
+                    fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -211,13 +185,7 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                       child: OutlinedButton.icon(
                         onPressed: () {}, // Future task: Image upload
                         icon: const Icon(Icons.upload, size: 18),
-                        label: Text(
-                          'Upload New',
-                          style: GoogleFonts.poppins(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                        label: const Text('Upload New'),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.white,
                           side: const BorderSide(
@@ -236,13 +204,7 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                       child: TextButton.icon(
                         onPressed: () {},
                         icon: const Icon(Icons.delete_outline, size: 18),
-                        label: Text(
-                          'Remove',
-                          style: GoogleFonts.poppins(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                        label: const Text('Remove'),
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.white,
                           backgroundColor: buttonRed.withOpacity(0.15),
@@ -284,20 +246,7 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                   hintText: 'Min. 8 characters',
                   obscureText: true,
                 ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: _handleForgotPassword,
-                    child: Text(
-                      'Forgot Password?',
-                      style: GoogleFonts.poppins(
-                        color: activeHighlight,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
+
                 const SizedBox(height: 40),
                 // 5. UPDATE SAVE BUTTON LOGIC
                 SizedBox(
@@ -305,63 +254,25 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                   height: 60,
                   child: ElevatedButton.icon(
                     onPressed: () async {
-                      final user = FirebaseAuth.instance.currentUser;
-                      if (user != null) {
-                        try {
-                          // 1. Always update the display name
-                          await FirestoreService().updateUserProfile(
-                            user.uid,
-                            _usernameController.text.trim(),
+                      final uid = FirebaseAuth.instance.currentUser?.uid;
+                      if (uid != null) {
+                        // Call a new update method in your service
+                        await FirestoreService().updateUserProfile(
+                          uid,
+                          _usernameController.text,
+                        );
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Profile updated!')),
                           );
-
-                          // 2. Check if they are trying to change their password
-                          if (_currentPasswordController.text.isNotEmpty &&
-                              _newPasswordController.text.isNotEmpty) {
-                            // Ask Firebase to verify their old password first!
-                            AuthCredential credential =
-                                EmailAuthProvider.credential(
-                                  email: user.email!,
-                                  password: _currentPasswordController.text,
-                                );
-
-                            // Re-authenticate and update
-                            await user.reauthenticateWithCredential(credential);
-                            await user.updatePassword(
-                              _newPasswordController.text,
-                            );
-                          }
-
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Account successfully updated!',
-                                  style: GoogleFonts.poppins(fontSize: 13),
-                                ),
-                              ),
-                            );
-                            context.pop(); // Go back after saving
-                          }
-                        } on FirebaseAuthException catch (e) {
-                          // If they typed the wrong current password, Firebase throws an error
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  e.message ??
-                                      'Authentication failed. Check your current password.',
-                                ),
-                                backgroundColor: buttonRed,
-                              ),
-                            );
-                          }
+                          context.pop();
                         }
                       }
                     },
                     icon: const Icon(Icons.save_outlined),
-                    label: Text(
+                    label: const Text(
                       'Save Changes',
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -393,9 +304,9 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
         const SizedBox(width: 8),
         Text(
           label,
-          style: GoogleFonts.poppins(
+          style: const TextStyle(
             color: accentPurple,
-            fontSize: 16,
+            fontSize: 12,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.1,
           ),
@@ -416,9 +327,9 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
       children: [
         Text(
           label,
-          style: GoogleFonts.poppins(
+          style: const TextStyle(
             color: textSecondary,
-            fontSize: 13,
+            fontSize: 11,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.1,
           ),
@@ -427,13 +338,10 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
         TextField(
           controller: controller,
           obscureText: obscureText,
-          style: GoogleFonts.poppins(
-            color: Colors.white.withOpacity(0.7),
-            fontSize: 13,
-          ),
+          style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 15),
           decoration: InputDecoration(
             hintText: hintText,
-            hintStyle: GoogleFonts.poppins(color: Colors.grey, fontSize: 13),
+            hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 20,
               vertical: 18,

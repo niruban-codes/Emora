@@ -7,17 +7,13 @@ class MusicAnalyticsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0D0C1D),
+      backgroundColor: const Color(0xFF131429),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0D0C1D),
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        automaticallyImplyLeading: false,
-        title: const Text("Music Analytics", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+        title: const Text("Music Analytics", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         leading: const Icon(Icons.arrow_back, color: Colors.white),
         actions: [
-          IconButton(icon: const Icon(Icons.search, color: Colors.white), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.settings, color: Colors.white), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.search), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
           const SizedBox(width: 8),
         ],
       ),
@@ -26,7 +22,7 @@ class MusicAnalyticsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. LISTENING STATS 
+            // 1. LISTENING STATS (The 4 Decorative Cards)
             _header("Listening Stats"),
             SizedBox(
               height: 100,
@@ -42,7 +38,7 @@ class MusicAnalyticsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // 2. LISTENING TRENDS 
+            // 2. LISTENING TRENDS (Full Width Line Chart)
             _header("Listening Trends"),
             _container(
               height: 180,
@@ -57,7 +53,7 @@ class MusicAnalyticsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // 3. GENRE BREAKDOWN 
+            // 3. GENRE BREAKDOWN (Large Donut with Legend)
             _header("Genre Breakdown"),
             _container(
               child: Row(
@@ -84,7 +80,7 @@ class MusicAnalyticsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // 4. TWO-COLUMN LIST 
+            // 4. TWO-COLUMN LIST (Top Songs & Top Artists)
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -108,10 +104,10 @@ class MusicAnalyticsScreen extends StatelessWidget {
     );
   }
 
-  // UI ELEMENTS 
+  // UI ELEMENTS MAPPING FIGMA
   Widget _header(String text) => Padding(
     padding: const EdgeInsets.symmetric(vertical: 10),
-    child: Text(text, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+    child: Text(text, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
   );
 
   Widget _container({required Widget child, double? height}) => Container(
@@ -132,8 +128,8 @@ class MusicAnalyticsScreen extends StatelessWidget {
         children: [
           Text(title, style: const TextStyle(fontSize: 8, color: Colors.white54)),
           const SizedBox(height: 5),
-          if (icon != null) Icon(icon, color: Colors.white, size: 20) else Text(val, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.white)),
-          if (icon != null) Text(val, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: Colors.white)),
+          if (icon != null) Icon(icon, color: Colors.white, size: 20) else Text(val, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+          if (icon != null) Text(val, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
         ],
       ),
     );
@@ -170,7 +166,7 @@ class MusicAnalyticsScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)),
+        Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
         const SizedBox(height: 10),
         Container(
           padding: const EdgeInsets.all(10),
@@ -189,7 +185,7 @@ class MusicAnalyticsScreen extends StatelessWidget {
           Container(width: 30, height: 30, decoration: BoxDecoration(color: Colors.white10, borderRadius: BorderRadius.circular(6)), child: Icon(icon, size: 15, color: Colors.white70)),
           const SizedBox(width: 8),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(title, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white), overflow: TextOverflow.ellipsis),
+            Text(title, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
             Text(sub, style: const TextStyle(fontSize: 8, color: Colors.white54)),
           ]))
         ],
@@ -208,7 +204,7 @@ class _legendItem extends StatelessWidget {
       Container(width: 8, height: 8, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
       const SizedBox(width: 8),
       Expanded(child: Text(label, style: const TextStyle(fontSize: 10, color: Colors.white70))),
-      Text(pct, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white)),
+      Text(pct, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
     ]),
   );
 }

@@ -6,17 +6,13 @@ class AdminControlScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0D0C1D),
+      backgroundColor: const Color(0xFF131429),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0D0C1D),
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        automaticallyImplyLeading: false,
-        title: const Text("Admin Controls", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
-        leading: const Icon(Icons.arrow_back, color: Colors.white),
+        title: const Text("Admin Controls", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        leading: const Icon(Icons.arrow_back),
         actions: [
-          IconButton(icon: const Icon(Icons.search, color: Colors.white), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.settings, color: Colors.white), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.search), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
           const SizedBox(width: 8),
         ],
       ),
@@ -25,7 +21,7 @@ class AdminControlScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. QUICK STATS 
+            // 1. QUICK STATS (Top Row)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 10),
               child: Text("Quick Stats", style: TextStyle(color: Colors.white70, fontSize: 13)),
@@ -79,7 +75,7 @@ class AdminControlScreen extends StatelessWidget {
     );
   }
 
-  // UI WIDGETS
+  // --- UI BUILDING BLOCKS ---
 
   Widget _buildSmallStatCard(String val, String label, IconData icon, Color color) {
     return Expanded(
@@ -94,7 +90,7 @@ class AdminControlScreen extends StatelessWidget {
               children: [
                 Icon(icon, color: color, size: 14),
                 const SizedBox(width: 4),
-                Text(val, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.white)),
+                Text(val, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
               ],
             ),
             const SizedBox(height: 4),
@@ -132,7 +128,7 @@ class AdminControlScreen extends StatelessWidget {
         decoration: BoxDecoration(color: iconColor.withOpacity(0.2), borderRadius: BorderRadius.circular(8)),
         child: Icon(icon, color: iconColor, size: 20),
       ),
-      title: Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Colors.white)),
+      title: Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
       subtitle: Text(sub, style: const TextStyle(fontSize: 9, color: Colors.white38)),
       trailing: SizedBox(
         width: badge != null ? 140 : 30,

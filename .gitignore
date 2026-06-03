@@ -16,12 +16,8 @@ backend/*.json
 .DS_Store
 
 # Virtual Environment
-env/
-backend/env/
 venv/
-env/
 backend/venv/
-backend/env/
 
 #vscode
 .vscode/
