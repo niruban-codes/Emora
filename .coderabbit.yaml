@@ -1,7 +1,9 @@
 reviews:
-  profile: "CHILL"
+  profile: "chill"
   request_changes_workflow: false
-  # Tells CodeRabbit to automatically review PRs targeting the 'test' branch
-  target_branches:
-    - "test"
-    - "main" # You can keep this here if you also want PRs to main reviewed
+  
+  # Corrected branch targeting structure
+  auto_review:
+    base_branches:
+      - "test"
+      - "main"
