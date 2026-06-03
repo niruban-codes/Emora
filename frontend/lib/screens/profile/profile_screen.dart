@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // 👈 added
-import '../../../services/firestore_service.dart'; // 👈 added
+import 'package:firebase_auth/firebase_auth.dart'; 
+import '../../../services/firestore_service.dart'; 
 
 class ProfileSettingsScreen extends StatefulWidget {
   const ProfileSettingsScreen({super.key});
 
-  static const Color bgColor = Color(0xFF15173D);
+  static const Color bgColor = Color(0xFF0D0C1D);
   static const Color accentPurple = Color(0xFF9C27B0);
   static const Color cardColor = Color(0xFF1E1A35);
   static const Color textSecondary = Colors.white38;
@@ -24,8 +24,13 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   String userEmail = "";
   // Define your hardcoded admin emails
   final List<String> _adminEmails = [
-    'niru2324@gmail.com', // Replace with your actual admin email
+    'niru2324@gmail.com',
+    'sparkswills40@gmail.com', // Replace with your actual admin email
     'admin@emora.com',
+    'geethmapiyaratne285@gmail.com',
+    'nirubannallirajah@gmail.com',
+    'hafsanafli2003@gmail.com',
+    'dinithia962@gmail.com', 
   ];
 
   // Check if the current logged-in user is an admin
