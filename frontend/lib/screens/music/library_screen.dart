@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:frontend/screens/emotion/mood_model.dart';
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
@@ -129,12 +130,38 @@ class _LibraryScreenState extends State<LibraryScreen> {
               itemBuilder: (context, index) {
                 final item = _libraryItems[index];
                 return GestureDetector(
+                  // NEW CODE
                   onTap: () {
-                    // Pass 'All' if it's Liked Songs, otherwise pass the specific mood
-                    final moodToPass = item['title'] == 'Liked Songs'
-                        ? 'All'
-                        : item['title'];
-                    context.push('/favorites', extra: moodToPass);
+                    if (item['title'] == 'Liked Songs') {
+                      // Keep original Liked Songs behavior
+                      context.push('/favorites', extra: 'All');
+                    } else {
+                      // Map the string title to the correct EmotionType enum
+                      MoodType selectedType =
+                          MoodType.neutral; // Default fallback
+
+                      switch (item['title']) {
+                        case 'Happy':
+                          selectedType = MoodType.happy;
+                          break;
+                        case 'Sad':
+                          selectedType = MoodType.sad;
+                          break;
+                        case 'Fear':
+                          selectedType = MoodType.fear;
+                          break;
+                        case 'Angry':
+                          selectedType = MoodType.angry;
+                          break;
+                        case 'Surprise':
+                          selectedType = MoodType.surprise;
+                          break;
+                      }
+
+                      final fullMoodModel = getMoodByType(selectedType);
+
+                      context.push('/playlist', extra: fullMoodModel);
+                    }
                   },
                   child: _buildMoodCard(
                     title: item['title'],
