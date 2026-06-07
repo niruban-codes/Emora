@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:frontend/screens/emotion/mood_model.dart';
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
@@ -26,13 +27,19 @@ class _LibraryScreenState extends State<LibraryScreen> {
     {
       'title': 'Sad',
       'subtitle': 'Reflective',
-      'icon': Icons.water_drop_outlined,
+      'icon': Icons.sentiment_dissatisfied_rounded,
       'baseColor': const Color(0xFF64B5F6),
+    },
+    {
+      'title': 'Neutral',
+      'subtitle': 'Ambient',
+      'icon': Icons.lens_blur_rounded,
+      'baseColor': Colors.grey.shade400,
     },
     {
       'title': 'Fear',
       'subtitle': 'Tense',
-      'icon': Icons.dark_mode_outlined,
+      'icon': Icons.sentiment_very_dissatisfied_outlined,
       'baseColor': const Color(0xFF9575CD),
     },
     {
@@ -46,12 +53,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
       'subtitle': 'Ethereal',
       'icon': Icons.flare_rounded,
       'baseColor': const Color(0xFF4DB6AC),
-    },
-    {
-      'title': 'Neutral',
-      'subtitle': 'Ambient',
-      'icon': Icons.lens_blur_rounded,
-      'baseColor': Colors.grey.shade400,
     },
   ];
 
@@ -75,22 +76,15 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GestureDetector(
-                    onTap: () => context.push('/profile'),
+                    onTap: () => context.go('/home'),
                     child: Container(
                       width: 40,
                       height: 40,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.15),
-                          width: 1.5,
-                        ),
-                        image: const DecorationImage(
-                          image: NetworkImage(
-                            'https://via.placeholder.com/150',
-                          ), // Replace with actual user profile image
-                          fit: BoxFit.cover,
-                        ),
+                      alignment: Alignment.centerLeft,
+                      child: const Icon(
+                        Icons.arrow_back_rounded,
+                        color: Colors.white,
+                        size: 22,
                       ),
                     ),
                   ),
@@ -98,7 +92,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     'Library',
                     style: GoogleFonts.poppins(
                       color: Colors.white,
-                      fontSize: 22,
+                      fontSize: 20,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 1.5,
                     ),
@@ -135,12 +129,47 @@ class _LibraryScreenState extends State<LibraryScreen> {
               separatorBuilder: (context, index) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
                 final item = _libraryItems[index];
-                return _buildMoodCard(
-                  title: item['title'],
-                  subtitle: item['subtitle'],
-                  icon: item['icon'],
-                  baseColor: item['baseColor'],
-                  isHighlight: index == 0, // Highlight the "Liked Songs"
+                return GestureDetector(
+                  // NEW CODE
+                  onTap: () {
+                    if (item['title'] == 'Liked Songs') {
+                      // Keep original Liked Songs behavior
+                      context.push('/favorites', extra: 'All');
+                    } else {
+                      // Map the string title to the correct EmotionType enum
+                      MoodType selectedType =
+                          MoodType.neutral; // Default fallback
+
+                      switch (item['title']) {
+                        case 'Happy':
+                          selectedType = MoodType.happy;
+                          break;
+                        case 'Sad':
+                          selectedType = MoodType.sad;
+                          break;
+                        case 'Fear':
+                          selectedType = MoodType.fear;
+                          break;
+                        case 'Angry':
+                          selectedType = MoodType.angry;
+                          break;
+                        case 'Surprise':
+                          selectedType = MoodType.surprise;
+                          break;
+                      }
+
+                      final fullMoodModel = getMoodByType(selectedType);
+
+                      context.push('/playlist', extra: fullMoodModel);
+                    }
+                  },
+                  child: _buildMoodCard(
+                    title: item['title'],
+                    subtitle: item['subtitle'],
+                    icon: item['icon'],
+                    baseColor: item['baseColor'],
+                    isHighlight: index == 0,
+                  ),
                 );
               },
             ),
@@ -188,7 +217,11 @@ class _LibraryScreenState extends State<LibraryScreen> {
             child: Container(
               decoration: BoxDecoration(
                 gradient: RadialGradient(
-                  colors: [baseColor.withOpacity(0.15), Colors.transparent],
+                  colors: [
+                    baseColor.withOpacity(0.9),
+                    Colors.transparent,
+                    baseColor.withOpacity(0.0),
+                  ],
                   center: Alignment.centerRight,
                   radius: 0.8,
                 ),
@@ -230,7 +263,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                         title,
                         style: GoogleFonts.poppins(
                           color: Colors.white,
-                          fontSize: 18,
+                          fontSize: 16,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.5,
                         ),
