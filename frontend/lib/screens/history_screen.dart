@@ -36,7 +36,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white70),
-          onPressed: () => context.pop(), //  go_router pop
+          onPressed: () => context.go('/home'), 
         ),
         title:  Text(
           "History",
@@ -57,7 +57,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               children: [
-                _sectionHeader("Today", showViewAll: true),
+                _sectionHeader("Today"),
                 _buildHistoryCard(
                   mood: "Neutral",
                   time: "Today, 2:45 PM",
@@ -111,7 +111,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.only(left: 20),
-        itemCount: _filters.length, //buttons
+        itemCount: _filters.length, 
         itemBuilder: (context, index) {
           bool isSelected = _selectedFilterIndex == index;
           return GestureDetector(
@@ -219,7 +219,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   ],
                 ),
               ),
-              const Icon(Icons.more_vert, color: Colors.white38),
             ],
           ),
           const SizedBox(height: 15),
