@@ -1,0 +1,9 @@
+reviews:
+  profile: "chill"
+  request_changes_workflow: false
+  
+  # Corrected branch targeting structure
+  auto_review:
+    base_branches:
+      - "test"
+      - "main"

@@ -1,9 +1,12 @@
+import 'dart:io'; //  added for handling the image File
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:frontend/screens/emotion/mood_model.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // 👈 added
+import 'package:image_picker/image_picker.dart';// added for camera/gallery access
 import '../../../services/firestore_service.dart'; // 👈 added
+import '../../api_service.dart'; // added to link our Python backend service
 
 /// EmotionDetectionScreen
 ///
@@ -33,6 +36,10 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
   bool _isAnalysing = false;
   bool _imageCaptured = false; // true once user taps capture / selects image
   String? _capturedLabel; // shown in preview after "capture"
+  File? _selectedImage; //  stores the image taken by your user
+
+  final ApiService _apiService = ApiService(); // instantiated our live connection pipeline
+  final ImagePicker _picker = ImagePicker(); // instantiated native camera window launcher
 
   // ── Animation controllers ──────────────────────────────────────────────────
   late AnimationController _scanLineCtrl;
@@ -103,47 +110,69 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
 
   // ── Simulated detection ────────────────────────────────────────────────────
   /// Replace this method with your real camera-capture + API call.
-  Future<void> _simulateDetection() async {
-    setState(() {
-      _isAnalysing = true;
-      _imageCaptured = true;
-    });
-
-    // 1. Simulate network delay
-    await Future.delayed(const Duration(milliseconds: 2800));
-
-    // 2. Logic to pick the mood
-    final moodIndex = DateTime.now().millisecond % allMoods.length;
-    final detectedMood = allMoods[moodIndex];
-    final detectedLabel = detectedMood.label.toLowerCase();
-
-    // 3. Save to Firestore (using the label as "emotion" and a dummy insight)
+ Future<void> _processImageDetection(ImageSource source) async {
     try {
-      await FirestoreService().addEmotion(
-        detectedMood.label,
-        detectedMood.description,
+      final XFile? pickedFile = await _picker.pickImage(
+        source: source,
+        preferredCameraDevice: CameraDevice.front,
+        maxWidth: 800,
       );
-      print(
-        "✅ DB Success: Saved '${detectedMood.label}' to emotion_history",
-      ); // Log success
+
+      if (pickedFile == null) return;
+
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+        _isAnalysing = true;
+        _imageCaptured = true;
+      });
+
+      // Send photo to your Python Flask API
+      final result = await _apiService.detectEmotion(_selectedImage!);
+
+      if (result != null && result.containsKey('emotion')) {
+        final String rawEmotion = result['emotion'].toString().toLowerCase();
+
+        // Save to your team's Firestore History
+        try {
+          await FirestoreService().addEmotion(
+            rawEmotion.toUpperCase(),
+            "AI detected mood: $rawEmotion",
+          );
+          print("✅ DB Success: Saved '$rawEmotion' to emotion_history");
+        } catch (e) {
+          print("❌ Database Log Error: $e");
+        }
+
+        if (!mounted) return;
+
+        setState(() {
+          _isAnalysing = false;
+          _capturedLabel = rawEmotion;
+        });
+
+        await Future.delayed(const Duration(milliseconds: 500));
+        if (!mounted) return;
+
+        context.go('/result', extra: MoodModel.fromString(rawEmotion));
+      } else {
+        throw Exception("Server returned empty data");
+      }
     } catch (e) {
-      print(
-        "❌ Database Error: $e",
-      ); // Log any errors but continue navigation regardless, since this is non-critical for the user flow.
+      print("❌ Full-Stack Connection Crash: $e");
+      setState(() {
+        _isAnalysing = false;
+        _imageCaptured = false;
+        _selectedImage = null;
+      });
+      
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Server Error: Make sure backend server is running!'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
     }
-
-    if (!mounted) return;
-
-    setState(() {
-      _isAnalysing = false;
-      _capturedLabel = detectedLabel;
-    });
-
-    // Brief pause so user sees "captured" state, then navigate
-    await Future.delayed(const Duration(milliseconds: 400));
-    if (!mounted) return;
-
-    context.go('/result', extra: MoodModel.fromString(detectedLabel));
   }
 
   // ── Build ──────────────────────────────────────────────────────────────────
@@ -261,15 +290,23 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
             borderRadius: BorderRadius.circular(24),
             child: Stack(
               children: [
-                // Background gradient
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: RadialGradient(
-                      center: Alignment.center,
-                      radius: 1.2,
-                      colors: [
-                        const Color(0xFF1E1A35),
-                        const Color(0xFF0D1135),
+               //  Replace your background container with this block
+                if (_selectedImage != null)
+                  Positioned.fill(
+                    child: Image.file(
+                      _selectedImage!,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                else
+                  Container(
+                    decoration: const BoxDecoration(
+                      gradient: RadialGradient(
+                        center: Alignment.center,
+                        radius: 1.2,
+                        colors: [
+                          Color(0xFF1E1A35),
+                          Color(0xFF0D1135),
                       ],
                     ),
                   ),
@@ -464,7 +501,7 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: _isAnalysing ? null : _simulateDetection,
+        onPressed: _isAnalysing ? null : () => _processImageDetection(ImageSource.camera),
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF8B2D8B),
           disabledBackgroundColor: const Color(0xFF8B2D8B).withOpacity(0.4),
@@ -502,7 +539,7 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
     return SizedBox(
       width: double.infinity,
       child: OutlinedButton.icon(
-        onPressed: _isAnalysing ? null : _simulateDetection,
+        onPressed: _isAnalysing ? null : () => _processImageDetection(ImageSource.gallery),
         style: OutlinedButton.styleFrom(
           side: BorderSide(color: Colors.white.withOpacity(0.25)),
           padding: const EdgeInsets.symmetric(vertical: 14),
