@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart'; 
 import '../../../services/firestore_service.dart'; 
+//import 'package:frontend/screens/result_screen.dart'; //remove later
 
 class ProfileSettingsScreen extends StatefulWidget {
   const ProfileSettingsScreen({super.key});
@@ -72,7 +73,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
           onPressed: () => context.pop(),
         ),
         title: const Text(
-          'Settings',
+          'Profile Settings',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 18,
@@ -80,12 +81,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
           ),
         ),
         centerTitle: true,
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: Icon(Icons.more_vert, color: Colors.white),
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -113,6 +108,30 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
               'Push Notifications',
               true,
             ),
+            // const SizedBox(height: 30),
+            // ElevatedButton.icon(
+            //   style: ElevatedButton.styleFrom(
+            //     backgroundColor: Colors.deepPurple, 
+            //     minimumSize: const Size(double.infinity, 50),
+            //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+            //   ),
+            //   icon: const Icon(Icons.layers_rounded, color: Colors.white),
+            //   label: const Text(
+            //     "Test Result Screen UI", 
+            //     style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+            //   ),
+            //   onPressed: () {
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(
+            //         builder: (context) => ResultScreen(
+            //           detectedEmotion: "Surprise", 
+            //           confidenceScore: 0.95,
+            //         ),
+            //       ),
+            //     );
+            //   },
+            // ),
 
             const SizedBox(height: 30),
             if (_isAdmin) _buildAdminCard(context),
