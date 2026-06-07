@@ -243,30 +243,36 @@ class _HomeScreenState extends State<HomeScreen>
     }
 
     //6 emotions containers  --------------------------------------------------
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E1A35), 
-        borderRadius: BorderRadius.circular(24), 
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            moodIcon,
-            color: moodColor, 
-            size: 30,
-          ),
-          const SizedBox(height: 12),
-          Text(
-            mood.label,
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
+    return GestureDetector(
+      onTap: () {
+        // Direct to the functional Playlist Screens
+        context.push('/playlist', extra: mood);
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF1E1A35), 
+          borderRadius: BorderRadius.circular(24), 
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              moodIcon,
+              color: moodColor, 
+              size: 30,
             ),
-          ),
-        ],
-      ),
+            const SizedBox(height: 12),
+            Text(
+              mood.label,
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),    
     );
   }
 
