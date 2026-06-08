@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lottie/lottie.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -61,19 +60,10 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(
-        0xFF110E26,
-      ), // Emora's premium dark background
+      backgroundColor: Colors.black,
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Background Topography
-          Image.asset(
-            'assets/images/splash_bg.png',
-            fit: BoxFit.cover,
-            opacity: const AlwaysStoppedAnimation(0.35),
-          ),
-
           // Foreground Content
           Center(
             child: Column(
@@ -84,36 +74,19 @@ class _SplashScreenState extends State<SplashScreen>
                   animation: _glowAnimation,
                   builder: (context, child) {
                     return Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          // Base Layer: Deep Purple Wide Glow
-                          BoxShadow(
-                            color: const Color(0xFF3B00FF).withOpacity(0.4),
-                            blurRadius: _glowAnimation.value + 40,
-                            spreadRadius: _glowAnimation.value / 2,
-                          ),
-                          // Core Layer: Hot Pink Intense Glow
-                          BoxShadow(
-                            color: const Color(0xFFFF2994).withOpacity(0.5),
-                            blurRadius: _glowAnimation.value,
-                            spreadRadius: _glowAnimation.value / 4,
-                          ),
-                        ],
-                      ),
                       child:
                           child, // The Lottie file goes inside this glowing box
                     );
                   },
-                  child: Lottie.asset(
-                    'assets/animations/infinite_loader.json',
+                  child: Image.asset(
+                    'assets/animations/logo_animation.gif',
                     width: 200,
                     height: 200,
                     fit: BoxFit.contain,
                   ),
                 ),
 
-                const SizedBox(height: 32),
+                const SizedBox(height: 0),
 
                 // Animated Text Area
                 Column(
@@ -127,7 +100,7 @@ class _SplashScreenState extends State<SplashScreen>
                         letterSpacing: 6.0,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 1),
                     Text(
                       'YOUR MOOD YOUR MUSIC',
                       style: GoogleFonts.poppins(
@@ -140,6 +113,15 @@ class _SplashScreenState extends State<SplashScreen>
                   ],
                 ),
               ],
+            ),
+          ),
+          IgnorePointer(
+            child: Image.asset(
+              'assets/images/Vector.png',
+              fit: BoxFit.cover, // Ensures it stretches over the whole screen
+              opacity: const AlwaysStoppedAnimation(
+                0.8,
+              ), // Optional: tweak if it's too bright
             ),
           ),
         ],
