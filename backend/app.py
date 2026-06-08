@@ -7,6 +7,7 @@ from flask_cors import CORS
 from youtube import youtube_bp
 from explore import explore_bp
 from library import library_bp
+from favorites import favorites_bp
 
 load_dotenv()
 
@@ -17,6 +18,7 @@ CORS(app)
 app.register_blueprint(youtube_bp)
 app.register_blueprint(explore_bp)
 app.register_blueprint(library_bp)
+app.register_blueprint(favorites_bp, url_prefix="/favorites")
 
 ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "webp"}
 
