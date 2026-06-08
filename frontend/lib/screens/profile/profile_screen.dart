@@ -23,10 +23,12 @@ class ProfileSettingsScreen extends StatefulWidget {
 class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   String userName = "Loading...";
   String userEmail = "";
+  String? profilePicUrl;
+
   // Define your hardcoded admin emails
   final List<String> _adminEmails = [
     'niru2324@gmail.com',
-    'sparkswills40@gmail.com', // Replace with your actual admin email
+    'sparkswills40@gmail.com', 
     'admin@emora.com',
     'geethmapiyaratne285@gmail.com',
     'nirubannallirajah@gmail.com',
@@ -56,6 +58,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         setState(() {
           userName = data['name'] ?? "No Name";
           userEmail = data['email'] ?? user.email ?? "";
+          profilePicUrl = data['profilePicUrl'];
         });
       }
     }
@@ -70,7 +73,13 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => context.pop(),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop(); 
+            } else {
+              context.go('/home'); 
+            }
+          },
         ),
         title: const Text(
           'Profile Settings',
@@ -98,8 +107,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
               Icons.sentiment_satisfied_alt_outlined,
               'Mood Analytics',
             ),
-
-            
 
             const SizedBox(height: 25),
             _buildSectionLabel('APP PREFERENCES'),
@@ -137,7 +144,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
             if (_isAdmin) _buildAdminCard(context),
 
             const SizedBox(height: 30),
-            _buildLogoutButton(context), // 
+            _buildLogoutButton(context), 
 
             const SizedBox(height: 40),
           ],
@@ -147,6 +154,19 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   }
 
   Widget _buildProfileHeader() {
+
+    ImageProvider profileImage;
+
+    if (profilePicUrl != null && profilePicUrl!.isNotEmpty) {
+      if (profilePicUrl!.startsWith('assets/')) {
+        profileImage = AssetImage(profilePicUrl!);
+      } else {
+        profileImage = NetworkImage(profilePicUrl!);
+      }
+    } else {
+      profileImage = const AssetImage('assets/avatars/Girl 07.png');
+    }
+
     return Column(
       children: [
         Stack(
@@ -161,11 +181,10 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                   width: 3,
                 ),
               ),
-              child: const CircleAvatar(
+              child: CircleAvatar(
                 radius: 55,
-                backgroundImage: NetworkImage(
-                  'https://i.imgur.com/8Km9t9S.png',
-                ),
+                backgroundColor: ProfileSettingsScreen.cardColor,
+                backgroundImage: profileImage,
               ),
             ),
             const CircleAvatar(
