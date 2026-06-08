@@ -58,6 +58,21 @@ final appRouter = GoRouter(
       builder: (context, state) => const RegisterWithEmailScreen(),
     ),
     GoRoute(
+<<<<<<< Updated upstream
+=======
+      path: '/genre-playlist',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>;
+        return GenrePlaylistScreen(
+          genre: extra['genre'] as String,
+          //'?' to allow null values from the home screen
+          songs: extra['songs'] as List<Song>?, 
+        );
+      },
+    ),
+    GoRoute(
+>>>>>>> Stashed changes
       path: '/login',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const LoginScreen(),
