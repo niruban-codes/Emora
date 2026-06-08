@@ -20,11 +20,13 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
   // Build a Song list from MoodModel data
   List<Song> get _songs {
     final playlists = _mood.playlistTitles;
+    final durations = ['3:45', '4:12', '2:58', '5:30', '3:22', '4:45'];
     return List.generate(playlists.length, (i) {
       return Song(
         id: '${_mood.type.name}_$i',
         title: i == 0 ? _mood.songTitle : playlists[i],
         artist: i == 0 ? _mood.artist : _mood.label,
+        duration: durations[i % durations.length],
         coverUrl: 'https://picsum.photos/200?${_mood.type.index * 10 + i}',
       );
     });
@@ -39,7 +41,7 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
   Widget build(BuildContext context) {
     final songs = _songs;
     return Scaffold(
-      backgroundColor: const Color(0xFF0F0E2A),
+      backgroundColor: const Color(0xFF0D0C1D),
       body: Column(
         children: [
           Expanded(
@@ -58,7 +60,7 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
               ],
             ),
           ),
-          _buildMiniPlayer(songs), // 👈 tap mini player → open player
+          _buildMiniPlayer(songs),
         ],
       ),
     );
@@ -80,16 +82,16 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
                 size: 22,
               ),
             ),
-            const Text(
-              'PLAYLIST',
-              style: TextStyle(
+            Text(
+              'Playlist',
+              style: GoogleFonts.poppins(
                 color: Colors.white,
-                fontSize: 14,
+                fontSize: 20,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 2.5,
               ),
             ),
-            const Icon(Icons.search_rounded, color: Colors.white, size: 22),
+            const SizedBox(width: 22), // Placeholder for spacing
           ],
         ),
       ),
@@ -130,9 +132,28 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
                   ),
                 ),
                 child: Center(
-                  child: Text(
-                    _mood.emoji,
-                    style: const TextStyle(fontSize: 80),
+                  child: Container(
+                    padding: const EdgeInsets.all(28),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white.withOpacity(0.1),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.2),
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.white.withOpacity(0.1),
+                          blurRadius: 20,
+                          spreadRadius: 5,
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.graphic_eq_rounded, // Modern audio wave icon
+                      size: 70,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
@@ -141,9 +162,9 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
           const SizedBox(height: 20),
           Text(
             '${_mood.label[0]}${_mood.label.substring(1).toLowerCase()} Playlist',
-            style: const TextStyle(
+            style: GoogleFonts.poppins(
               color: Colors.white,
-              fontSize: 26,
+              fontSize: 20,
               fontWeight: FontWeight.w800,
               letterSpacing: 0.3,
             ),
@@ -154,7 +175,7 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
             children: [
               Text(
                 'Emora Curated',
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   color: Colors.white.withOpacity(0.55),
                   fontSize: 13,
                 ),
@@ -163,7 +184,7 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 6),
                 child: Text(
                   '•',
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     color: Colors.white.withOpacity(0.4),
                     fontSize: 13,
                   ),
@@ -171,7 +192,7 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
               ),
               Text(
                 '${songs.length} tracks',
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   color: Colors.white.withOpacity(0.55),
                   fontSize: 13,
                 ),
@@ -194,7 +215,7 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
             child: GestureDetector(
               onTap: () {
                 setState(() => _playingIndex = 0);
-                _openPlayer(0); // 👈 Play button opens player at index 0
+                _openPlayer(0);
               },
               child: Container(
                 height: 50,
@@ -213,7 +234,7 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
                     ),
                   ],
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
@@ -224,7 +245,7 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
                     SizedBox(width: 6),
                     Text(
                       'Play',
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         color: Colors.white,
                         fontWeight: FontWeight.w700,
                         fontSize: 15,
@@ -255,7 +276,7 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
                   const SizedBox(width: 6),
                   Text(
                     'Shuffle',
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       color: Colors.white.withOpacity(0.85),
                       fontWeight: FontWeight.w600,
                       fontSize: 15,
@@ -277,7 +298,7 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
     return GestureDetector(
       onTap: () {
         setState(() => _playingIndex = index);
-        _openPlayer(index); // 👈 tap song → open player at that index
+        _openPlayer(index);
       },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 3),
@@ -332,7 +353,7 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
                 children: [
                   Text(
                     song.title,
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       color: isPlaying ? _mood.labelColor : Colors.white,
                       fontWeight: FontWeight.w600,
                       fontSize: 15,
@@ -341,7 +362,7 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
                   const SizedBox(height: 3),
                   Text(
                     song.artist,
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       color: isPlaying
                           ? _mood.labelColor.withOpacity(0.7)
                           : Colors.white.withOpacity(0.5),
@@ -353,7 +374,7 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
             ),
             Text(
               ['3:45', '4:12', '2:58', '5:30', '3:22', '4:45'][index % 6],
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 color: Colors.white.withOpacity(0.5),
                 fontSize: 13,
               ),
@@ -374,8 +395,7 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
   Widget _buildMiniPlayer(List<Song> songs) {
     final current = songs[_playingIndex];
     return GestureDetector(
-      onTap: () =>
-          _openPlayer(_playingIndex), // 👈 tap mini player → open player
+      onTap: () => _openPlayer(_playingIndex),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -410,10 +430,11 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
                     color: Colors.white.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Center(
-                    child: Text(
-                      _mood.emoji,
-                      style: const TextStyle(fontSize: 20),
+                  child: const Center(
+                    child: Icon(
+                      Icons.graphic_eq_rounded,
+                      color: Colors.white,
+                      size: 20,
                     ),
                   ),
                 ),
@@ -427,7 +448,7 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
                 children: [
                   Text(
                     current.title,
-                    style: const TextStyle(
+                    style: GoogleFonts.poppins(
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
                       fontSize: 14,
@@ -435,7 +456,7 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
                   ),
                   Text(
                     current.artist,
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       color: Colors.white.withOpacity(0.7),
                       fontSize: 12,
                     ),

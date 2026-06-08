@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:frontend/models/song_model.dart';
 
 class SearchMoodScreen extends StatefulWidget {
   const SearchMoodScreen({super.key});
@@ -13,7 +15,6 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
 
   // Languages data — strongly typed, no map casts needed
   final List<_LanguageItem> _languages = const [
-    _LanguageItem(label: 'English', symbol: 'Aa'),
     _LanguageItem(label: 'Tamil', symbol: 'த'),
     _LanguageItem(label: 'Sinhala', symbol: 'ස'),
     _LanguageItem(label: 'Korean', symbol: '한'),
@@ -53,9 +54,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
     'Rap',
     'Jazz',
     'Classical',
-    'R&B',
-    'Metal',
-    'Pop',
+    'Motivational',
   ];
 
   @override
@@ -78,7 +77,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
                     _buildBackButton(),
                     const SizedBox(height: 20),
                     _buildSearchBar(),
@@ -110,11 +109,16 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
   // ── Back Button ────────────────────────────────────────────────────────────
   Widget _buildBackButton() {
     return GestureDetector(
-      onTap: () => Navigator.maybePop(context),
-      child: const Icon(
-        Icons.arrow_back_rounded,
-        color: Colors.white,
-        size: 24,
+      onTap: () => context.go('/home'),
+      child: Container(
+        width: 40,
+        height: 40,
+        alignment: Alignment.centerLeft,
+        child: const Icon(
+          Icons.arrow_back_rounded,
+          color: Colors.white,
+          size: 22,
+        ),
       ),
     );
   }
@@ -129,12 +133,12 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
       ),
       child: TextField(
         controller: _searchController,
-        style: const TextStyle(color: Colors.white, fontSize: 14),
+        style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
         decoration: InputDecoration(
           hintText: 'Artists, songs, or podcasts',
-          hintStyle: TextStyle(
+          hintStyle: GoogleFonts.poppins(
             color: Colors.white.withOpacity(0.35),
-            fontSize: 14,
+            fontSize: 13,
           ),
           prefixIcon: Icon(
             Icons.search_rounded,
@@ -159,7 +163,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
       children: [
         Text(
           title,
-          style: const TextStyle(
+          style: GoogleFonts.poppins(
             color: Colors.white,
             fontSize: 20,
             fontWeight: FontWeight.w800,
@@ -171,7 +175,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
             onTap: onAction,
             child: Text(
               actionLabel,
-              style: const TextStyle(
+              style: GoogleFonts.poppins(
                 color: Color(0xFFCE93D8),
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
@@ -197,7 +201,14 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
   }
 
   Widget _buildLanguageCard(_LanguageItem lang) {
-    return Container(
+  return GestureDetector(
+    onTap: () {
+      context.push('/genre-playlist', extra: {
+        'genre': lang.label,
+        'songs': <Song>[],
+      });
+    },
+    child: Container(
       width: 100,
       decoration: BoxDecoration(
         color: const Color(0xFF14122A),
@@ -213,7 +224,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
             ).createShader(bounds),
             child: Text(
               lang.symbol,
-              style: const TextStyle(
+              style: GoogleFonts.poppins(
                 color: Colors.white,
                 fontSize: 26,
                 fontWeight: FontWeight.w700,
@@ -224,7 +235,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
           const SizedBox(height: 10),
           Text(
             lang.label,
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               color: Colors.white.withOpacity(0.85),
               fontSize: 13,
               fontWeight: FontWeight.w500,
@@ -232,15 +243,21 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   // ── Featured Vibe Card (large) ─────────────────────────────────────────────
   Widget _buildFeaturedVibeCard() {
     final colors = _featuredVibe['gradientColors'] as List<Color>;
 
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        context.push('/genre-playlist', extra: {
+          'genre': _featuredVibe['label'] as String,
+          'songs': <Song>[],
+        });
+      },
       child: Container(
         width: double.infinity,
         height: 160,
@@ -287,9 +304,9 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
                 children: [
                   Text(
                     _featuredVibe['label'] as String,
-                    style: const TextStyle(
-                      color: Color(0xFFFF6EC7),
-                      fontSize: 17,
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 16,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 0.2,
                     ),
@@ -297,7 +314,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
                   const SizedBox(height: 4),
                   Text(
                     _featuredVibe['subtitle'] as String,
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       color: Colors.white.withOpacity(0.75),
                       fontSize: 13,
                       fontWeight: FontWeight.w400,
@@ -334,7 +351,12 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
     final colors = vibe['gradientColors'] as List<Color>;
 
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        context.push('/genre-playlist', extra: {
+          'genre': vibe['label'] as String,
+          'songs': <Song>[],
+        });
+      },
       child: Container(
         height: 130,
         decoration: BoxDecoration(
@@ -376,7 +398,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
               right: 8,
               child: Text(
                 vibe['label'] as String,
-                style: const TextStyle(
+                style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
@@ -416,7 +438,12 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
 
   Widget _buildGenreChip(String genre) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        context.push('/genre-playlist', extra: {
+          'genre': genre,
+          'songs': <Song>[],
+        });
+      },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
@@ -426,7 +453,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
         ),
         child: Text(
           genre,
-          style: TextStyle(
+          style: GoogleFonts.poppins(
             color: Colors.white.withOpacity(0.85),
             fontSize: 13,
             fontWeight: FontWeight.w500,

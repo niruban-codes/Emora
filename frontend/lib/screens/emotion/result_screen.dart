@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:frontend/screens/emotion/mood_model.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // 👈 added
-import '../../../services/firestore_service.dart'; // 👈 added
+import 'package:firebase_auth/firebase_auth.dart'; 
+import '../../../services/firestore_service.dart'; 
 
 class ResultScreen extends StatefulWidget {
   final MoodModel mood;
@@ -79,7 +79,7 @@ class _ResultScreenState extends State<ResultScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0D1135),
+      backgroundColor: const Color(0xFF0D0C1D),
       body: FadeTransition(
         opacity: _fadeAnim,
         child: Container(
@@ -87,7 +87,7 @@ class _ResultScreenState extends State<ResultScreen>
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [Color(0xFF0D1135), Color(0xFF0D1135)],
+              colors: [Color(0xFF0D0C1D), Color(0xFF0D0C1D)],
             ),
           ),
           child: SafeArea(
@@ -100,7 +100,7 @@ class _ResultScreenState extends State<ResultScreen>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildFaceScanArea(),
+                       // _buildFaceScanArea(),
                         const SizedBox(height: 16),
                         _buildMoodLabel(),
                         const SizedBox(height: 12),
@@ -108,7 +108,7 @@ class _ResultScreenState extends State<ResultScreen>
                         const SizedBox(height: 32),
                         _buildSongSection(),
                         const SizedBox(height: 24),
-                        _buildMoodPlaylists(),
+                       // _buildMoodPlaylists(),
                         const SizedBox(height: 32),
                         _buildBottomButtons(context),
                         const SizedBox(height: 20),
@@ -124,7 +124,7 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 
-  // ── Top Bar ───────────────────────────────────────────────────────────────
+  //  Top Bar 
   Widget _buildTopBar(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -133,14 +133,14 @@ class _ResultScreenState extends State<ResultScreen>
         children: [
           _circleBtn(Icons.arrow_back, onTap: () => context.go('/home')),
           Text(
-            'AI Insights',
+            'Current Mood',
             style: GoogleFonts.poppins(
               color: Colors.white,
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
-          _circleBtn(Icons.more_vert),
+          const SizedBox(width: 38),
         ],
       ),
     );
@@ -161,7 +161,7 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 
-  // ── Face Scan Area ────────────────────────────────────────────────────────
+  //  Face Scan Area 
   Widget _buildFaceScanArea() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -170,7 +170,7 @@ class _ResultScreenState extends State<ResultScreen>
         height: 280,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: const Color(0xFF151830),
+          color: const Color(0xFF0D0C1D).withOpacity(0.5),
           border: Border.all(color: _primary.withOpacity(0.4), width: 1.5),
         ),
         child: Stack(
@@ -188,7 +188,7 @@ class _ResultScreenState extends State<ResultScreen>
                         radius: 1.2,
                         colors: [
                           _primary.withOpacity(0.15),
-                          const Color(0xFF0D1135),
+                          const Color(0xFF0D0C1D),
                         ],
                       ),
                     ),
@@ -256,7 +256,7 @@ class _ResultScreenState extends State<ResultScreen>
               left: 14,
               child: Text(
                 'STATUS: COMPLETE',
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   color: Colors.white.withOpacity(0.5),
                   fontSize: 9,
                   letterSpacing: 1,
@@ -309,7 +309,7 @@ class _ResultScreenState extends State<ResultScreen>
                 children: [
                   Text(
                     'X: 42.1  Y: 88.4',
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       color: Colors.white.withOpacity(0.6),
                       fontSize: 9,
                       letterSpacing: 0.5,
@@ -326,14 +326,14 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 
-  // ── Mood Label ────────────────────────────────────────────────────────────
+  //  Mood Label 
   Widget _buildMoodLabel() {
     return Center(
       child: Column(
         children: [
           Text(
             'CURRENT MOOD',
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               color: Colors.white.withOpacity(0.5),
               fontSize: 12,
               letterSpacing: 2.5,
@@ -376,7 +376,7 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 
-  // ── Song Section ──────────────────────────────────────────────────────────
+  //  Song Section 
   Widget _buildSongSection() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -385,7 +385,7 @@ class _ResultScreenState extends State<ResultScreen>
         children: [
           Text(
             'RECOMMENDED FOR YOU',
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               color: Colors.white.withOpacity(0.85),
               fontSize: 12,
               fontWeight: FontWeight.bold,
@@ -435,7 +435,7 @@ class _ResultScreenState extends State<ResultScreen>
                       const SizedBox(height: 3),
                       Text(
                         '${widget.mood.artist} • ${widget.mood.genre}',
-                        style: TextStyle(
+                        style: GoogleFonts.poppins(
                           color: Colors.white.withOpacity(0.5),
                           fontSize: 12,
                         ),
@@ -464,7 +464,7 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 
-  // ── Mood Playlists ────────────────────────────────────────────────────────
+  //  Mood Playlists 
   Widget _buildMoodPlaylists() {
     final playlists = widget.mood.playlistTitles;
     return Padding(
@@ -474,7 +474,7 @@ class _ResultScreenState extends State<ResultScreen>
         children: [
           Text(
             'MOOD PLAYLISTS',
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               color: Colors.white.withOpacity(0.85),
               fontSize: 12,
               fontWeight: FontWeight.bold,
@@ -550,7 +550,7 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 
-  // ── Bottom Buttons ────────────────────────────────────────────────────────
+  //  Bottom Buttons 
   Widget _buildBottomButtons(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -597,12 +597,12 @@ class _ResultScreenState extends State<ResultScreen>
               ),
               label: Text(
                 'Recalibrate Scan',
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   color: Colors.white.withOpacity(0.65),
                   fontSize: 14,
                 ),
               ),
-              onPressed: () => context.pop(),
+              onPressed: () => context.push('/scan'),
             ),
           ),
         ],
@@ -610,7 +610,7 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 
-  // ── Corner Brackets ───────────────────────────────────────────────────────
+  //  Corner Brackets 
   List<Widget> _cornerBrackets(Color color) {
     const size = 20.0;
     const stroke = 2.0;
