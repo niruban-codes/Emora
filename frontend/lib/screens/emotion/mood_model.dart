@@ -120,7 +120,8 @@ class MoodModel {
   // Called with the raw string returned by your emotion-detection API.
   // e.g.  MoodModel.fromString('happy')  or  MoodModel.fromString('ENERGETIC')
   factory MoodModel.fromString(String raw) {
-    switch (raw.trim().toLowerCase()) {
+    final String key = raw.trim().toLowerCase().replaceAll('surprised', 'surprise');
+    switch (key) {
       case 'happy':
         return const MoodModel(
           type: MoodType.happy,
@@ -141,7 +142,7 @@ class MoodModel {
           genre: 'Soul',
           description: 'Feeling low. These songs understand.',
         );
-      case 'peaceful':
+      case 'neutral':
         return const MoodModel(
           type: MoodType.neutral,
           label: 'PEACEFUL',
@@ -151,7 +152,7 @@ class MoodModel {
           genre: 'Ambient',
           description: 'Calm and centred. Lean into the tranquility.',
         );
-      case 'energetic':
+      case 'fear':
         return const MoodModel(
           type: MoodType.fear,
           label: 'FEAR',
@@ -161,7 +162,7 @@ class MoodModel {
           genre: 'Electronic',
           description: "You're buzzing. Time to turn it up.",
         );
-      case 'anxious':
+      case 'angry':
         return const MoodModel(
           type: MoodType.angry,
           label: 'ANGRY',
