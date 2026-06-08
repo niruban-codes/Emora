@@ -50,10 +50,10 @@ class FirestoreService {
       // so we store the uid as a field inside the document.
       await _db.collection('emotion_history').add({
         'userId': uid ?? 'anonymous', // Link it to the user
-        'emotion': emotion,
+        'emotion': emotion.toLowerCase(),
         'insight': insight,
         'timestamp': FieldValue.serverTimestamp(),
-        'isDummy': true,
+        'isDummy': false,
       });
     } catch (e) {
       print("Error adding emotion history: $e");
