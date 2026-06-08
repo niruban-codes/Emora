@@ -62,31 +62,17 @@ final appRouter = GoRouter(
       builder: (context, state) => const RegisterWithEmailScreen(),
     ),
     GoRoute(
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> 1e4f0e141bd18c9e4b551ce85e268888f2c18cd8
       path: '/genre-playlist',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) {
         final extra = state.extra as Map<String, dynamic>;
         return GenrePlaylistScreen(
           genre: extra['genre'] as String,
-<<<<<<< HEAD
-          //'?' to allow null values from the home screen
           songs: extra['songs'] as List<Song>?, 
-=======
-          songs: extra['songs'] as List<Song>,
->>>>>>> 1e4f0e141bd18c9e4b551ce85e268888f2c18cd8
         );
       },
     ),
     GoRoute(
-<<<<<<< HEAD
->>>>>>> Stashed changes
-=======
->>>>>>> 1e4f0e141bd18c9e4b551ce85e268888f2c18cd8
       path: '/login',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const LoginScreen(),
