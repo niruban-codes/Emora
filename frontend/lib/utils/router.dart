@@ -68,7 +68,7 @@ final appRouter = GoRouter(
         final extra = state.extra as Map<String, dynamic>;
         return GenrePlaylistScreen(
           genre: extra['genre'] as String,
-          songs: extra['songs'] as List<Song>,
+          songs: extra['songs'] as List<Song>?, 
         );
       },
     ),
