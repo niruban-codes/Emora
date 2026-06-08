@@ -11,31 +11,14 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _glowController;
-  late Animation<double> _glowAnimation;
+class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
     super.initState();
 
-    // 1. The Breathing Neon Controller
-    _glowController =
-        AnimationController(
-          vsync: this,
-          duration: const Duration(milliseconds: 1500),
-        )..repeat(
-          reverse: true,
-        ); // The "reverse: true" makes it pulse in and out infinitely
-
-    // 2. The size of the glow (pulses between 20 and 60 pixels wide)
-    _glowAnimation = Tween<double>(begin: 20.0, end: 60.0).animate(
-      CurvedAnimation(parent: _glowController, curve: Curves.easeInOut),
-    );
-
-    // 3. Check Auth state and navigate after 3.5 seconds
-    Future.delayed(const Duration(milliseconds: 3500), () {
+   // Check Auth state and navigate after 4 seconds
+    Future.delayed(const Duration(milliseconds: 4000), () {
       if (!mounted) return;
 
       // Ask Firebase if a user is currently signed in
@@ -69,21 +52,13 @@ class _SplashScreenState extends State<SplashScreen>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // 🪄 The Neon Breathing Wrapper
-                AnimatedBuilder(
-                  animation: _glowAnimation,
-                  builder: (context, child) {
-                    return Container(
-                      child:
-                          child, // The Lottie file goes inside this glowing box
-                    );
-                  },
-                  child: Image.asset(
+                // Logo Animation
+                  Image.asset(
                     'assets/animations/logo_animation.gif',
-                    width: 200,
-                    height: 200,
-                    fit: BoxFit.contain,
-                  ),
+                  width: 200,
+                  height: 200,
+                  fit: BoxFit.contain,
+                 ),
                 ),
 
                 const SizedBox(height: 0),
