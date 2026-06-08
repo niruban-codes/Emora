@@ -12,12 +12,11 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   @override
   void initState() {
     super.initState();
 
-   // Check Auth state and navigate after 4 seconds
+    // Check Auth state and navigate after 4 seconds
     Future.delayed(const Duration(milliseconds: 4000), () {
       if (!mounted) return;
 
@@ -36,7 +35,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void dispose() {
-    _glowController.dispose();
     super.dispose();
   }
 
@@ -53,12 +51,11 @@ class _SplashScreenState extends State<SplashScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // Logo Animation
-                  Image.asset(
-                    'assets/animations/logo_animation.gif',
+                Image.asset(
+                  'assets/animations/logo_animation.gif',
                   width: 200,
                   height: 200,
                   fit: BoxFit.contain,
-                 ),
                 ),
 
                 const SizedBox(height: 0),
