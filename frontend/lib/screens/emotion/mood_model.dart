@@ -40,10 +40,7 @@ class MoodModel {
   }
 
   // Colours 
-  // Computed from type so callers never need to pass colours manually.
-  // Previously mood_data.dart hardcoded Color(0xFF8B2D8B) for every mood —
-  // that's now replaced with distinct per-mood palettes.
-
+  // Previously mood_data.dart hardcoded Color(0xFF8B2D8B) for every mood 
   /// Primary accent — drives buttons, borders, play button, badge bg.
   Color get primaryColor {
     switch (type) {
@@ -58,7 +55,7 @@ class MoodModel {
       case MoodType.angry:
         return const Color(0xFFEF5350); // tense red
       case MoodType.surprise:
-        return const Color(0xFFAB47BC); // muted violet
+        return const Color(0xFF9C27B0); // purple
     }
   }
 
@@ -76,7 +73,7 @@ class MoodModel {
       case MoodType.angry:
         return const Color(0xFFFF7043); // deep orange
       case MoodType.surprise:
-        return const Color(0xFF00BCD4); // lavender
+        return const Color(0xFF4CAF50); // green
     }
   }
 

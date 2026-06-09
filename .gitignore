@@ -16,6 +16,8 @@ backend/*.json
 .DS_Store
 
 # Virtual Environment
+env/
+backend/env/
 venv/
 env/
 backend/venv/

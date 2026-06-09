@@ -3,15 +3,46 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend/models/song_model.dart';
 
-class GenrePlaylistScreen extends StatelessWidget {
+class GenrePlaylistScreen extends StatefulWidget {
   final String genre;
-  final List<Song> songs;
+  final List<Song>? songs; // Made nullable to detect dynamic loading
 
   const GenrePlaylistScreen({
     super.key,
     required this.genre,
-    required this.songs,
+    this.songs,
   });
+
+  @override
+  State<GenrePlaylistScreen> createState() => _GenrePlaylistScreenState();
+}
+
+class _GenrePlaylistScreenState extends State<GenrePlaylistScreen> {
+  List<Song> _displaySongs = [];
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.songs != null) {
+      _displaySongs = widget.songs!;
+    } else {
+      _fetchTrendingSongs();
+    }
+  }
+
+  Future<void> _fetchTrendingSongs() async {
+    setState(() => _isLoading = true);
+    try {
+      // TODO----Connect actual backend API service fetch function here later
+      await Future.delayed(const Duration(seconds: 2));
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +92,7 @@ class GenrePlaylistScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            genre,
+            widget.genre,
             style: GoogleFonts.poppins(
               color: Colors.white,
               fontSize: 28,
@@ -71,7 +102,7 @@ class GenrePlaylistScreen extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            '${songs.length} songs',
+            '${_displaySongs.length} songs',
             style: GoogleFonts.poppins(
               color: Colors.white.withOpacity(0.4),
               fontSize: 13,
@@ -85,7 +116,13 @@ class GenrePlaylistScreen extends StatelessWidget {
 
   // ── Song List ─────────────────────────────────────────────────────────────
   Widget _buildSongList(BuildContext context) {
-    if (songs.isEmpty) {
+    if (_isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(color: Color(0xFFCE93D8)),
+      );
+    }
+
+    if (_displaySongs.isEmpty) {
       return Center(
         child: Text(
           'No songs available',
@@ -99,19 +136,19 @@ class GenrePlaylistScreen extends StatelessWidget {
 
     return ListView.separated(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      itemCount: songs.length,
+      itemCount: _displaySongs.length,
       separatorBuilder: (_, __) => const SizedBox(height: 10),
       itemBuilder: (context, index) => _buildSongTile(context, index),
     );
-  }
+  }    
 
   Widget _buildSongTile(BuildContext context, int index) {
-    final song = songs[index];
+    final song = _displaySongs[index];
 
     return GestureDetector(
       onTap: () {
         context.push('/player', extra: {
-          'songs': songs,
+          'songs': _displaySongs,
           'index': index,
         });
       },
