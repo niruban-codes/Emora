@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart'; 
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../../services/firestore_service.dart'; 
-//import 'package:frontend/screens/result_screen.dart'; //remove later
 
 class ProfileSettingsScreen extends StatefulWidget {
   const ProfileSettingsScreen({super.key});
@@ -154,19 +154,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   }
 
   Widget _buildProfileHeader() {
-
-    ImageProvider profileImage;
-
-    if (profilePicUrl != null && profilePicUrl!.isNotEmpty) {
-      if (profilePicUrl!.startsWith('assets/')) {
-        profileImage = AssetImage(profilePicUrl!);
-      } else {
-        profileImage = NetworkImage(profilePicUrl!);
-      }
-    } else {
-      profileImage = const AssetImage('assets/avatars/Girl 07.png');
-    }
-
     return Column(
       children: [
         Stack(
@@ -181,11 +168,38 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                   width: 3,
                 ),
               ),
-              child: CircleAvatar(
-                radius: 55,
-                backgroundColor: ProfileSettingsScreen.cardColor,
-                backgroundImage: profileImage,
-              ),
+              child: profilePicUrl != null && profilePicUrl!.isNotEmpty
+                  ? (profilePicUrl!.startsWith('assets/')
+                      ? CircleAvatar(
+                          radius: 55,
+                          backgroundColor: ProfileSettingsScreen.cardColor,
+                          backgroundImage: AssetImage(profilePicUrl!),
+                          onBackgroundImageError: (_, __) {
+                            debugPrint("Failed to load local asset avatar path.");
+                          },
+                        )
+                      : CircleAvatar(
+                          radius: 55,
+                          backgroundColor: ProfileSettingsScreen.cardColor,
+                          child: CachedNetworkImage(
+                            imageUrl: profilePicUrl!,
+                            imageBuilder: (context, imageProvider) => Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                              ),
+                            ),
+                            placeholder: (context, url) => const CircularProgressIndicator(
+                              color: ProfileSettingsScreen.accentPurple,
+                            ),
+                            errorWidget: (context, url, error) => const Icon(Icons.person, size: 50, color: Colors.white),
+                          ),
+                        ))
+                    : const CircleAvatar(
+                      radius: 55,
+                      backgroundColor: ProfileSettingsScreen.cardColor,
+                      backgroundImage: AssetImage('assets/avatars/Girl 07.png'),
+                    ),
             ),
             const CircleAvatar(
               radius: 16,

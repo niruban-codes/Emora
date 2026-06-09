@@ -67,8 +67,11 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
           _selectedAvatarAsset = _savedAvatarAsset;
 
           if (userData?['createdAt'] != null) {
-            final date = (userData!['createdAt'] as Timestamp).toDate();
-            _memberSinceText = 'Member since ${date.year}';
+            final createdAt = userData!['createdAt'];
+            if (createdAt is Timestamp) {
+              final date = createdAt.toDate();
+              _memberSinceText = "Member since ${date.year}";
+            }
           }
 
           _isLoading = false;
@@ -294,7 +297,7 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                   children: [
                     Expanded(
                       child: OutlinedButton.icon(
-                        onPressed: _selectedAvatarAsset == _savedAvatarAsset
+                        onPressed:_selectedAvatarAsset == _savedAvatarAsset
                             ? null // Disabled if highlighted avatar is already saved
                             : () => _updateAvatarInFirestore(_selectedAvatarAsset!, 'Avatar saved successfully!'),
                         icon: const Icon(Icons.upload, size: 18),

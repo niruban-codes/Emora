@@ -27,6 +27,8 @@ dependencies:
   flutter_inappwebview: ^5.8.0
   dio: ^5.9.2
   firebase_storage: ^13.4.2
+  cached_network_image: ^3.3.0
+
 
 dev_dependencies:
   flutter_test:
