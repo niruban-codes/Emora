@@ -180,6 +180,7 @@ class MoodModel {
           genre: 'Indie Folk',
           description: 'A bittersweet haze surrounds you. Embrace it.',
         );
+      }  
     }
   }
 
