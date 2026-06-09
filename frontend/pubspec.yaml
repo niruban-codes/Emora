@@ -47,4 +47,6 @@ flutter:
     - assets/images/splash_bg.png
     - assets/images/logo_large.png
     - assets/animations/infinite_loader.json
+    - assets/animations/logo_animation.gif
+    - assets/images/Vector.png
     - assets/avatars/

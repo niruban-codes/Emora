@@ -292,48 +292,57 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _playlistCard(Map<String, String> playlist) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            const Color(0xFF2A1A4E).withOpacity(0.8),
-            const Color(0xFF0D0A1E),
-          ],
+    return GestureDetector(
+      onTap: () {
+        // Navigates to shared playlist view and passes a dynamic query title
+        context.push('/genre-playlist', extra: {
+          'genre': playlist['title'] ?? 'Trending Playlists',
+          'songs': null, // Triggers your dynamic YouTube loading flow!
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              const Color(0xFF2A1A4E).withOpacity(0.8),
+              const Color(0xFF0D0A1E),
+            ],
+          ),
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: const Color(0xFFA7338A),
-              borderRadius: BorderRadius.circular(100),
-            ),
-            child: Text(
-              playlist['mood']!,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 8,
-                fontWeight: FontWeight.bold,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: const Color(0xFFA7338A),
+                borderRadius: BorderRadius.circular(100),
+               ),
+              child: Text(
+                playlist['mood']!,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 8,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            playlist['title']!,
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
+            const SizedBox(height: 6),
+            Text(
+              playlist['title']!,
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
