@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart'; 
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../../services/firestore_service.dart'; 
-//import 'package:frontend/screens/result_screen.dart'; //remove later
 
 class ProfileSettingsScreen extends StatefulWidget {
   const ProfileSettingsScreen({super.key});
@@ -23,10 +23,12 @@ class ProfileSettingsScreen extends StatefulWidget {
 class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   String userName = "Loading...";
   String userEmail = "";
+  String? profilePicUrl;
+
   // Define your hardcoded admin emails
   final List<String> _adminEmails = [
     'niru2324@gmail.com',
-    'sparkswills40@gmail.com', // Replace with your actual admin email
+    'sparkswills40@gmail.com', 
     'admin@emora.com',
     'geethmapiyaratne285@gmail.com',
     'nirubannallirajah@gmail.com',
@@ -56,6 +58,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         setState(() {
           userName = data['name'] ?? "No Name";
           userEmail = data['email'] ?? user.email ?? "";
+          profilePicUrl = data['profilePicUrl'];
         });
       }
     }
@@ -70,7 +73,13 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => context.pop(),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop(); 
+            } else {
+              context.go('/home'); 
+            }
+          },
         ),
         title: const Text(
           'Profile Settings',
@@ -98,8 +107,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
               Icons.sentiment_satisfied_alt_outlined,
               'Mood Analytics',
             ),
-
-            
 
             const SizedBox(height: 25),
             _buildSectionLabel('APP PREFERENCES'),
@@ -137,7 +144,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
             if (_isAdmin) _buildAdminCard(context),
 
             const SizedBox(height: 30),
-            _buildLogoutButton(context), // 
+            _buildLogoutButton(context), 
 
             const SizedBox(height: 40),
           ],
@@ -161,12 +168,38 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                   width: 3,
                 ),
               ),
-              child: const CircleAvatar(
-                radius: 55,
-                backgroundImage: NetworkImage(
-                  'https://i.imgur.com/8Km9t9S.png',
-                ),
-              ),
+              child: profilePicUrl != null && profilePicUrl!.isNotEmpty
+                  ? (profilePicUrl!.startsWith('assets/')
+                      ? CircleAvatar(
+                          radius: 55,
+                          backgroundColor: ProfileSettingsScreen.cardColor,
+                          backgroundImage: AssetImage(profilePicUrl!),
+                          onBackgroundImageError: (_, __) {
+                            debugPrint("Failed to load local asset avatar path.");
+                          },
+                        )
+                      : CircleAvatar(
+                          radius: 55,
+                          backgroundColor: ProfileSettingsScreen.cardColor,
+                          child: CachedNetworkImage(
+                            imageUrl: profilePicUrl!,
+                            imageBuilder: (context, imageProvider) => Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                              ),
+                            ),
+                            placeholder: (context, url) => const CircularProgressIndicator(
+                              color: ProfileSettingsScreen.accentPurple,
+                            ),
+                            errorWidget: (context, url, error) => const Icon(Icons.person, size: 50, color: Colors.white),
+                          ),
+                        ))
+                    : const CircleAvatar(
+                      radius: 55,
+                      backgroundColor: ProfileSettingsScreen.cardColor,
+                      backgroundImage: AssetImage('assets/avatars/Girl 07.png'),
+                    ),
             ),
             const CircleAvatar(
               radius: 16,
