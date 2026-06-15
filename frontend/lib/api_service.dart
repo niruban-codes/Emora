@@ -10,7 +10,7 @@ class ApiService {
       "https://emora-api-backend-ggccceepbsa2f4dk.eastasia-01.azurewebsites.net";
 
   // 1. AI EMOTION DETECTION (Camera Screen Bridge)
-  Future<Map<String, dynamic>?> detectEmotion(File imageFile) async {
+  Future<String?> detectEmotion(File imageFile) async {
     try {
       String fileName = imageFile.path.split('/').last;
 
@@ -27,7 +27,7 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
-        return response.data; // Returns facial analysis results dict
+        return response.data.toString(); // Returns facial analysis results dict
       }
     } on DioException catch (e) {
       print("AI Detection Server Error: ${e.response?.data ?? e.message}");
@@ -80,4 +80,42 @@ class ApiService {
       return false;
     }
   }
+
+
+// 5. SAVE MOOD DETECTION HISTORY (Azure DB Sync Bridge)
+  Future<bool> saveMoodHistoryToAzure({
+    required String uid,
+    required String emotion,
+    required List<dynamic> tracks,
+  }) async {
+    try {
+      Response response = await _dio.post(
+        "$baseUrl/history/add",
+        data: {
+          "uid": uid,
+          "emotion": emotion,
+          "timestamp": DateTime.now().toUtc().toIso8601String(),
+          "tracks": tracks,
+        },
+      );
+      return response.statusCode == 201 || response.statusCode == 200;
+    } on DioException catch (e) {
+      print("Azure History sync failed: ${e.response?.data ?? e.message}");
+      return false;
+    }
+  }
+
+  // 6. FETCH MOOD DETECTION HISTORY (For building your History list view)
+  Future<List<dynamic>?> getMoodHistoryFromAzure(String uid) async {
+    try {
+      Response response = await _dio.get("$baseUrl/history/get/$uid");
+      if (response.statusCode == 200) {
+        return response.data; // Returns list of past history objects from Azure
+      }
+    } on DioException catch (e) {
+      print("Azure History retrieval failed: ${e.response?.data ?? e.message}");
+    }
+    return null;
+  }
+
 }

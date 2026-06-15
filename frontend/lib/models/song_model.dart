@@ -14,27 +14,13 @@ class Song {
     this.isFavorite = false,
     this.duration = '',
   });
-
-  // Dummy Data
-  static List<Song> dummyPlaylist = [
-    Song(
-      id: '1',
-      title: 'Midnight City',
-      artist: 'M83',
-      coverUrl: 'https://picsum.photos/200?1',
-    ),
-    Song(
-      id: '2',
-      title: 'Blinding Lights',
-      artist: 'The Weeknd',
-      coverUrl: 'https://picsum.photos/200?2',
-      isFavorite: true,
-    ),
-    Song(
-      id: '3',
-      title: 'Levitating',
-      artist: 'Dua Lipa',
-      coverUrl: 'https://picsum.photos/200?3',
-    ),
-  ];
+ 
+ factory Song.fromJson(Map<String, dynamic> json){
+  return Song(id: json['videoId'] ?? '',
+   title: json['title'] ?? '',
+    artist: json['artist'] ?? '',
+     coverUrl: json['thumbnail'] ?? '',
+     duration: json['duration'] ?? '',
+     );
+ }
 }

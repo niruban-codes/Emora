@@ -67,7 +67,7 @@ final appRouter = GoRouter(
       builder: (context, state) {
         final extra = state.extra as Map<String, dynamic>;
         return GenrePlaylistScreen(
-          genre: extra['genre'] as String,
+          genre: extra['genre'] as String ?? 'Unknown Genre',
           songs: extra['songs'] as List<Song>?, 
         );
       },
@@ -106,13 +106,79 @@ final appRouter = GoRouter(
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) {
         final extra = state.extra as Map<String, dynamic>;
-        final songs = extra['songs'] as List<Song>;
-        final index = extra['index'] as int;
+        final songs = extra['songs'] as List<Song>? ?? [];
+        final index = extra['index'] as int? ?? 0;
+
+        if (songs.isEmpty) {
+          return const Scaffold(body: Center(child: Text("No tracks found")));
+        }
+
         return PlayerScreen(
           currentSong: songs[index],
           playlist: songs,
           initialIndex: index,
         );
+      },
+    ),
+    GoRoute(
+      path: '/result',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) {
+  try {
+          final extra = state.extra;
+
+          // 1. Check if we received the custom Map passed from EmotionDetectionScreen
+          if (extra is Map<String, dynamic>) {
+            // Unpack the pre-constructed MoodModel from the map
+            if (extra.containsKey('mood') && extra['mood'] is MoodModel) {
+              return ResultScreen(mood: extra['mood'] as MoodModel);
+            }
+            
+            // Fallback parsing if the raw backend Map layout was parsed directly
+            final emotionStr = (extra['dominant_emotion'] ?? extra['emotion'] ?? extra['mood'] ?? 'peaceful').toString();
+            return ResultScreen(mood: MoodModel.fromString(emotionStr));
+          } 
+          
+          // 2. Check if it was passed cleanly as just a MoodModel object
+          if (extra is MoodModel) {
+            return ResultScreen(mood: extra);
+          }
+          
+          // 3. Fallback safely if no parameter structure matches
+          return ResultScreen(mood: MoodModel.fromString('peaceful'));
+        } catch (e, stackTrace) {
+          debugPrint("❌ GoRouter Result Processing Exception caught safely: $e");
+          return ResultScreen(mood: MoodModel.fromString('peaceful'));
+        }
+      },
+    ),
+    GoRoute(
+      path: '/playlist',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) {
+        try {
+          final extra = state.extra;
+
+          if (extra is Map<String, dynamic>) {
+            final emotionStr = (extra['dominant_emotion'] ?? extra['emotion'] ?? extra['mood'] ?? 'peaceful').toString();
+            return PlaylistDetailsScreen(mood: MoodModel.fromString(emotionStr));
+          } 
+
+          if (extra is MoodModel) {
+            return PlaylistDetailsScreen(mood: extra);
+          }
+
+          // 3. NEW: Check if the app sent a plain text String (Fixes your ResultScreen crash!)
+          if (extra is String) {
+            return PlaylistDetailsScreen(mood: MoodModel.fromString(extra));
+          }
+          
+          return PlaylistDetailsScreen(mood: MoodModel.fromString('peaceful'));
+        } catch (e, stackTrace) {
+          debugPrint("❌ GoRouter Playlist Navigation Error: $e");
+          debugPrint("Stacktrace: $stackTrace");
+          return PlaylistDetailsScreen(mood: MoodModel.fromString('peaceful'));
+        }
       },
     ),
 
@@ -151,24 +217,6 @@ final appRouter = GoRouter(
             GoRoute(
               path: '/library',
               builder: (context, state) => const LibraryScreen(),
-            ),
-            GoRoute(
-              path: '/result',
-              builder: (context, state) {
-                final mood = state.extra as MoodModel?;
-                return ResultScreen(
-                  mood: mood ?? MoodModel.fromString('peaceful'),
-                );
-              },
-            ),
-            GoRoute(
-              path: '/playlist',
-              builder: (context, state) {
-                final mood = state.extra as MoodModel?;
-                return PlaylistDetailsScreen(
-                  mood: mood ?? MoodModel.fromString('peaceful'),
-                );
-              },
             ),
           ],
         ),
