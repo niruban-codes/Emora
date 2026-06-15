@@ -130,37 +130,17 @@ class _LibraryScreenState extends State<LibraryScreen> {
               itemBuilder: (context, index) {
                 final item = _libraryItems[index];
                 return GestureDetector(
-                  // NEW CODE
-                  onTap: () {
-                    if (item['title'] == 'Liked Songs') {
+                  // NEW CODE only added here
+                  onTap: (){
+                    if(item['title'] == 'Liked Songs') {
                       // Keep original Liked Songs behavior
                       context.push('/favorites', extra: 'All');
                     } else {
-                      // Map the string title to the correct EmotionType enum
-                      MoodType selectedType =
-                          MoodType.neutral; // Default fallback
-
-                      switch (item['title']) {
-                        case 'Happy':
-                          selectedType = MoodType.happy;
-                          break;
-                        case 'Sad':
-                          selectedType = MoodType.sad;
-                          break;
-                        case 'Fear':
-                          selectedType = MoodType.fear;
-                          break;
-                        case 'Angry':
-                          selectedType = MoodType.angry;
-                          break;
-                        case 'Surprise':
-                          selectedType = MoodType.surprise;
-                          break;
-                      }
-
-                      final fullMoodModel = getMoodByType(selectedType);
-
-                      context.push('/playlist', extra: fullMoodModel);
+                      // 🟢 Pass the plain text mood name directly as a string 
+                      final String selectedMood = item['title'].toString();
+                      
+                      // Routes directly to GenrePlaylistScreen, triggering its dynamic Azure fetching method
+                      context.push('/playlist', extra: selectedMood);
                     }
                   },
                   child: _buildMoodCard(

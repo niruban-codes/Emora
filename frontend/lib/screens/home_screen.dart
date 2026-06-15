@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/models/song_model.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:frontend/screens/emotion/mood_model.dart';
@@ -297,7 +298,7 @@ class _HomeScreenState extends State<HomeScreen>
         // Navigates to shared playlist view and passes a dynamic query title
         context.push('/genre-playlist', extra: {
           'genre': playlist['title'] ?? 'Trending Playlists',
-          'songs': null, // Triggers your dynamic YouTube loading flow!
+          'songs': <Song>[], // Triggers your dynamic YouTube loading flow!
         });
       },
       child: Container(
