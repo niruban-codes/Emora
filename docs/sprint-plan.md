@@ -14,8 +14,8 @@
 | Wathsiluni | Phase 2 | Firestore — Build           |
 | Geethma    | Phase 3 | Flask + DeepFace — Build    |
 | Dinithi    | Phase 4 | YouTube API — Build         |
-| Hafsa      | Phase 5 | Admin Panel                 |
-| Pending    | Phase 6 | Flutter Integration — Build |
+| Hafsa      | Phase 5 | Flutter Integration — Build |
+| All        | Phase 6 | Admin Panel                 |
 
 **Testing Policy:** No member tests their own phase.
 
@@ -31,103 +31,68 @@
 
 ## Sprint Overview
 
-| Sprint | Week    | Theme                            | Phase       | Builder(s)                        | Tester(s)   | Status          |
-| ------ | ------- | -------------------------------- | ----------- | --------------------------------- | ----------- | --------------- |
-| 1      | Week 1  | Planning                         | Pre-Dev     | All Members                       | —           | ✅ Done         |
-| 2      | Week 2  | Wireframing                      | Pre-Dev     | All Members                       | —           | ✅ Done         |
-| 3      | Week 3  | UI Design & Prototyping          | Pre-Dev     | All Members                       | —           | ✅ Done         |
-| 4      | Week 4  | Flutter Learning & Dev Start     | Pre-Dev     | All Members                       | —           | ✅ Done         |
-| 5      | Week 5  | Frontend Development & GitHub    | Pre-Dev     | All Members                       | —           | ✅ Done         |
-| 6      | Week 6  | Phase 1 Complete + Testing       | Phase 1     | Niruban                           | Hafsa       | ✅ Done         |
-| 7      | Week 7  | Phase 2 Complete + Testing       | Phase 2     | Wathsiluni                        | Dinithi     | ✅ Done         |
-| 8      | Week 8  | Phase 3 — Flask + DeepFace       | Phase 3     | Geethma                           | Niruban     | ✅ Done         |
-| 9      | Week 9  | Phase 4 — YouTube API            | Phase 4     | Dinithi                           | Geethma     | ⏳ In Progress  |
-| 10     | Week 10 | Phase 4 and UI updates           | Phase 4     | Dinithi , All members             | Geethma     | ⏳ Upcoming     |
-| 11     | Week 11 | Phase 4 complete                 | Phase 4     | Dinithi                           | Pending     | ⏳ Upcoming     |
-| 12     | Week 12 | Phase 5 -Admin Panel             | Phase 5     | Geethma , Niruban                 | Dinithi     | ⏳ Upcoming     |
-| 13     | Week 13 | Phase 6 - Full Integration       | Phase 6     | Hafsa                             | Wathsiluni  | ⏳ Upcoming     |
-| 14     | Week 14 | Buffer Week                      | All Members | All Members                       | All Members | ⏳ Upcoming     |
-| 15     | Week 15 | Demo Prep + UAT                  | All Members | All Members                       | All Members | ⏳ Upcoming     |
+| Sprint | Weeks       | Theme                               | Phase       | Builder(s)            | Tester(s)         | Status          |
+| ------ | ----------- | ----------------------------------- | ----------- | ----------------------| ----------------  |-----------------|
+| 1      | Week 1–2    | Planning & Wireframing              | Pre-Dev     | All Members           | —                 | ✅ Done         |
+| 2      | Week 3–4    | UI Design, Prototyping              | Pre-Dev     | All Members           | —                 | ✅ Done         |
+| 3      | Week 5–6    | Frontend Dev + Phase 1              | Phase 1     | All Members / Niruban | Hafsa             | ✅ Done         |
+| 4      | Week 7–8    | Phase 2 & Phase 3                   | Phase 2 & 3 | Wathsiluni / Geethma  | Dinithi / Niruban | ✅ Done         |
+| 5      | Week 9–10   | Phase 4 — YouTube API               | Phase 4     | Dinithi / All Members | Geethma           | ✅ Done         |
+| 6      | Week 11–12  | Phase 5 — Admin Panel               | Phase 5     | Geethma / Niruban     | Dinithi           | ⏳ Upcoming     |
+| 7      | Week 13–14  | Phase 6 — Full Integration & Buffer | Phase 6     | Hafsa / All Members   | Wathsiluni        | ⏳ Upcoming     |
+| 8      | Week 15     | Demo Prep, UAT & Submission         | All Members | All Members           | All Members       | ⏳ Upcoming     |
+
 
 ---
 
 ## Sprint Details
 
-### Sprint 1 · Week 1 · Planning
+### Sprint 1 · Weeks 1–2 · Planning & Wireframing
 
 **Owner(s):** All Members | **Status:** ✅ Done
 
 - Project discussion and team alignment
 - Requirement gathering and feature identification
 - Initial wireframes started
-
----
-
-### Sprint 2 · Week 2 · Wireframing
-
-**Owner(s):** All Members | **Status:** ✅ Done
-
 - Completed wireframes for all screens
 - Defined navigation flow
 - Team review and adjustments made
 
 ---
 
-### Sprint 3 · Week 3 · UI Design & Prototyping
+### Sprint 2 · Weeks 3–4 · UI Design, Prototyping & Flutter Dev Start
 
 **Owner(s):** All Members | **Status:** ✅ Done
 
 - Figma UI designs created
 - Colors and typography applied
 - Interactive prototype built and reviewed
-
----
-
-### Sprint 4 · Week 4 · Flutter Learning & Dev Start
-
-**Owner(s):** All Members | **Status:** ✅ Done
-
 - Team began learning Flutter and Dart
 - Sign In and Sign Up pages started
 - Project folder structure set up
 
 ---
 
-### Sprint 5 · Week 5 · Frontend Development & GitHub
+### Sprint 3 · Weeks 5–6 · Frontend Development & Phase 1
 
-**Owner(s):** All Members | **Status:** ✅ Done
+**Builder(s):** All Members / Niruban (Phase 1) | **Tester:** Hafsa (Phase 1) | **Status:** ✅ Done
 
 - Continued building auth screens
 - Code pushed to GitHub
 - Branching, merging, and merge conflict resolution
 - Team meetings and coordination
-
----
-
-### Sprint 6 · Week 6 · Phase 1 Complete + Phase 2 Start
-
-**Builder(s):** Niruban (Phase 1), Wathsiluni (Phase 2) | **Tester:** Hafsa (Phase 1) | **Status:** ✅ Done
-
 - Firebase Authentication connected and completed
 - Phase 1 tested and signed off
-- Firestore collections and structure started (Phase 2)
 
 ---
 
-### Sprint 7 · Week 7 · Phase 2 Complete + Testing
+### Sprint 4 · Weeks 7–8 · Phase 2 & Phase 3
 
-**Builder:** Wathsiluni | **Tester:** Dinithi | **Status:** 🔄 In Progress
+**Builder(s):** Wathsiluni (Phase 2), Geethma (Phase 3) | **Tester(s):** Dinithi (Phase 2), Niruban (Phase 3) | **Status:** ✅ Done
 
 - Firestore integration completed
 - Phase 2 tested end-to-end and signed off
 - Bugs identified and fixed
-
----
-
-### Sprint 8 · Week 8 · Phase 3 — Flask + DeepFace
-
-**Builder:** Geethma | **Tester:** Niruban | **Status:** ⏳ Upcoming
-
 - Flask backend set up
 - `/ping` health check endpoint created
 - `/detect-emotion` endpoint built with DeepFace integration
@@ -137,21 +102,14 @@
 
 ---
 
-### Sprint 9 · Week 9 · Phase 4 — YouTube API
+### Sprint 5 · Weeks 9–10 · Phase 4 — YouTube API & Flutter Integration
 
-**Builder:** Dinithi | **Tester:** Geethma | **Status:** ⏳ Upcoming
+**Builder(s):** Dinithi (Phase 4), Hafsa (Phase 5) | **Tester(s):** Geethma (Phase 4), Wathsiluni (Phase 5) | **Status:** ✅ Done
 
 - YouTube API integrated
 - `/recommend-music` endpoint completed
 - All emotion categories tested
 - Phase 4 tested and signed off
-
----
-
-### Sprint 10 · Week 10 · Phase 5 — Flutter Integration
-
-**Builder:** Hafsa | **Tester:** Wathsiluni | **Status:** ⏳ Upcoming
-
 - Flutter fully connected to backend
 - Emotion-to-query mapping implemented
 - Error handling and `.env` setup complete
@@ -159,21 +117,12 @@
 
 ---
 
-### Sprint 11 · Week 11 · Phase 6 — Admin Panel
+### Sprint 6 · Weeks 11–12 · Admin Panel & Full Integration
 
-**Builder:** Pending | **Tester:** Pending | **Status:** ⏳ Upcoming
+**Builder(s):** Geethma, Niruban (Admin Panel), All Members (Integration) | **Tester:** Dinithi | **Status:** ⏳ Ongoing
 
 - Admin panel built and tested
 - Phase 6 signed off
-
-> ⚠️ Admin panel ownership and testing assignment.
-
----
-
-### Sprint 12 · Week 12 · Full Integration & Final Setup
-
-**Owner(s):** All Members | **Status:** ⏳ Upcoming
-
 - Flutter fully connected to backend end-to-end
 - End-to-end testing on a real device
 - Flask backend deployed
@@ -181,33 +130,27 @@
 
 ---
 
-### Sprint 13 · Week 13 · Buffer Week
+### Sprint 7 · Weeks 13–14 · Buffer, Demo Prep & UAT
 
 **Owner(s):** All Members | **Status:** ⏳ Upcoming
 
 - Remaining bugs fixed
 - Failed test cases re-tested
 - UI polishing and final adjustments
-
----
-
-### Sprint 14 · Week 14 · Demo Prep + UAT
-
-**Owner(s):** All Members | **Status:** ⏳ Upcoming
-
 - Full demo rehearsal conducted
 - Presentation slides prepared
 - User Acceptance Testing (UAT) and final checks
 
 ---
 
-### Sprint 15 · Week 15 · Journal + Submission
+### Sprint 8 · Week 15 · Journal & Submission
 
 **Owner(s):** All Members | **Status:** ⏳ Upcoming
 
 - Project journal completed
 - All documentation finalised and submitted
 
+>  Sprint 8 is a single-week wrap-up sprint. All development must be complete before this sprint begins.
 ---
 
-> 📝 *Last updated: March 2026*
+> 📝 *Last updated: June 2026*
