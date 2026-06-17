@@ -6,16 +6,11 @@ import 'package:frontend/models/song_model.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-
 class GenrePlaylistScreen extends StatefulWidget {
   final String genre;
-  final List<Song>? songs; // Made nullable to detect dynamic loading
+  final List<Song>? songs;
 
-  const GenrePlaylistScreen({
-    super.key,
-    required this.genre,
-    this.songs,
-  });
+  const GenrePlaylistScreen({super.key, required this.genre, this.songs});
 
   @override
   State<GenrePlaylistScreen> createState() => _GenrePlaylistScreenState();
@@ -28,20 +23,16 @@ class _GenrePlaylistScreenState extends State<GenrePlaylistScreen> {
   @override
   void initState() {
     super.initState();
-     // Check if the list exists AND is not empty
     if (widget.songs != null && widget.songs!.isNotEmpty) {
-      // We have pre-loaded songs, display them directly
       _displaySongs = widget.songs!;
     } else {
-      // The list is either null (Home Screen) or empty (Explore Screen).
-      // Time to fetch the songs from Azure!
       _fetchTrendingSongs();
     }
   }
 
   Future<void> _fetchTrendingSongs() async {
     setState(() => _isLoading = true);
-  try {
+    try {
       final uri = Uri.parse(
         "https://emora-api-backend-ggccceepbsa2f4dk.eastasia-01.azurewebsites.net/explore/vibe-genre?query=${Uri.encodeComponent(widget.genre)}",
       );
@@ -87,7 +78,7 @@ class _GenrePlaylistScreenState extends State<GenrePlaylistScreen> {
     );
   }
 
-  // ── Top Bar ───────────────────────────────────────────────────────────────
+  //Top Bar
   Widget _buildTopBar(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -107,7 +98,7 @@ class _GenrePlaylistScreenState extends State<GenrePlaylistScreen> {
     );
   }
 
-  // ── Header ────────────────────────────────────────────────────────────────
+  //Header
   Widget _buildHeader() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -137,7 +128,7 @@ class _GenrePlaylistScreenState extends State<GenrePlaylistScreen> {
     );
   }
 
-  // ── Song List ─────────────────────────────────────────────────────────────
+  //Song List
   Widget _buildSongList(BuildContext context) {
     if (_isLoading) {
       return const Center(
@@ -163,27 +154,24 @@ class _GenrePlaylistScreenState extends State<GenrePlaylistScreen> {
       separatorBuilder: (_, __) => const SizedBox(height: 10),
       itemBuilder: (context, index) => _buildSongTile(context, index),
     );
-  }    
+  }
 
   Widget _buildSongTile(BuildContext context, int index) {
     final song = _displaySongs[index];
 
     return GestureDetector(
       onTap: () {
-        context.push('/player', extra: {
-          'songs': _displaySongs,
-          'index': index,
-        });
+        context.push(
+          '/player',
+          extra: {'songs': _displaySongs, 'index': index},
+        );
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           color: const Color(0xFF14122A),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: Colors.white.withOpacity(0.06),
-            width: 1,
-          ),
+          border: Border.all(color: Colors.white.withOpacity(0.06), width: 1),
         ),
         child: Row(
           children: [
@@ -244,7 +232,6 @@ class _GenrePlaylistScreenState extends State<GenrePlaylistScreen> {
               ),
             ),
             const SizedBox(width: 10),
-            // More icon
             Icon(
               Icons.more_vert,
               color: Colors.white.withOpacity(0.3),

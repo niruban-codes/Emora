@@ -22,13 +22,13 @@ class MoodAnalyticsScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => context.pop(),
         ),
-        title:  Text(
+        title: Text(
           "Mood Analytics",
           style: GoogleFonts.poppins(
-            color: Colors.white, 
+            color: Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: 20,
-            ),
+          ),
         ),
         centerTitle: true,
       ),
@@ -63,7 +63,7 @@ class MoodAnalyticsScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 30),
-            Text (
+            Text(
               "Mood Distribution",
               style: GoogleFonts.poppins(
                 color: Colors.white,
@@ -78,7 +78,7 @@ class MoodAnalyticsScreen extends StatelessWidget {
             const SizedBox(height: 30),
             _buildCalendarGrid(),
             const SizedBox(height: 25),
-            _buildViewMonthlyButton(context), //  pass context
+            _buildViewMonthlyButton(context),
             const SizedBox(height: 30),
           ],
         ),
@@ -99,7 +99,7 @@ class MoodAnalyticsScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-               Text(
+              Text(
                 "Daily Mood Average",
                 style: GoogleFonts.poppins(color: Colors.white54, fontSize: 16),
               ),
@@ -109,7 +109,7 @@ class MoodAnalyticsScreen extends StatelessWidget {
                   color: greenAccent.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child:  Text(
+                child: Text(
                   "↗ 12%",
                   style: GoogleFonts.poppins(
                     color: greenAccent,
@@ -120,7 +120,7 @@ class MoodAnalyticsScreen extends StatelessWidget {
               ),
             ],
           ),
-           Row(
+          Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
@@ -135,7 +135,10 @@ class MoodAnalyticsScreen extends StatelessWidget {
                 padding: EdgeInsets.only(bottom: 8, left: 4),
                 child: Text(
                   "/10",
-                  style: GoogleFonts.poppins(color: Colors.white38, fontSize: 13),
+                  style: GoogleFonts.poppins(
+                    color: Colors.white38,
+                    fontSize: 13,
+                  ),
                 ),
               ),
             ],
@@ -146,7 +149,7 @@ class MoodAnalyticsScreen extends StatelessWidget {
             width: double.infinity,
             child: CustomPaint(painter: WavePainter(pinkAccent)),
           ),
-           Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
@@ -202,7 +205,7 @@ class MoodAnalyticsScreen extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             value,
-            style:  GoogleFonts.poppins(
+            style: GoogleFonts.poppins(
               color: Colors.white,
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -223,12 +226,32 @@ class MoodAnalyticsScreen extends StatelessWidget {
       spacing: 10,
       runSpacing: 10,
       children: [
-        _moodChip("Happy", "42%", Color(0xFFFFB347), Icons.sentiment_very_satisfied_rounded,),
-        _moodChip("Sad", "15%", Color(0xFF42A5F5), Icons.sentiment_dissatisfied_rounded,),
-        _moodChip("Neutral", "28%", Color(0xFF78909C), Icons.lens_blur_rounded,),
-        _moodChip("Fear", "12%", Color(0xFF7E57C2), Icons.sentiment_very_dissatisfied_outlined,),
-        _moodChip("Angry", "8%", Color(0xFFEF5350), Icons.local_fire_department_outlined,),
-        _moodChip("Surprised", "20%", Color(0xFF4DB6AC), Icons.flare_rounded,),
+        _moodChip(
+          "Happy",
+          "42%",
+          Color(0xFFFFB347),
+          Icons.sentiment_very_satisfied_rounded,
+        ),
+        _moodChip(
+          "Sad",
+          "15%",
+          Color(0xFF42A5F5),
+          Icons.sentiment_dissatisfied_rounded,
+        ),
+        _moodChip("Neutral", "28%", Color(0xFF78909C), Icons.lens_blur_rounded),
+        _moodChip(
+          "Fear",
+          "12%",
+          Color(0xFF7E57C2),
+          Icons.sentiment_very_dissatisfied_outlined,
+        ),
+        _moodChip(
+          "Angry",
+          "8%",
+          Color(0xFFEF5350),
+          Icons.local_fire_department_outlined,
+        ),
+        _moodChip("Surprised", "20%", Color(0xFF4DB6AC), Icons.flare_rounded),
       ],
     );
   }
@@ -270,7 +293,7 @@ class MoodAnalyticsScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-           Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
@@ -287,7 +310,7 @@ class MoodAnalyticsScreen extends StatelessWidget {
               ),
             ],
           ),
-           Text(
+          Text(
             "Stable & Growing",
             style: GoogleFonts.poppins(
               color: pinkAccent,
@@ -302,7 +325,7 @@ class MoodAnalyticsScreen extends StatelessWidget {
             child: CustomPaint(painter: WavePainter(purpleAccent)),
           ),
           const SizedBox(height: 10),
-           Text(
+          Text(
             "You stayed calm for most of the day",
             style: GoogleFonts.poppins(color: Colors.white70, fontSize: 13),
           ),
@@ -340,7 +363,7 @@ class MoodAnalyticsScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 15),
-           Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _DayHeader("S"),
@@ -407,10 +430,9 @@ class MoodAnalyticsScreen extends StatelessWidget {
     );
   }
 
-  //  Now navigates to /monthly-analytics
   Widget _buildViewMonthlyButton(BuildContext context) {
     return GestureDetector(
-      onTap: () => context.push('/monthly-analytics'), //  added navigation
+      onTap: () => context.push('/monthly-analytics'),
       child: Container(
         width: double.infinity,
         height: 55,
@@ -418,7 +440,7 @@ class MoodAnalyticsScreen extends StatelessWidget {
           color: const Color(0xFF24224D),
           borderRadius: BorderRadius.circular(16),
         ),
-        child:  Center(
+        child: Center(
           child: Text(
             "View Monthly Analytics",
             style: GoogleFonts.poppins(
@@ -445,9 +467,9 @@ class _DayHeader extends StatelessWidget {
           label,
           style: GoogleFonts.poppins(
             color: Colors.white24,
-            fontSize: 13, 
+            fontSize: 13,
             fontWeight: FontWeight.bold,
-          ), //calender day heads
+          ),
         ),
       ),
     );
@@ -490,7 +512,7 @@ class _DateCircle extends StatelessWidget {
             color: isMuted ? Colors.white12 : Colors.white,
             fontSize: 13,
             fontWeight: FontWeight.bold,
-          ), //calender numbers
+          ),
         ),
       ),
     );

@@ -16,8 +16,6 @@ class _HomeScreenState extends State<HomeScreen>
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
 
-  // Mood grid now driven by allMoods from mood_model.dart — no local list needed.
-
   final List<Map<String, String>> _playlists = [
     {'title': 'Midnight Pulse', 'mood': 'HAPPY'},
     {'title': 'Ocean Breeze', 'mood': 'NEUTRAL'},
@@ -60,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen>
                       const SizedBox(height: 16),
                       _buildTopBar(),
                       const SizedBox(height: 28),
-                      _buildAnalyzeButton(), 
+                      _buildAnalyzeButton(),
                       const SizedBox(height: 32),
                       _sectionHeader('Search by Mood', showSeeAll: false),
                       const SizedBox(height: 16),
@@ -83,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  //UI Components 
+  //UI Components
   Widget _buildTopBar() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -105,7 +103,6 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildAnalyzeButton() {
     return ElevatedButton(
-      // Navigate to EmotionDetectionScreen via GoRouter
       onPressed: () => context.push('/scan'),
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.white,
@@ -115,11 +112,7 @@ class _HomeScreenState extends State<HomeScreen>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
-            Icons.bar_chart_rounded,
-            color: Colors.black,
-            size: 22,
-          ),
+          const Icon(Icons.bar_chart_rounded, color: Colors.black, size: 22),
           const SizedBox(width: 10),
           Text(
             'Analyze Mood',
@@ -174,18 +167,16 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-//view fav button 
+  //view fav button
   Widget _buildViewFavoritesButton() {
     return OutlinedButton(
       onPressed: () => context.push('/favorites'),
       style: OutlinedButton.styleFrom(
         backgroundColor: const Color(0xFF1E1A35),
-        side: const BorderSide(color: Color.fromARGB(29, 255, 255, 255)), 
+        side: const BorderSide(color: Color.fromARGB(29, 255, 255, 255)),
         minimumSize: const Size(double.infinity, 45),
         padding: const EdgeInsets.symmetric(vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -214,7 +205,7 @@ class _HomeScreenState extends State<HomeScreen>
     IconData moodIcon;
     Color moodColor = Colors.white;
 
-    switch (mood.label.toLowerCase()) { 
+    switch (mood.label.toLowerCase()) {
       case 'happy':
         moodIcon = Icons.sentiment_very_satisfied_rounded;
         moodColor = const Color(0xFFFFB74D);
@@ -243,25 +234,20 @@ class _HomeScreenState extends State<HomeScreen>
         moodIcon = Icons.face;
     }
 
-    //6 emotions containers  --------------------------------------------------
+    //6 emotions containers
     return GestureDetector(
       onTap: () {
-        // Direct to the functional Playlist Screens
         context.push('/playlist', extra: mood);
       },
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFF1E1A35), 
-          borderRadius: BorderRadius.circular(24), 
+          color: const Color(0xFF1E1A35),
+          borderRadius: BorderRadius.circular(24),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              moodIcon,
-              color: moodColor, 
-              size: 30,
-            ),
+            Icon(moodIcon, color: moodColor, size: 30),
             const SizedBox(height: 12),
             Text(
               mood.label,
@@ -273,7 +259,7 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           ],
         ),
-      ),    
+      ),
     );
   }
 
@@ -295,11 +281,13 @@ class _HomeScreenState extends State<HomeScreen>
   Widget _playlistCard(Map<String, String> playlist) {
     return GestureDetector(
       onTap: () {
-        // Navigates to shared playlist view and passes a dynamic query title
-        context.push('/genre-playlist', extra: {
-          'genre': playlist['title'] ?? 'Trending Playlists',
-          'songs': <Song>[], // Triggers your dynamic YouTube loading flow!
-        });
+        context.push(
+          '/genre-playlist',
+          extra: {
+            'genre': playlist['title'] ?? 'Trending Playlists',
+            'songs': <Song>[],
+          },
+        );
       },
       child: Container(
         padding: const EdgeInsets.all(12),
@@ -323,7 +311,7 @@ class _HomeScreenState extends State<HomeScreen>
               decoration: BoxDecoration(
                 color: const Color(0xFFA7338A),
                 borderRadius: BorderRadius.circular(100),
-               ),
+              ),
               child: Text(
                 playlist['mood']!,
                 style: const TextStyle(

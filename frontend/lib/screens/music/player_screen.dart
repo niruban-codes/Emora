@@ -28,7 +28,7 @@ class _PlayerScreenState extends State<PlayerScreen>
   bool _isShuffle = false;
   bool _isRepeat = false;
 
-  // Animation for album art pop-in
+  // Animation for album art pop in
   late AnimationController _animCtrl;
   late Animation<double> _scaleAnim;
 
@@ -49,11 +49,8 @@ class _PlayerScreenState extends State<PlayerScreen>
     _scaleAnim = CurvedAnimation(parent: _animCtrl, curve: Curves.easeOutBack);
     _animCtrl.forward();
     _ytController = YoutubePlayerController(
-      initialVideoId: _song.id,  //video id
-      flags: const YoutubePlayerFlags(
-        autoPlay: true,
-        mute: false,
-      ),
+      initialVideoId: _song.id,
+      flags: const YoutubePlayerFlags(autoPlay: true, mute: false),
     );
   }
 
@@ -70,8 +67,8 @@ class _PlayerScreenState extends State<PlayerScreen>
         _currentIndex++;
         _sliderValue = 0;
       });
-        _ytController.load(_song.id); // the videoId gotta be here
-        _animCtrl.forward(from: 0);
+      _ytController.load(_song.id);
+      _animCtrl.forward(from: 0);
     }
   }
 
@@ -81,7 +78,7 @@ class _PlayerScreenState extends State<PlayerScreen>
         _currentIndex--;
         _sliderValue = 0;
       });
-      _ytController.load(_song.id);   // id = videoid
+      _ytController.load(_song.id);
       _animCtrl.forward(from: 0);
     }
   }
@@ -101,43 +98,31 @@ class _PlayerScreenState extends State<PlayerScreen>
           body: SafeArea(
             child: Column(
               children: [
-                // ── Top Bar ──
                 _buildTopBar(context),
 
                 const SizedBox(height: 24),
-
-                // ── Album Art ──
                 _buildAlbumArt(),
 
                 const SizedBox(height: 32),
-
-                // ── Song Info ──
                 _buildSongInfo(),
 
                 const SizedBox(height: 28),
-
-                // ── Progress Slider ──
                 _buildProgressSlider(),
 
                 const SizedBox(height: 24),
-
-                // ── Controls ──
                 _buildControls(),
 
                 const SizedBox(height: 32),
-
-                // ── Playlist Queue Preview ──
                 _buildQueuePreview(),
               ],
             ),
           ),
         );
-      }
+      },
     );
   }
-      
-      
-  // ── Top Bar ───────────────────────────────────────────────────────────────
+
+  //Top Bar
   Widget _buildTopBar(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -190,44 +175,6 @@ class _PlayerScreenState extends State<PlayerScreen>
     );
   }
 
-  // ── Album Art ─────────────────────────────────────────────────────────────
-  // Widget _buildAlbumArt() {
-  //   return ScaleTransition(
-  //     scale: _scaleAnim,
-  //     child: Hero(
-  //       tag: 'album_art_${_song.id}',
-  //       child: Container(
-  //         height: 280,
-  //         width: 280,
-  //         decoration: BoxDecoration(
-  //           borderRadius: BorderRadius.circular(24),
-  //           boxShadow: [
-  //             BoxShadow(
-  //               color: Colors.black.withOpacity(0.5),
-  //               blurRadius: 30,
-  //               offset: const Offset(0, 16),
-  //             ),
-  //           ],
-  //         ),
-  //         child: ClipRRect(
-  //           borderRadius: BorderRadius.circular(24),
-  //           child: Image.network(
-  //             _song.coverUrl,
-  //             fit: BoxFit.cover,
-  //             errorBuilder: (_, __, ___) => Container(
-  //               color: const Color(0xFF1E1E3A),
-  //               child: const Icon(
-  //                 Icons.music_note,
-  //                 color: Colors.white24,
-  //                 size: 80,
-  //               ),
-  //             ),
-  //           ),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
   Widget _buildAlbumArt() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -243,7 +190,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     );
   }
 
-  // ── Song Info ─────────────────────────────────────────────────────────────
+  //Song Info
   Widget _buildSongInfo() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 28),
@@ -288,11 +235,10 @@ class _PlayerScreenState extends State<PlayerScreen>
     );
   }
 
-  // ── Progress Slider ───────────────────────────────────────────────────────
+  //Progress Slider
   Widget _buildProgressSlider() {
-    // Convert slider 0–100 to mm:ss
-    String _fmt(double val) {
-      final total = 225; // dummy total seconds (3:45)
+    String fmt(double val) {
+      final total = 225;
       final secs = (val / 100 * total).round();
       final m = secs ~/ 60;
       final s = secs % 60;
@@ -325,7 +271,7 @@ class _PlayerScreenState extends State<PlayerScreen>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  _fmt(_sliderValue),
+                  fmt(_sliderValue),
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.5),
                     fontSize: 12,
@@ -346,14 +292,13 @@ class _PlayerScreenState extends State<PlayerScreen>
     );
   }
 
-  // ── Controls ──────────────────────────────────────────────────────────────
+  //Controls
   Widget _buildControls() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Shuffle
           GestureDetector(
             onTap: () => setState(() => _isShuffle = !_isShuffle),
             child: Icon(
@@ -427,9 +372,8 @@ class _PlayerScreenState extends State<PlayerScreen>
     );
   }
 
-  // ── Queue Preview ─────────────────────────────────────────────────────────
+  //Queue Preview
   Widget _buildQueuePreview() {
-    // Show up to 2 upcoming songs
     final upcoming = widget.playlist
         .sublist(_currentIndex + 1)
         .take(2)

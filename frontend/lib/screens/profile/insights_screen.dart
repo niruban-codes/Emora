@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart'; 
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class InsightsScreen extends StatelessWidget {
@@ -22,7 +22,7 @@ class InsightsScreen extends StatelessWidget {
             backgroundColor: Color(0xFF2D2B55),
             child: Icon(Icons.arrow_back, color: Colors.white, size: 18),
           ),
-          onPressed: () => context.pop(), //  go_router pop
+          onPressed: () => context.pop(),
         ),
         title: Text(
           "Insights",
@@ -48,11 +48,9 @@ class InsightsScreen extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-             Text(
+            Text(
               "How you've been feeling this week",
-              style: GoogleFonts.poppins(
-                color: Colors.white54, 
-                fontSize: 13),
+              style: GoogleFonts.poppins(color: Colors.white54, fontSize: 13),
             ),
             const SizedBox(height: 25),
             _buildMostFrequentCard(),
@@ -79,7 +77,7 @@ class InsightsScreen extends StatelessWidget {
               mixColor: Colors.blueAccent,
             ),
             const SizedBox(height: 25),
-             Text(
+            Text(
               "Deep Insights",
               style: GoogleFonts.poppins(
                 color: Colors.white,
@@ -93,7 +91,7 @@ class InsightsScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                 Text(
+                Text(
                   "Top Mood-Boosting Tracks",
                   style: GoogleFonts.poppins(
                     color: Colors.white,
@@ -172,7 +170,7 @@ class InsightsScreen extends StatelessWidget {
                   color: const Color(0xFF1DB954).withOpacity(0.15),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child:  Row(
+                child: Row(
                   children: [
                     Icon(Icons.trending_up, color: Color(0xFF1DB954), size: 18),
                     SizedBox(width: 6),
@@ -262,7 +260,7 @@ class InsightsScreen extends StatelessWidget {
                       ),
                       Text(
                         mixName,
-                        style:GoogleFonts.poppins(
+                        style: GoogleFonts.poppins(
                           color: Colors.white,
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
@@ -313,7 +311,7 @@ class InsightsScreen extends StatelessWidget {
               children: [
                 Text(
                   "Caffeine Sensitivity",
-                  style:GoogleFonts.poppins(
+                  style: GoogleFonts.poppins(
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -379,14 +377,17 @@ class InsightsScreen extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   sub,
-                  style: GoogleFonts.poppins(color: Colors.white54, fontSize: 13),
+                  style: GoogleFonts.poppins(
+                    color: Colors.white54,
+                    fontSize: 13,
+                  ),
                 ),
               ],
             ),
           ),
           Text(
             moodImpact,
-            style:GoogleFonts.poppins(
+            style: GoogleFonts.poppins(
               color: pinkAccent,
               fontSize: 13,
               fontWeight: FontWeight.w500,

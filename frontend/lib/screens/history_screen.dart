@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart'; //  added
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // 🟢 ADDED
-import 'package:frontend/api_service.dart'; // 🟢 ADDED (Adjust path if needed)
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:frontend/api_service.dart';
+
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
 
@@ -12,7 +13,8 @@ class HistoryScreen extends StatefulWidget {
 
 class _HistoryScreenState extends State<HistoryScreen> {
   final ApiService _apiService = ApiService();
-  final String _currentUid = FirebaseAuth.instance.currentUser?.uid ?? 'anonymous_user';
+  final String _currentUid =
+      FirebaseAuth.instance.currentUser?.uid ?? 'anonymous_user';
 
   static const Color bgColor = Color(0xFF0D0C1D);
   static const Color cardBg = Color(0xFF1D1B3E);
@@ -47,9 +49,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white70),
-          onPressed: () => context.go('/home'), 
+          onPressed: () => context.go('/home'),
         ),
-        title:  Text(
+        title: Text(
           "History",
           style: GoogleFonts.poppins(
             color: Colors.white,
@@ -74,7 +76,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   );
                 }
 
-                if (snapshot.hasError || snapshot.data == null || snapshot.data!.isEmpty) {
+                if (snapshot.hasError ||
+                    snapshot.data == null ||
+                    snapshot.data!.isEmpty) {
                   return Center(
                     child: Text(
                       "No scan logs recorded yet.\nTry scanning your face!",
@@ -87,12 +91,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   );
                 }
 
-                // 🟢 Client-side filter matching the horizontal FilterBar selection
                 final rawList = snapshot.data!;
                 final filteredList = rawList.where((log) {
-                  if (_selectedFilterIndex == 0) return true; // "All"
-                  String selectedMoodName = _filters[_selectedFilterIndex].toLowerCase();
-                  String currentLogMood = (log['emotion'] ?? '').toString().toLowerCase();
+                  if (_selectedFilterIndex == 0) return true;
+                  String selectedMoodName = _filters[_selectedFilterIndex]
+                      .toLowerCase();
+                  String currentLogMood = (log['emotion'] ?? '')
+                      .toString()
+                      .toLowerCase();
                   return currentLogMood == selectedMoodName;
                 }).toList();
 
@@ -100,30 +106,32 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   return Center(
                     child: Text(
                       "No history logs found for ${_filters[_selectedFilterIndex]}",
-                      style: GoogleFonts.poppins(color: Colors.white38, fontSize: 14),
+                      style: GoogleFonts.poppins(
+                        color: Colors.white38,
+                        fontSize: 14,
+                      ),
                     ),
                   );
                 }
 
                 return ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
                   itemCount: filteredList.length,
                   itemBuilder: (context, index) {
                     final log = filteredList[index];
-
-                    // Extract data keys arriving from your backend history schema
                     final String detectedMood = log['emotion'] ?? 'Neutral';
                     final String timestamp = log['timestamp'] ?? '';
                     final List<dynamic> tracks = log['tracks'] ?? [];
-
-                    // Gracefully identify the first song name or fallback text
-                    final String trackName = tracks.isNotEmpty 
-                        ? (tracks[0]['title'] ?? tracks[0]['name'] ?? 'Recommended Track Mix')
+                    final String trackName = tracks.isNotEmpty
+                        ? (tracks[0]['title'] ??
+                              tracks[0]['name'] ??
+                              'Recommended Track Mix')
                         : 'Custom Vibe Playlist';
-                    
-                    final String subText = "Generated ${tracks.length} tracks";
 
-                    // Determine layout configurations based on emotion types dynamically
+                    final String subText = "Generated ${tracks.length} tracks";
                     IconData moodIcon = Icons.lens_blur_rounded;
                     Color iconColor = const Color(0xFF78909C);
 
@@ -154,7 +162,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
                     return _buildHistoryCard(
                       mood: detectedMood,
-                      time: timestamp.length > 16 ? timestamp.substring(0, 16).replaceAll('T', ' ') : timestamp,
+                      time: timestamp.length > 16
+                          ? timestamp.substring(0, 16).replaceAll('T', ' ')
+                          : timestamp,
                       trackName: trackName,
                       subText: subText,
                       moodIcon: moodIcon,
@@ -166,7 +176,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
               },
             ),
           ),
-
         ],
       ),
     );
@@ -178,7 +187,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.only(left: 20),
-        itemCount: _filters.length, 
+        itemCount: _filters.length,
         itemBuilder: (context, index) {
           bool isSelected = _selectedFilterIndex == index;
           return GestureDetector(
@@ -199,7 +208,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     fontWeight: isSelected
                         ? FontWeight.bold
                         : FontWeight.normal,
-                        fontSize: 13,
+                    fontSize: 13,
                   ),
                 ),
               ),
@@ -343,6 +352,4 @@ class _HistoryScreenState extends State<HistoryScreen> {
       ),
     );
   }
-
-  // ── Bottom Navigation (UPDATED) ────────────────────────────────────────────
 }

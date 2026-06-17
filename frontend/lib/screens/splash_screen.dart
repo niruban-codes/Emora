@@ -16,18 +16,14 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
 
-    // Check Auth state and navigate after 4 seconds
     Future.delayed(const Duration(milliseconds: 4000), () {
       if (!mounted) return;
 
-      // Ask Firebase if a user is currently signed in
       final user = FirebaseAuth.instance.currentUser;
 
       if (user != null) {
-        // User is remembered, skip the launch screen!
         context.go('/home');
       } else {
-        // Nobody is logged in, show the launch/login flow
         context.go('/launch');
       }
     });
@@ -45,12 +41,10 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Foreground Content
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Logo Animation
                 Image.asset(
                   'assets/animations/logo_animation.gif',
                   width: 200,
@@ -76,7 +70,7 @@ class _SplashScreenState extends State<SplashScreen> {
                     Text(
                       'YOUR MOOD YOUR MUSIC',
                       style: GoogleFonts.poppins(
-                        color: const Color(0xFFFF2994), // Emora Pink
+                        color: const Color(0xFFFF2994),
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 3.0,
@@ -90,10 +84,8 @@ class _SplashScreenState extends State<SplashScreen> {
           IgnorePointer(
             child: Image.asset(
               'assets/images/Vector.png',
-              fit: BoxFit.cover, // Ensures it stretches over the whole screen
-              opacity: const AlwaysStoppedAnimation(
-                0.8,
-              ), // Optional: tweak if it's too bright
+              fit: BoxFit.cover,
+              opacity: const AlwaysStoppedAnimation(0.8),
             ),
           ),
         ],

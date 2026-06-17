@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class MainLayout extends StatelessWidget {
-  // This shell manages the state of all our tabs automatically!
   final StatefulNavigationShell navigationShell;
 
   const MainLayout({super.key, required this.navigationShell});
@@ -11,14 +10,13 @@ class MainLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF15173D), // Fallback background
-      body:
-          navigationShell, // 👈 This is where Home, Library, etc. get injected
+      backgroundColor: const Color(0xFF15173D),
+      body: navigationShell,
       bottomNavigationBar: _buildBottomNav(context),
     );
   }
 
-  // ── Bottom Navigation (Unified Master Copy) ────────────────────────────────
+  //Bottom Navigation
   Widget _buildBottomNav(BuildContext context) {
     final items = [
       const _NavItem(icon: Icons.home_rounded, label: 'HOME'),
@@ -34,15 +32,12 @@ class MainLayout extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: List.generate(items.length, (index) {
-          // GoRouter automatically knows which tab is active!
           final isSelected = index == navigationShell.currentIndex;
 
           return GestureDetector(
             onTap: () {
-              // This single magical line handles all tab switching and state saving
               navigationShell.goBranch(
                 index,
-                // If they tap the active tab again, it pops them back to the root of that tab
                 initialLocation: index == navigationShell.currentIndex,
               );
             },
@@ -77,7 +72,7 @@ class MainLayout extends StatelessWidget {
   }
 }
 
-// ── Nav Item Model ─────────────────────────────────────────────────────────────
+//Nav Item Model
 class _NavItem {
   final IconData icon;
   final String label;

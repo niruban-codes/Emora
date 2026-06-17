@@ -7,7 +7,7 @@ class NotificationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0D0C1D), // Dark purple background
+      backgroundColor: const Color(0xFF0D0C1D),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -15,21 +15,30 @@ class NotificationScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text("Notifications", style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
+        title: Text(
+          "Notifications",
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: const [
           NotificationTile(
             title: "Mood Sync Successful!",
-            subtitle: "Your morning mood scan was successful! Check your new Peaceful playlist.",
+            subtitle:
+                "Your morning mood scan was successful! Check your new Peaceful playlist.",
             time: "2m ago",
             icon: Icons.auto_awesome,
             isNew: true,
           ),
           NotificationTile(
             title: "Playlist Update",
-            subtitle: "3 new tracks added to your 'Energetic Afternoon' collection.",
+            subtitle:
+                "3 new tracks added to your 'Energetic Afternoon' collection.",
             time: "1h ago",
             icon: Icons.queue_music,
             isNew: true,
@@ -42,13 +51,15 @@ class NotificationScreen extends StatelessWidget {
           ),
           NotificationTile(
             title: "AI Model Update",
-            subtitle: "We've enhanced your facial expression detection for better mood accuracy.",
+            subtitle:
+                "We've enhanced your facial expression detection for better mood accuracy.",
             time: "Yesterday",
             icon: Icons.settings_suggest_outlined,
           ),
           NotificationTile(
             title: "Security Check",
-            subtitle: "Your account data is safely encrypted and backed up to the cloud.",
+            subtitle:
+                "Your account data is safely encrypted and backed up to the cloud.",
             time: "2 days ago",
             icon: Icons.verified_user_outlined,
           ),
@@ -80,7 +91,9 @@ class NotificationTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.05),
         borderRadius: BorderRadius.circular(24),
-        border: isNew ? Border.all(color: Colors.purpleAccent.withOpacity(0.5), width: 1) : null,
+        border: isNew
+            ? Border.all(color: Colors.purpleAccent.withOpacity(0.5), width: 1)
+            : null,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -101,20 +114,43 @@ class NotificationTile extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(title, style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16)),
+                    Text(
+                      title,
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 16,
+                      ),
+                    ),
                     Row(
                       children: [
-                        Text(time, style: GoogleFonts.poppins(color: Colors.white.withOpacity(0.5), fontSize: 14)),
+                        Text(
+                          time,
+                          style: GoogleFonts.poppins(
+                            color: Colors.white.withOpacity(0.5),
+                            fontSize: 14,
+                          ),
+                        ),
                         if (isNew) ...[
                           const SizedBox(width: 4),
-                          const CircleAvatar(radius: 4, backgroundColor: Colors.purpleAccent),
-                        ]
+                          const CircleAvatar(
+                            radius: 4,
+                            backgroundColor: Colors.purpleAccent,
+                          ),
+                        ],
                       ],
                     ),
                   ],
                 ),
                 const SizedBox(height: 8),
-                Text(subtitle, style: GoogleFonts.poppins(color: Colors.white.withOpacity(0.7), fontSize: 13, height: 1.4)),
+                Text(
+                  subtitle,
+                  style: GoogleFonts.poppins(
+                    color: Colors.white.withOpacity(0.7),
+                    fontSize: 13,
+                    height: 1.4,
+                  ),
+                ),
               ],
             ),
           ),

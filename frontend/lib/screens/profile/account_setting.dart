@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:firebase_auth/firebase_auth.dart'; 
-import '../../../services/firestore_service.dart'; 
-import 'package:cloud_firestore/cloud_firestore.dart'; 
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../../services/firestore_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 
 class AccountSettingScreen extends StatefulWidget {
   const AccountSettingScreen({super.key});
@@ -14,20 +13,20 @@ class AccountSettingScreen extends StatefulWidget {
 }
 
 class _AccountSettingScreenState extends State<AccountSettingScreen> {
-  // Theme Colors - Syncing with your Home & Profile screens
+  //Theme Colors
   static const Color bgColor = Color(0xFF0D0C1D);
   static const Color accentPurple = Color(0xFF9C27B0);
   static const Color activeHighlight = Color(0xFFA7338A);
   static const Color textSecondary = Colors.white38;
   static const Color buttonRed = Color(0xFFC62828);
 
-  // Controllers to handle text input
+  //Controllers to handle text input
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _currentPasswordController = TextEditingController();
   final _newPasswordController = TextEditingController();
 
-  bool _isLoading = true; // Added loading state
+  bool _isLoading = true;
   String? _selectedAvatarAsset;
   String? _savedAvatarAsset;
   String _memberSinceText = 'Member since 2026';
@@ -48,15 +47,13 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
   @override
   void initState() {
     super.initState();
-    _loadCurrentUserData(); // 2. Load real data on start
+    _loadCurrentUserData();
   }
 
-  // 3. Fetch data from Firebase
   Future<void> _loadCurrentUserData() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       try {
-        // Assuming your FirestoreService has getUserProfile
         final userData = await FirestoreService().getUserProfile(user.uid);
 
         setState(() {
@@ -95,16 +92,18 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
     );
   }
 
-  Future<void> _updateAvatarInFirestore(String avatarPath, String successMessage) async {
+  Future<void> _updateAvatarInFirestore(
+    String avatarPath,
+    String successMessage,
+  ) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
     setState(() => _isLoading = true);
     try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .update({'profilePicUrl': avatarPath});
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).update(
+        {'profilePicUrl': avatarPath},
+      );
 
       setState(() {
         _savedAvatarAsset = avatarPath;
@@ -114,7 +113,10 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(successMessage, style: GoogleFonts.poppins(fontSize: 13)),
+            content: Text(
+              successMessage,
+              style: GoogleFonts.poppins(fontSize: 13),
+            ),
             backgroundColor: accentPurple,
           ),
         );
@@ -124,7 +126,10 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to update avatar: ${e.toString()}', style: GoogleFonts.poppins(fontSize: 13)),
+            content: Text(
+              'Failed to update avatar: ${e.toString()}',
+              style: GoogleFonts.poppins(fontSize: 13),
+            ),
             backgroundColor: buttonRed,
           ),
         );
@@ -132,13 +137,11 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
     }
   }
 
-  // 4. Update the save logic for TC11
   Future<void> _handleSave() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null && _usernameController.text.isNotEmpty) {
       setState(() => _isLoading = true);
 
-      // Add a method in FirestoreService to update the name
       await FirestoreService().updateUserProfile(
         user.uid,
         _usernameController.text.trim(),
@@ -152,7 +155,6 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
       }
     }
   }
-   
 
   Future<void> _handleForgotPassword() async {
     final email = _emailController.text.trim();
@@ -211,13 +213,13 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
         ),
         centerTitle: true,
       ),
-      // 1. ADD FUTUREBUILDER TO FETCH REAL DATA
       body: FutureBuilder<Map<String, dynamic>?>(
         future: FirestoreService().getUserProfile(
           FirebaseAuth.instance.currentUser?.uid ?? '',
         ),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting && _isLoading) {
+          if (snapshot.connectionState == ConnectionState.waiting &&
+              _isLoading) {
             return const Center(
               child: CircularProgressIndicator(color: accentPurple),
             );
@@ -245,7 +247,6 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
             child: Column(
               children: [
                 const SizedBox(height: 20),
-                // Profile Image Section
                 Center(
                   child: Container(
                     padding: const EdgeInsets.all(3),
@@ -264,7 +265,6 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                   ),
                 ),
                 const SizedBox(height: 15),
-                // 4. DISPLAY REAL NAME
                 Text(
                   _usernameController.text,
                   style: GoogleFonts.poppins(
@@ -273,12 +273,11 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                     color: Colors.white,
                   ),
                 ),
-                
+
                 Text(
-                  // We check if snapshot has data and the createdAt field exists
                   snapshot.hasData && snapshot.data?['createdAt'] != null
                       ? 'Member since ${(snapshot.data!['createdAt'] as Timestamp).toDate().year}'
-                      : 'Member since 2026', // Fallback while loading or if null
+                      : 'Member since 2026',
                   style: GoogleFonts.poppins(
                     color: accentPurple,
                     fontSize: 13,
@@ -297,9 +296,12 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                   children: [
                     Expanded(
                       child: OutlinedButton.icon(
-                        onPressed:_selectedAvatarAsset == _savedAvatarAsset
-                            ? null // Disabled if highlighted avatar is already saved
-                            : () => _updateAvatarInFirestore(_selectedAvatarAsset!, 'Avatar saved successfully!'),
+                        onPressed: _selectedAvatarAsset == _savedAvatarAsset
+                            ? null
+                            : () => _updateAvatarInFirestore(
+                                _selectedAvatarAsset!,
+                                'Avatar saved successfully!',
+                              ),
                         icon: const Icon(Icons.upload, size: 18),
                         label: Text(
                           'Save Avatar',
@@ -313,12 +315,14 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                           backgroundColor: Colors.transparent,
 
                           disabledForegroundColor: Colors.white24,
-                          disabledBackgroundColor: Colors.white.withOpacity(0.01),
+                          disabledBackgroundColor: Colors.white.withOpacity(
+                            0.01,
+                          ),
 
                           side: BorderSide(
-                            color: _selectedAvatarAsset != _savedAvatarAsset 
-                                ? accentPurple 
-                                : Colors.white10, 
+                            color: _selectedAvatarAsset != _savedAvatarAsset
+                                ? accentPurple
+                                : Colors.white10,
                             width: 1.5,
                           ),
 
@@ -332,9 +336,12 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                     const SizedBox(width: 16),
                     Expanded(
                       child: TextButton.icon(
-                        onPressed:_savedAvatarAsset == defaultAvatar
-                            ? null // Disabled if already running baseline default setup
-                            : () => _updateAvatarInFirestore(defaultAvatar, 'Reset to default avatar!'),
+                        onPressed: _savedAvatarAsset == defaultAvatar
+                            ? null
+                            : () => _updateAvatarInFirestore(
+                                defaultAvatar,
+                                'Reset to default avatar!',
+                              ),
                         icon: const Icon(Icons.delete_outline, size: 18),
                         label: Text(
                           'Remove',
@@ -348,7 +355,9 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                           backgroundColor: buttonRed.withOpacity(0.15),
 
                           disabledForegroundColor: Colors.white10,
-                          disabledBackgroundColor: Colors.white.withOpacity(0.02),
+                          disabledBackgroundColor: Colors.white.withOpacity(
+                            0.02,
+                          ),
 
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
@@ -403,7 +412,6 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                   ),
                 ),
                 const SizedBox(height: 40),
-                // 5. UPDATE SAVE BUTTON LOGIC
                 SizedBox(
                   width: double.infinity,
                   height: 60,
@@ -412,23 +420,17 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                       final user = FirebaseAuth.instance.currentUser;
                       if (user != null) {
                         try {
-                          // 1. Always update the display name
                           await FirestoreService().updateUserProfile(
                             user.uid,
                             _usernameController.text.trim(),
                           );
-
-                          // 2. Check if they are trying to change their password
                           if (_currentPasswordController.text.isNotEmpty &&
                               _newPasswordController.text.isNotEmpty) {
-                            // Ask Firebase to verify their old password first!
                             AuthCredential credential =
                                 EmailAuthProvider.credential(
                                   email: user.email!,
                                   password: _currentPasswordController.text,
                                 );
-
-                            // Re-authenticate and update
                             await user.reauthenticateWithCredential(credential);
                             await user.updatePassword(
                               _newPasswordController.text,
@@ -444,10 +446,9 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                                 ),
                               ),
                             );
-                            context.pop(); // Go back after saving
+                            context.pop();
                           }
                         } on FirebaseAuthException catch (e) {
-                          // If they typed the wrong current password, Firebase throws an error
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
@@ -488,15 +489,15 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
     );
   }
 
-  // ── Helper Methods (These fix the errors in your screenshot) ──────────────
+  //Helper Methods
 
   Widget _buildAvatarSelectionGrid() {
     return GridView.builder(
       shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(), 
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: _emoraAvatars.length,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4, 
+        crossAxisCount: 4,
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
       ),
@@ -519,20 +520,20 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: isSelected ? Colors.white : accentPurple.withOpacity(0.3),
+                    color: isSelected
+                        ? Colors.white
+                        : accentPurple.withOpacity(0.3),
                     width: isSelected ? 2.5 : 1.2,
                   ),
                 ),
-                child: CircleAvatar(
-                  backgroundImage: AssetImage(currentUri),
-                ),
+                child: CircleAvatar(backgroundImage: AssetImage(currentUri)),
               ),
               if (isSaved)
                 const CircleAvatar(
                   radius: 9,
                   backgroundColor: Colors.green,
                   child: Icon(Icons.check, size: 11, color: Colors.white),
-                )
+                ),
             ],
           ),
         );
@@ -622,7 +623,7 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                     child: suffixIcon,
                   )
                 : null,
-            ),
+          ),
         ),
         const SizedBox(height: 16),
       ],

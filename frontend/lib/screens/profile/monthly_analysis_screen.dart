@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart'; //  added
+import 'package:go_router/go_router.dart';
 import 'dart:math' as math;
 import 'package:google_fonts/google_fonts.dart';
 
@@ -30,7 +30,7 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white70),
-          onPressed: () => context.pop(), //  go_router pop
+          onPressed: () => context.pop(),
         ),
         title: Text(
           "Monthly Mood Analysis",
@@ -47,7 +47,7 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-             Text(
+            Text(
               "Monthly Emotional Profile",
               style: GoogleFonts.poppins(
                 color: Colors.white,
@@ -60,9 +60,9 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
             const SizedBox(height: 25),
             _buildComparisonCard(),
             const SizedBox(height: 35),
-             Text(
+            Text(
               "Emotion Accuracy per Category",
-              style:GoogleFonts.poppins(
+              style: GoogleFonts.poppins(
                 color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -88,7 +88,7 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
       ),
       child: Column(
         children: [
-           Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Icon(Icons.chevron_left, color: Colors.white30),
@@ -197,7 +197,7 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
                     days[i],
                     style: GoogleFonts.poppins(
                       color: Colors.white,
-                      fontSize: 13, //calendernumber
+                      fontSize: 13,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -209,7 +209,7 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
                     color: days[i].isEmpty
                         ? Colors.transparent
                         : Colors.white60,
-                    fontSize: 13, //calender number
+                    fontSize: 13,
                   ),
                 ),
               const SizedBox(height: 4),
@@ -264,7 +264,7 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
         alignment: Alignment.center,
         children: [
           CustomPaint(size: const Size(110, 110), painter: DonutPainter()),
-           Column(
+          Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
@@ -277,11 +277,8 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
               ),
               Text(
                 "Avg",
-                style: GoogleFonts.poppins(
-                  color: Colors.white54, 
-                  fontSize: 12,
-                  ),
-                ),
+                style: GoogleFonts.poppins(color: Colors.white54, fontSize: 12),
+              ),
             ],
           ),
         ],
@@ -297,10 +294,7 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
           children: [
             Text(
               label,
-              style: GoogleFonts.poppins(
-                color: Colors.white70, 
-                fontSize: 13
-                ),
+              style: GoogleFonts.poppins(color: Colors.white70, fontSize: 13),
             ),
             Text(
               count,
@@ -340,7 +334,7 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
             child: Icon(Icons.trending_up, color: Colors.white, size: 20),
           ),
           const SizedBox(width: 15),
-           Expanded(
+          Expanded(
             child: Text.rich(
               TextSpan(
                 style: GoogleFonts.poppins(color: Colors.white70, fontSize: 13),
@@ -370,7 +364,7 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
         color: cardBg.withOpacity(0.4),
         borderRadius: BorderRadius.circular(24),
       ),
-      child:  Row(
+      child: Row(
         children: [
           Icon(Icons.verified, color: Color(0xFFE598D0), size: 26),
           SizedBox(width: 15),
@@ -459,9 +453,8 @@ class _LItem extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             t,
-           style: GoogleFonts.poppins(
-            color: Colors.white54, 
-            fontSize: 13)),
+            style: GoogleFonts.poppins(color: Colors.white54, fontSize: 13),
+          ),
         ],
       ),
     );

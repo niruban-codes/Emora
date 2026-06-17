@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:frontend/models/song_model.dart';
 
-// Dummy song model 
 class _FavSong {
   final String title;
   final String artist;
@@ -123,8 +122,6 @@ class _FavoritesScreenState extends State<FavoritesScreen>
       ? _allSongs
       : _allSongs.where((s) => s.mood == _selectedMood).toList();
 
-  // Convert _FavSong → real Song for PlayerScreen 
-  // Adjust field names to match your actual Song model constructor.
   Song _toSong(_FavSong s) => Song(
     id: 'default-id',
     title: s.title,
@@ -133,7 +130,6 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     coverUrl: 'default-cover-url',
   );
 
-  // Push /player and keep mini-player in sync 
   void _navigateToPlayer(List<_FavSong> songs, int index) {
     setState(() => _playingIndex = index);
     final realSongs = songs.map(_toSong).toList();
@@ -157,7 +153,6 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     _animController.dispose();
     super.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -217,7 +212,6 @@ class _FavoritesScreenState extends State<FavoritesScreen>
               ),
             ),
           ),
-          // Play-all → opens PlayerScreen at index 0
           GestureDetector(
             onTap: () {
               if (songs.isNotEmpty) _navigateToPlayer(songs, 0);
@@ -315,13 +309,13 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     );
   }
 
-  //  Single song tile — tap opens full PlayerScreen 
+  //  Single song tile — tap opens full PlayerScreen
   Widget _buildSongTile(List<_FavSong> songs, int index) {
     final song = songs[index];
     final isPlaying = _playingIndex == index;
 
     return GestureDetector(
-      onTap: () => _navigateToPlayer(songs, index), //  full screen player
+      onTap: () => _navigateToPlayer(songs, index),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         margin: const EdgeInsets.only(bottom: 10),
@@ -335,7 +329,6 @@ class _FavoritesScreenState extends State<FavoritesScreen>
         ),
         child: Row(
           children: [
-            // Thumbnail / icon
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Image.network(
@@ -350,7 +343,6 @@ class _FavoritesScreenState extends State<FavoritesScreen>
               ),
             ),
             const SizedBox(width: 12),
-            // Title + artist
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -374,13 +366,11 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                 ],
               ),
             ),
-            // Duration
             Text(
               song.duration,
               style: GoogleFonts.poppins(color: Colors.white38, fontSize: 12),
             ),
             const SizedBox(width: 8),
-            // Three-dot menu — stopPropagation so it doesn't trigger tile tap
             GestureDetector(
               onTap: () => _showSongOptions(context, song),
               behavior: HitTestBehavior.opaque,
@@ -399,11 +389,10 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     );
   }
 
-  // ── Mini player bar — tap title area opens full PlayerScreen ──────────────
   Widget _buildMiniPlayer(List<_FavSong> songs) {
     final song = songs[_playingIndex!];
     return GestureDetector(
-      onTap: () => _navigateToPlayer(songs, _playingIndex!), // ← full screen
+      onTap: () => _navigateToPlayer(songs, _playingIndex!),
       child: Container(
         margin: const EdgeInsets.fromLTRB(16, 8, 16, 12),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -422,10 +411,8 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                 width: 40,
                 height: 40,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const Icon(
-                  Icons.music_note_rounded,
-                  color: Colors.white,
-                ),
+                errorBuilder: (_, __, ___) =>
+                    const Icon(Icons.music_note_rounded, color: Colors.white),
               ),
             ),
             const SizedBox(width: 12),
@@ -452,7 +439,6 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                 ],
               ),
             ),
-            // Prev — GestureDetector absorbs tap so it doesn't bubble to parent
             GestureDetector(
               onTap: () {
                 if (_playingIndex! > 0) {
@@ -470,7 +456,6 @@ class _FavoritesScreenState extends State<FavoritesScreen>
               ),
             ),
             const SizedBox(width: 4),
-            // Pause/dismiss
             GestureDetector(
               onTap: () => setState(() => _playingIndex = null),
               behavior: HitTestBehavior.opaque,
@@ -489,7 +474,6 @@ class _FavoritesScreenState extends State<FavoritesScreen>
               ),
             ),
             const SizedBox(width: 4),
-            // Next
             GestureDetector(
               onTap: () {
                 if (_playingIndex! < songs.length - 1) {
@@ -512,7 +496,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     );
   }
 
-  // ── Bottom sheet options ──────────────────────────────────────────────────
+  //Bottom sheet options
   void _showSongOptions(BuildContext context, _FavSong song) {
     showModalBottomSheet(
       context: context,

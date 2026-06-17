@@ -21,7 +21,7 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
 
   MoodModel get _mood => widget.mood;
 
-   @override
+  @override
   void initState() {
     super.initState();
     _fetchMoodPlaylist();
@@ -39,7 +39,6 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
         body: jsonEncode({'emotion': _mood.label.toLowerCase()}),
       );
 
-      // 2. We are printing Azure's exact response to the terminal!
       print("Azure Response Code: ${response.statusCode}");
       print("Azure Response Body: ${response.body}");
 
@@ -62,7 +61,6 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
     }
   }
 
-  // Navigate to PlayerScreen passing full playlist + tapped index
   void _openPlayer(int index) {
     context.push('/player', extra: {'songs': _songs, 'index': index});
   }
@@ -81,7 +79,6 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
                 SliverToBoxAdapter(child: _buildCoverSection(songs)),
                 SliverToBoxAdapter(child: _buildActionButtons(songs)),
 
-                // Show a dynamic loading spinner while Azure fetches the tracks
                 if (_isLoading)
                   SliverToBoxAdapter(
                     child: Padding(
@@ -104,14 +101,13 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
               ],
             ),
           ),
-          // Hide the mini-player until the songs are fully loaded
           if (!_isLoading && songs.isNotEmpty) _buildMiniPlayer(songs),
         ],
       ),
     );
   }
 
-  // ── Top Bar ───────────────────────────────────────────────────────────────
+  //Top Bar
   Widget _buildTopBar() {
     return SafeArea(
       child: Padding(
@@ -136,14 +132,14 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
                 letterSpacing: 2.5,
               ),
             ),
-            const SizedBox(width: 22), // Placeholder for spacing
+            const SizedBox(width: 22),
           ],
         ),
       ),
     );
   }
 
-  // ── Cover Section ─────────────────────────────────────────────────────────
+  //Cover Section
   Widget _buildCoverSection(List<Song> songs) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -195,7 +191,7 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
                       ],
                     ),
                     child: const Icon(
-                      Icons.graphic_eq_rounded, // Modern audio wave icon
+                      Icons.graphic_eq_rounded,
                       size: 70,
                       color: Colors.white,
                     ),
@@ -250,7 +246,7 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
     );
   }
 
-  // ── Play / Shuffle Buttons ────────────────────────────────────────────────
+  //Play / Shuffle Buttons
   Widget _buildActionButtons(List<Song> songs) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -336,7 +332,7 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
     );
   }
 
-  // ── Song Tile ─────────────────────────────────────────────────────────────
+  //Song Tile
   Widget _buildSongTile(Song song, int index) {
     final bool isPlaying = index == _playingIndex;
 
@@ -356,7 +352,6 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
         ),
         child: Row(
           children: [
-            // Album art thumbnail
             Hero(
               tag: 'album_art_${song.id}',
               child: ClipRRect(
@@ -436,7 +431,7 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
     );
   }
 
-  // ── Mini Player ───────────────────────────────────────────────────────────
+  //Mini Player
   Widget _buildMiniPlayer(List<Song> songs) {
     final current = songs[_playingIndex];
     return GestureDetector(

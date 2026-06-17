@@ -1,7 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
-
-// ── Screens ────────────────────────────────────────────────────────────────
+//Screens
 import 'package:frontend/screens/splash_screen.dart';
 import 'package:frontend/screens/launch_screen.dart';
 import 'package:frontend/screens/auth/register_screen.dart';
@@ -38,9 +37,6 @@ final appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/',
   routes: [
-    // ═══════════════════════════════════════════════════════════════════════
-    // FULL SCREEN ROUTES (No Bottom Navigation Bar)
-    // ═══════════════════════════════════════════════════════════════════════
     GoRoute(
       path: '/',
       parentNavigatorKey: _rootNavigatorKey,
@@ -68,7 +64,7 @@ final appRouter = GoRouter(
         final extra = state.extra as Map<String, dynamic>;
         return GenrePlaylistScreen(
           genre: (extra['genre'] as String?) ?? 'Unknown Genre',
-          songs: extra['songs'] as List<Song>?, 
+          songs: extra['songs'] as List<Song>?,
         );
       },
     ),
@@ -125,30 +121,32 @@ final appRouter = GoRouter(
       path: '/result',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) {
-  try {
+        try {
           final extra = state.extra;
 
-          // 1. Check if we received the custom Map passed from EmotionDetectionScreen
           if (extra is Map<String, dynamic>) {
-            // Unpack the pre-constructed MoodModel from the map
             if (extra.containsKey('mood') && extra['mood'] is MoodModel) {
               return ResultScreen(mood: extra['mood'] as MoodModel);
             }
-            
-            // Fallback parsing if the raw backend Map layout was parsed directly
-            final emotionStr = (extra['dominant_emotion'] ?? extra['emotion'] ?? extra['mood'] ?? 'neutral').toString();
+
+            final emotionStr =
+                (extra['dominant_emotion'] ??
+                        extra['emotion'] ??
+                        extra['mood'] ??
+                        'neutral')
+                    .toString();
             return ResultScreen(mood: MoodModel.fromString(emotionStr));
-          } 
-          
-          // 2. Check if it was passed cleanly as just a MoodModel object
+          }
+
           if (extra is MoodModel) {
             return ResultScreen(mood: extra);
           }
-          
-          // 3. Fallback safely if no parameter structure matches
+
           return ResultScreen(mood: MoodModel.fromString('neutral'));
         } catch (e, stackTrace) {
-          debugPrint("❌ GoRouter Result Processing Exception caught safely: $e");
+          debugPrint(
+            "❌ GoRouter Result Processing Exception caught safely: $e",
+          );
           return ResultScreen(mood: MoodModel.fromString('neutral'));
         }
       },
@@ -161,19 +159,25 @@ final appRouter = GoRouter(
           final extra = state.extra;
 
           if (extra is Map<String, dynamic>) {
-            final emotionStr = (extra['dominant_emotion'] ?? extra['emotion'] ?? extra['mood'] ?? 'neutral').toString();
-            return PlaylistDetailsScreen(mood: MoodModel.fromString(emotionStr));
-          } 
+            final emotionStr =
+                (extra['dominant_emotion'] ??
+                        extra['emotion'] ??
+                        extra['mood'] ??
+                        'neutral')
+                    .toString();
+            return PlaylistDetailsScreen(
+              mood: MoodModel.fromString(emotionStr),
+            );
+          }
 
           if (extra is MoodModel) {
             return PlaylistDetailsScreen(mood: extra);
           }
 
-          // 3. NEW: Check if the app sent a plain text String (Fixes your ResultScreen crash!)
           if (extra is String) {
             return PlaylistDetailsScreen(mood: MoodModel.fromString(extra));
           }
-          
+
           return PlaylistDetailsScreen(mood: MoodModel.fromString('neutral'));
         } catch (e, stackTrace) {
           debugPrint("❌ GoRouter Playlist Navigation Error: $e");
@@ -183,16 +187,11 @@ final appRouter = GoRouter(
       },
     ),
 
-    // ═══════════════════════════════════════════════════════════════════════
-    // SHELL ROUTES (Wrapped in MainLayout with Bottom Navigation Bar)
-    // ═══════════════════════════════════════════════════════════════════════
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
-        // Return the MainLayout, passing the shell to display the current tab
         return MainLayout(navigationShell: navigationShell);
       },
       branches: [
-        // ── Branch 0: HOME ──
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -202,7 +201,6 @@ final appRouter = GoRouter(
           ],
         ),
 
-        // ── Branch 1: EXPLORE ──
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -212,7 +210,6 @@ final appRouter = GoRouter(
           ],
         ),
 
-        // ── Branch 2: LIBRARY (and its sub-pages) ──
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -222,7 +219,6 @@ final appRouter = GoRouter(
           ],
         ),
 
-        // ── Branch 3: HISTORY ──
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -232,7 +228,6 @@ final appRouter = GoRouter(
           ],
         ),
 
-        // ── Branch 4: PROFILE (and its sub-pages) ──
         StatefulShellBranch(
           routes: [
             GoRoute(
