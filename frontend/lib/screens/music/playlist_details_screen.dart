@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:frontend/screens/emotion/mood_model.dart';
 import 'package:frontend/models/song_model.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class PlaylistDetailsScreen extends StatefulWidget {
   final MoodModel mood;
@@ -14,22 +16,50 @@ class PlaylistDetailsScreen extends StatefulWidget {
 
 class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
   int _playingIndex = 0;
+  List<Song> _songs = [];
+  bool _isLoading = true;
 
   MoodModel get _mood => widget.mood;
 
-  // Build a Song list from MoodModel data
-  List<Song> get _songs {
-    final playlists = _mood.playlistTitles;
-    final durations = ['3:45', '4:12', '2:58', '5:30', '3:22', '4:45'];
-    return List.generate(playlists.length, (i) {
-      return Song(
-        id: '${_mood.type.name}_$i',
-        title: i == 0 ? _mood.songTitle : playlists[i],
-        artist: i == 0 ? _mood.artist : _mood.label,
-        duration: durations[i % durations.length],
-        coverUrl: 'https://picsum.photos/200?${_mood.type.index * 10 + i}',
+   @override
+  void initState() {
+    super.initState();
+    _fetchMoodPlaylist();
+  }
+
+  Future<void> _fetchMoodPlaylist() async {
+    try {
+      final uri = Uri.parse(
+        "https://emora-api-backend-ggccceepbsa2f4dk.eastasia-01.azurewebsites.net/youtube/recommend-music",
       );
-    });
+
+      final response = await http.post(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'emotion': _mood.label.toLowerCase()}),
+      );
+
+      // 2. We are printing Azure's exact response to the terminal!
+      print("Azure Response Code: ${response.statusCode}");
+      print("Azure Response Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        if (mounted) {
+          setState(() {
+            _songs = data.map((e) => Song.fromJson(e)).toList();
+            _isLoading = false;
+          });
+        }
+      } else {
+        throw Exception("Server Error: ${response.statusCode}");
+      }
+    } catch (e) {
+      debugPrint("Error fetching mood playlist: $e");
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   // Navigate to PlayerScreen passing full playlist + tapped index
@@ -50,17 +80,32 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
                 SliverToBoxAdapter(child: _buildTopBar()),
                 SliverToBoxAdapter(child: _buildCoverSection(songs)),
                 SliverToBoxAdapter(child: _buildActionButtons(songs)),
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) => _buildSongTile(songs[index], index),
-                    childCount: songs.length,
+
+                // Show a dynamic loading spinner while Azure fetches the tracks
+                if (_isLoading)
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 50.0),
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: _mood.primaryColor,
+                        ),
+                      ),
+                    ),
+                  )
+                else
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) => _buildSongTile(songs[index], index),
+                      childCount: songs.length,
+                    ),
                   ),
-                ),
                 const SliverToBoxAdapter(child: SizedBox(height: 80)),
               ],
             ),
           ),
-          _buildMiniPlayer(songs),
+          // Hide the mini-player until the songs are fully loaded
+          if (!_isLoading && songs.isNotEmpty) _buildMiniPlayer(songs),
         ],
       ),
     );

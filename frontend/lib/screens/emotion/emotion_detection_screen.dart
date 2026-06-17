@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:frontend/screens/emotion/mood_model.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // 👈 added
+import 'package:firebase_auth/firebase_auth.dart'; //  added
 import 'package:image_picker/image_picker.dart';// added for camera/gallery access
-import '../../../services/firestore_service.dart'; // 👈 added
+import '../../../services/firestore_service.dart'; //  added
 import '../../api_service.dart'; // added to link our Python backend service
+import 'dart:convert';
 
 /// EmotionDetectionScreen
 ///
@@ -127,34 +128,83 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
       });
 
       // Send photo to your Python Flask API
-      final result = await _apiService.detectEmotion(_selectedImage!);
+// Send photo to your Python Flask API
+      final String? result = await _apiService.detectEmotion(_selectedImage!);
 
-      if (result != null && result.containsKey('emotion')) {
-        final String rawEmotion = result['emotion'].toString().toLowerCase();
-
-        // Save to your team's Firestore History
+      if (result != null && result.isNotEmpty) {
+        String cleanEmotionWord = "neutral"; // Default fallback word string
+        
         try {
-          await FirestoreService().addEmotion(
-            rawEmotion.toUpperCase(),
-            "AI detected mood: $rawEmotion",
-          );
-          print("✅ DB Success: Saved '$rawEmotion' to emotion_history");
+          // 👈 FIX 1: Python sends single quotes ('), but JSON needs double quotes (")
+          String validJsonString = result.replaceAll("'", '"');
+          final Map<String, dynamic> parsedJson = jsonDecode(validJsonString);
+          if (parsedJson.containsKey('emotion')) {
+            cleanEmotionWord = parsedJson['emotion'].toString().trim().toLowerCase();
+          }
         } catch (e) {
-          print("❌ Database Log Error: $e");
+          // Fallback parsing logic
+          String cleanText = result.trim().toLowerCase();
+          if (cleanText.contains('happy')) {
+            cleanEmotionWord = 'happy';
+          } else if (cleanText.contains('sad')) {
+            cleanEmotionWord = 'sad';
+          } else if (cleanText.contains('angry') || cleanText.contains('anger')) {
+            cleanEmotionWord = 'angry';
+          } else if (cleanText.contains('fear')) {
+            cleanEmotionWord = 'fear';
+          } else if (cleanText.contains('neutral')) {
+            cleanEmotionWord = 'neutral';
+          } else if (cleanText.contains('surprise')) {
+            cleanEmotionWord = 'surprise';
+          }
+        }
+
+        debugPrint("🎯 ISOLATED CLEAN KEYWORD WORD FOR SWITCH: '$cleanEmotionWord'");
+
+        final uid = FirebaseAuth.instance.currentUser?.uid ?? 'anonymous_user';
+        List<dynamic> realTracks = [];
+        try {
+          // 1. Fetch data from your Azure / YouTube music recommendation endpoint wrapper
+          final responseData = await _apiService.getMoodHistoryFromAzure(uid);
+          if (responseData != null && responseData is List) {
+            realTracks = responseData; // Assuming this returns an array list of song objects
+          }
+        } catch (e) {
+          debugPrint("Failed fetching live recommendations: $e");
+        }
+
+        // Build the basic model definition block template
+        MoodModel unifiedMoodResult = MoodModel.fromString(cleanEmotionWord);
+
+        // If the API returned real, verified database entries, overwrite the placeholder fields safely
+        if (realTracks.isNotEmpty) {
+          final firstTrack = realTracks.first; // Get the peak matching song record
+          
+          unifiedMoodResult = unifiedMoodResult.copyWithTracks(
+            //  FIX: Safeguard against maps returning values via 'title' instead of placeholder fields
+            customTitle: firstTrack['title'] ?? unifiedMoodResult.songTitle,
+            customArtist: firstTrack['artist'] ?? unifiedMoodResult.artist,
+            
+            //  FIX HERE: Since explore.py has no 'genre' key, provide a fallback string matching the current mood!
+            customGenre: firstTrack['genre'] ?? cleanEmotionWord.toUpperCase(),
+            tracks: realTracks,
+          );
         }
 
         if (!mounted) return;
 
         setState(() {
           _isAnalysing = false;
-          _capturedLabel = rawEmotion;
+          _capturedLabel = cleanEmotionWord;
         });
 
         await Future.delayed(const Duration(milliseconds: 500));
         if (!mounted) return;
 
-        context.go('/result', extra: MoodModel.fromString(rawEmotion));
-      } else {
+        // Pass the newly customized, dynamic model payload safely to the route template context layout!
+        context.go('/result', extra: unifiedMoodResult);
+        
+       } else {
         throw Exception("Server returned empty data");
       }
     } catch (e) {

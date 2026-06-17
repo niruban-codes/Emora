@@ -50,8 +50,7 @@ class _ResultScreenState extends State<ResultScreen>
 
     // Map your mood data into the format for playlist_history
     List<Map<String, dynamic>> playlistData = widget.mood.playlistTitles.map((
-      title,
-    ) {
+      title) {
       return {
         'playlistName': title,
         'mainSong': widget.mood.songTitle,

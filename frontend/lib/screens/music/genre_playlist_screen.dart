@@ -1,7 +1,11 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend/models/song_model.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
 
 class GenrePlaylistScreen extends StatefulWidget {
   final String genre;
@@ -24,23 +28,42 @@ class _GenrePlaylistScreenState extends State<GenrePlaylistScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.songs != null) {
+     // Check if the list exists AND is not empty
+    if (widget.songs != null && widget.songs!.isNotEmpty) {
+      // We have pre-loaded songs, display them directly
       _displaySongs = widget.songs!;
     } else {
+      // The list is either null (Home Screen) or empty (Explore Screen).
+      // Time to fetch the songs from Azure!
       _fetchTrendingSongs();
     }
   }
 
   Future<void> _fetchTrendingSongs() async {
     setState(() => _isLoading = true);
-    try {
-      // TODO----Connect actual backend API service fetch function here later
-      await Future.delayed(const Duration(seconds: 2));
+  try {
+      final uri = Uri.parse(
+        "http://emora-api-backend-ggccceepbsa2f4dk.eastasia-01.azurewebsites.net/explore/vibe-genre?query=${Uri.encodeComponent(widget.genre)}",
+      );
+
+      final response = await http.get(uri);
+      print("API Response: ${response.statusCode} - ${response.body}");
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+
+        setState(() {
+          _displaySongs = data.map((e) => Song.fromJson(e)).toList();
+          _isLoading = false;
+        });
+      } else {
+        throw Exception("Failed to load songs");
+      }
+    } catch (e) {
       setState(() {
         _isLoading = false;
       });
-    } catch (e) {
-      setState(() => _isLoading = false);
+
+      debugPrint("Error fetching songs: $e");
     }
   }
 
