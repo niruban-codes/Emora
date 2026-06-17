@@ -67,7 +67,7 @@ final appRouter = GoRouter(
       builder: (context, state) {
         final extra = state.extra as Map<String, dynamic>;
         return GenrePlaylistScreen(
-          genre: extra['genre'] as String ?? 'Unknown Genre',
+          genre: (extra['genre'] as String?) ?? 'Unknown Genre',
           songs: extra['songs'] as List<Song>?, 
         );
       },
@@ -113,10 +113,11 @@ final appRouter = GoRouter(
           return const Scaffold(body: Center(child: Text("No tracks found")));
         }
 
+        final safeIndex = index.clamp(0, songs.length - 1);
         return PlayerScreen(
-          currentSong: songs[index],
+          currentSong: songs[safeIndex],
           playlist: songs,
-          initialIndex: index,
+          initialIndex: safeIndex,
         );
       },
     ),
@@ -135,7 +136,7 @@ final appRouter = GoRouter(
             }
             
             // Fallback parsing if the raw backend Map layout was parsed directly
-            final emotionStr = (extra['dominant_emotion'] ?? extra['emotion'] ?? extra['mood'] ?? 'peaceful').toString();
+            final emotionStr = (extra['dominant_emotion'] ?? extra['emotion'] ?? extra['mood'] ?? 'neutral').toString();
             return ResultScreen(mood: MoodModel.fromString(emotionStr));
           } 
           
@@ -145,10 +146,10 @@ final appRouter = GoRouter(
           }
           
           // 3. Fallback safely if no parameter structure matches
-          return ResultScreen(mood: MoodModel.fromString('peaceful'));
+          return ResultScreen(mood: MoodModel.fromString('neutral'));
         } catch (e, stackTrace) {
           debugPrint("❌ GoRouter Result Processing Exception caught safely: $e");
-          return ResultScreen(mood: MoodModel.fromString('peaceful'));
+          return ResultScreen(mood: MoodModel.fromString('neutral'));
         }
       },
     ),
@@ -160,7 +161,7 @@ final appRouter = GoRouter(
           final extra = state.extra;
 
           if (extra is Map<String, dynamic>) {
-            final emotionStr = (extra['dominant_emotion'] ?? extra['emotion'] ?? extra['mood'] ?? 'peaceful').toString();
+            final emotionStr = (extra['dominant_emotion'] ?? extra['emotion'] ?? extra['mood'] ?? 'neutral').toString();
             return PlaylistDetailsScreen(mood: MoodModel.fromString(emotionStr));
           } 
 
@@ -173,11 +174,11 @@ final appRouter = GoRouter(
             return PlaylistDetailsScreen(mood: MoodModel.fromString(extra));
           }
           
-          return PlaylistDetailsScreen(mood: MoodModel.fromString('peaceful'));
+          return PlaylistDetailsScreen(mood: MoodModel.fromString('neutral'));
         } catch (e, stackTrace) {
           debugPrint("❌ GoRouter Playlist Navigation Error: $e");
           debugPrint("Stacktrace: $stackTrace");
-          return PlaylistDetailsScreen(mood: MoodModel.fromString('peaceful'));
+          return PlaylistDetailsScreen(mood: MoodModel.fromString('neutral'));
         }
       },
     ),

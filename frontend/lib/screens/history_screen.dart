@@ -21,6 +21,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   static const Color chipActive = Color(0xFFAB47BC);
 
   int _selectedFilterIndex = 0;
+  late Future<List<dynamic>?> _moodHistoryFuture;
   final List<String> _filters = [
     "All",
     "Happy",
@@ -30,6 +31,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
     "Anger",
     "Surprised",
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _moodHistoryFuture = _apiService.getMoodHistoryFromAzure(_currentUid);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +66,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           _buildFilterBar(),
           Expanded(
             child: FutureBuilder<List<dynamic>?>(
-              future: _apiService.getMoodHistoryFromAzure(_currentUid),
+              future: _moodHistoryFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
