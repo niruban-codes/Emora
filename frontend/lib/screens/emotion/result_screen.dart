@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:frontend/screens/emotion/mood_model.dart';
-import 'package:firebase_auth/firebase_auth.dart'; 
-import '../../../services/firestore_service.dart'; 
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../../services/firestore_service.dart';
 
 class ResultScreen extends StatefulWidget {
   final MoodModel mood;
@@ -17,7 +17,7 @@ class _ResultScreenState extends State<ResultScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _fadeCtrl;
   late Animation<double> _fadeAnim;
-  int _currentNavIndex = 2; // result is under LIBRARY
+  int _currentNavIndex = 2;
 
   Color get _primary => widget.mood.primaryColor;
   Color get _secondary => widget.mood.secondaryColor;
@@ -26,7 +26,6 @@ class _ResultScreenState extends State<ResultScreen>
   @override
   void initState() {
     super.initState();
-    // 2. Trigger the save as soon as the result is displayed
     _savePlaylistToFirebase();
 
     _fadeCtrl = AnimationController(
@@ -36,7 +35,7 @@ class _ResultScreenState extends State<ResultScreen>
     _fadeAnim = CurvedAnimation(parent: _fadeCtrl, curve: Curves.easeOut);
   }
 
-  // 3. Create the save method
+  //Create the save method
   Future<void> _savePlaylistToFirebase() async {
     final user = FirebaseAuth.instance.currentUser;
 
@@ -45,12 +44,12 @@ class _ResultScreenState extends State<ResultScreen>
       return;
     }
 
-    // Initialize the service here so it can be used below
     final firestoreService = FirestoreService();
 
     // Map your mood data into the format for playlist_history
     List<Map<String, dynamic>> playlistData = widget.mood.playlistTitles.map((
-      title) {
+      title,
+    ) {
       return {
         'playlistName': title,
         'mainSong': widget.mood.songTitle,
@@ -99,7 +98,6 @@ class _ResultScreenState extends State<ResultScreen>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                       // _buildFaceScanArea(),
                         const SizedBox(height: 16),
                         _buildMoodLabel(),
                         const SizedBox(height: 12),
@@ -107,7 +105,7 @@ class _ResultScreenState extends State<ResultScreen>
                         const SizedBox(height: 32),
                         _buildSongSection(),
                         const SizedBox(height: 24),
-                       // _buildMoodPlaylists(),
+
                         const SizedBox(height: 32),
                         _buildBottomButtons(context),
                         const SizedBox(height: 20),
@@ -123,7 +121,7 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 
-  //  Top Bar 
+  //  Top Bar
   Widget _buildTopBar(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -160,7 +158,7 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 
-  //  Face Scan Area 
+  //  Face Scan Area
   Widget _buildFaceScanArea() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -325,7 +323,7 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 
-  //  Mood Label 
+  //  Mood Label
   Widget _buildMoodLabel() {
     return Center(
       child: Column(
@@ -375,7 +373,7 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 
-  //  Song Section 
+  //  Song Section
   Widget _buildSongSection() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -463,7 +461,7 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 
-  //  Mood Playlists 
+  //  Mood Playlists
   Widget _buildMoodPlaylists() {
     final playlists = widget.mood.playlistTitles;
     return Padding(
@@ -549,7 +547,7 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 
-  //  Bottom Buttons 
+  //  Bottom Buttons
   Widget _buildBottomButtons(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -609,7 +607,7 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 
-  //  Corner Brackets 
+  //  Corner Brackets
   List<Widget> _cornerBrackets(Color color) {
     const size = 20.0;
     const stroke = 2.0;

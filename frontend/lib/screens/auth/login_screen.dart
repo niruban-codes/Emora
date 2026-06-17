@@ -3,7 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../../services/auth_service.dart'; 
+import '../../../services/auth_service.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -18,7 +19,7 @@ class _LoginScreenState extends State<LoginScreen>
   bool _obscurePassword = true;
   bool _rememberMe = false;
   bool _isLoading = false;
-  bool _isGoogleLoading = false; 
+  bool _isGoogleLoading = false;
 
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
@@ -90,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen>
     }
   }
 
-  // Google Sign In 
+  // Google Sign In
   Future<void> _handleGoogleSignIn() async {
     setState(() => _isGoogleLoading = true);
     try {
@@ -105,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen>
     }
   }
 
-  //Show Error Snackbar 
+  //Show Error Snackbar
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -136,7 +137,6 @@ class _LoginScreenState extends State<LoginScreen>
                   _buildLogo(),
                   const SizedBox(height: 40),
 
-                  // Google button now calls _handleGoogleSignIn()
                   _socialButton(
                     icon: _isGoogleLoading
                         ? const SizedBox(
@@ -434,5 +434,4 @@ class _LoginScreenState extends State<LoginScreen>
       width: 22,
     );
   }
-
 }

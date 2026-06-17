@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../../services/auth_service.dart'; 
+import '../../../services/auth_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -12,15 +12,15 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  bool _isGoogleLoading = false; 
+  bool _isGoogleLoading = false;
 
-  //  Google Sign In 
+  //  Google Sign In
   Future<void> _handleGoogleSignIn() async {
     setState(() => _isGoogleLoading = true);
     try {
       final result = await AuthService.signInWithGoogle();
       if (result != null && mounted) {
-        context.go('/home'); 
+        context.go('/home');
       }
     } catch (e) {
       if (mounted) {
@@ -79,7 +79,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               const SizedBox(height: 48),
 
-              // 👇 Google button now calls _handleGoogleSignIn()
               _socialButton(
                 label: 'Continue with Google',
                 icon: _isGoogleLoading
@@ -246,5 +245,4 @@ class _RegisterScreenState extends State<RegisterScreen> {
       height: 22,
     );
   }
-
 }

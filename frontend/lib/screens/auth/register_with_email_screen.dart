@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:firebase_auth/firebase_auth.dart'; 
-import '../../../services/firestore_service.dart'; 
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../../services/firestore_service.dart';
 
 class RegisterWithEmailScreen extends StatefulWidget {
   const RegisterWithEmailScreen({super.key});
@@ -26,7 +26,7 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _agreeToPolicy = false;
-  bool _isLoading = false; 
+  bool _isLoading = false;
 
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
@@ -60,9 +60,8 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
     super.dispose();
   }
 
-  // Firebase Register Logic
+  // 1. Firebase Register Logic
   Future<void> _register() async {
-    // 1. Validate fields are not empty
     if (_emailController.text.trim().isEmpty ||
         _passwordController.text.trim().isEmpty ||
         _usernameController.text.trim().isEmpty) {
@@ -86,10 +85,11 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
 
     try {
       // 4. Create user with Firebase Auth
-      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+          );
 
       // 5. Update display name with username
       await userCredential.user?.updateDisplayName(
@@ -99,9 +99,9 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
       // Create user document in Firestore
       if (userCredential.user != null) {
         await FirestoreService().createUser(
-          userCredential.user!.uid,            // The unique ID
-          _usernameController.text.trim(),     // The name
-          _emailController.text.trim(),        // The email
+          userCredential.user!.uid,
+          _usernameController.text.trim(),
+          _emailController.text.trim(),
         );
       }
 
@@ -129,7 +129,7 @@ class _RegisterWithEmailScreenState extends State<RegisterWithEmailScreen>
     }
   }
 
-  // Show Error Snackbar 
+  // Show Error Snackbar
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
