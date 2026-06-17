@@ -7,7 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart'; //  added
 import 'package:image_picker/image_picker.dart';// added for camera/gallery access
 import '../../../services/firestore_service.dart'; //  added
 import '../../api_service.dart'; // added to link our Python backend service
-import 'dart:convert';
+//import 'dart:convert';
 
 /// EmotionDetectionScreen
 ///
@@ -129,36 +129,39 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
 
       // Send photo to your Python Flask API
 // Send photo to your Python Flask API
-      final String? result = await _apiService.detectEmotion(_selectedImage!);
+      final Map<String, dynamic>? result = await _apiService.detectEmotion(_selectedImage!);
 
-      if (result != null && result.isNotEmpty) {
-        String cleanEmotionWord = "neutral"; // Default fallback word string
+      // if (result != null && result.isNotEmpty) {
+      //   String cleanEmotionWord = "neutral"; // Default fallback word string
         
-        try {
-          // 👈 FIX 1: Python sends single quotes ('), but JSON needs double quotes (")
-          String validJsonString = result.replaceAll("'", '"');
-          final Map<String, dynamic> parsedJson = jsonDecode(validJsonString);
-          if (parsedJson.containsKey('emotion')) {
-            cleanEmotionWord = parsedJson['emotion'].toString().trim().toLowerCase();
-          }
-        } catch (e) {
-          // Fallback parsing logic
-          String cleanText = result.trim().toLowerCase();
-          if (cleanText.contains('happy')) {
-            cleanEmotionWord = 'happy';
-          } else if (cleanText.contains('sad')) {
-            cleanEmotionWord = 'sad';
-          } else if (cleanText.contains('angry') || cleanText.contains('anger')) {
-            cleanEmotionWord = 'angry';
-          } else if (cleanText.contains('fear')) {
-            cleanEmotionWord = 'fear';
-          } else if (cleanText.contains('neutral')) {
-            cleanEmotionWord = 'neutral';
-          } else if (cleanText.contains('surprise')) {
-            cleanEmotionWord = 'surprise';
-          }
-        }
+      //   try {
+      //     // 👈 FIX 1: Python sends single quotes ('), but JSON needs double quotes (")
+      //     String validJsonString = result.replaceAll("'", '"');
+      //     final Map<String, dynamic> parsedJson = jsonDecode(validJsonString);
+      //     if (parsedJson.containsKey('emotion')) {
+      //       cleanEmotionWord = parsedJson['emotion'].toString().trim().toLowerCase();
+      //     }
+      //   } catch (e) {
+      //     // Fallback parsing logic
+      //     String cleanText = result.trim().toLowerCase();
+      //     if (cleanText.contains('happy')) {
+      //       cleanEmotionWord = 'happy';
+      //     } else if (cleanText.contains('sad')) {
+      //       cleanEmotionWord = 'sad';
+      //     } else if (cleanText.contains('angry') || cleanText.contains('anger')) {
+      //       cleanEmotionWord = 'angry';
+      //     } else if (cleanText.contains('fear')) {
+      //       cleanEmotionWord = 'fear';
+      //     } else if (cleanText.contains('neutral')) {
+      //       cleanEmotionWord = 'neutral';
+      //     } else if (cleanText.contains('surprise')) {
+      //       cleanEmotionWord = 'surprise';
+      //     }
+      //   }
 
+        if (result != null && result.containsKey('emotion')) {
+          final String cleanEmotionWord = result['emotion'].toString().trim().toLowerCase();
+        
         debugPrint("🎯 ISOLATED CLEAN KEYWORD WORD FOR SWITCH: '$cleanEmotionWord'");
 
         final uid = FirebaseAuth.instance.currentUser?.uid ?? 'anonymous_user';

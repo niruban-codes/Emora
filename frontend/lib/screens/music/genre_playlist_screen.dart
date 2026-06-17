@@ -43,7 +43,7 @@ class _GenrePlaylistScreenState extends State<GenrePlaylistScreen> {
     setState(() => _isLoading = true);
   try {
       final uri = Uri.parse(
-        "http://emora-api-backend-ggccceepbsa2f4dk.eastasia-01.azurewebsites.net/explore/vibe-genre?query=${Uri.encodeComponent(widget.genre)}",
+        "https://emora-api-backend-ggccceepbsa2f4dk.eastasia-01.azurewebsites.net/explore/vibe-genre?query=${Uri.encodeComponent(widget.genre)}",
       );
 
       final response = await http.get(uri);

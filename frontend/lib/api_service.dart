@@ -10,7 +10,7 @@ class ApiService {
       "https://emora-api-backend-ggccceepbsa2f4dk.eastasia-01.azurewebsites.net";
 
   // 1. AI EMOTION DETECTION (Camera Screen Bridge)
-  Future<String?> detectEmotion(File imageFile) async {
+  Future<Map<String, dynamic>?> detectEmotion(File imageFile) async {
     try {
       String fileName = imageFile.path.split('/').last;
 
@@ -27,7 +27,7 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
-        return response.data.toString(); // Returns facial analysis results dict
+        return response.data as Map<String, dynamic>; // Returns facial analysis results dict
       }
     } on DioException catch (e) {
       print("AI Detection Server Error: ${e.response?.data ?? e.message}");
