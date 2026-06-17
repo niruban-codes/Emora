@@ -23,12 +23,11 @@ from datetime import timezone
 from flask import Blueprint, jsonify, request
 from google.cloud.firestore_v1 import SERVER_TIMESTAMP
 from google.api_core.exceptions import NotFound, GoogleAPICallError
-
-from firebase_config import db  # single shared Firestore client
+from firebase_config import db
 
 #  Blueprint setup
 history_bp = Blueprint("history", __name__, url_prefix="/history")
-#helperss
+
 def _detections_ref(uid: str):
     """Shortcut: returns the 'detections' subcollection reference for a uid."""
     return db.collection("emotion_history").document(uid).collection("detections")
@@ -41,21 +40,18 @@ def _format_doc(doc) -> dict:
     """
     data = doc.to_dict()
 
-    # Convert Firestore Timestamp → readable string
     ts = data.get("timestamp")
     if ts is not None:
         try:
-            # Firestore timestamps expose .ToDatetime() or are datetime objects
             dt = ts.ToDatetime() if hasattr(ts, "ToDatetime") else ts
             dt_utc = dt.replace(tzinfo=timezone.utc) if dt.tzinfo is None else dt
             data["timestamp"] = dt_utc.strftime("%Y-%m-%d %H:%M:%S")
         except Exception:
-            data["timestamp"] = str(ts)  # fallback: raw string
+            data["timestamp"] = str(ts)
 
     return {"id": doc.id, **data}
 
 
-# GET /history/<uid> 
 
 @history_bp.route("/<uid>", methods=["GET"])
 def get_history(uid: str):
@@ -75,8 +71,7 @@ def get_history(uid: str):
             .stream()
         )
         history = [_format_doc(doc) for doc in docs]
-        # Returns an empty list (not 404) when a user has no history yet —
-        # that's valid: the user simply hasn't made any detections.
+        # Returns an empty list (not 404) when a user has no history yet
         return jsonify(history), 200
 
     except GoogleAPICallError as e:
@@ -85,8 +80,6 @@ def get_history(uid: str):
     except Exception as e:
         return jsonify({"error": "Unexpected server error", "details": str(e)}), 500
 
-
-# POST /history/<uid>
 
 @history_bp.route("/<uid>", methods=["POST"])
 def save_history(uid: str):
@@ -109,7 +102,7 @@ def save_history(uid: str):
     """
     body = request.get_json(silent=True)
 
-    # Validate required fields 
+    #Validate required fields 
     if not body:
         return jsonify({"error": "Request body must be JSON"}), 400
 
@@ -119,7 +112,7 @@ def save_history(uid: str):
 
     emotion    = body["emotion"]
     confidence = body["confidence"]
-    tracks     = body.get("tracks", [])  # optional — defaults to empty list
+    tracks     = body.get("tracks", [])
 
     # Type checks 
     if not isinstance(emotion, str) or not emotion.strip():
@@ -140,7 +133,7 @@ def save_history(uid: str):
             "timestamp":  SERVER_TIMESTAMP,  # Firestore fills this in server-side
         }
 
-        # add() auto-generates a document ID
+        # add() auto generates a document ID
         _, new_doc_ref = _detections_ref(uid).add(doc_data)
 
         return jsonify({"id": new_doc_ref.id}), 201
@@ -152,7 +145,6 @@ def save_history(uid: str):
         return jsonify({"error": "Unexpected server error", "details": str(e)}), 500
 
 
-#  DELETE /history/<uid>/<id> 
 
 @history_bp.route("/<uid>/<doc_id>", methods=["DELETE"])
 def delete_history(uid: str, doc_id: str):
@@ -169,7 +161,6 @@ def delete_history(uid: str, doc_id: str):
     try:
         doc_ref = _detections_ref(uid).document(doc_id)
 
-        # Check existence before deleting so we can return a proper 404
         snapshot = doc_ref.get()
         if not snapshot.exists:
             return jsonify({

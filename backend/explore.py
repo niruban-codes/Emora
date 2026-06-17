@@ -5,7 +5,6 @@ from flask import Blueprint, jsonify, request
 
 explore_bp = Blueprint("explore", __name__, url_prefix="/explore")
 
-# PERFECTLY MAPPED STATIC CODES FOR ZERO-QUOTA INSTANT LOADING
 EXPLORE_STATIC_MAP = {
     
     "tamil": [
@@ -128,19 +127,17 @@ def get_vibe_genre():
     if not query_input:
         return jsonify({"error": "Missing 'query' parameter"}), 400
 
-    # 1. CHECK LOCAL STORAGE POOLS FIRST (Protects your Quota Limit 100%)
+
     if query_input in EXPLORE_STATIC_MAP:
         print(f"🎯 Local storage pool hit for category tile: '{query_input}'. Serving instant data.")
         return jsonify(EXPLORE_STATIC_MAP[query_input]), 200
 
-    # 2. RUNTIME FALLBACK ONLY FOR LIVE CUSTOM SEARCHES
     api_key = os.getenv("YOUTUBE_API_KEY")
     if not api_key:
         return jsonify({"error": "Server API key configuration missing"}), 500
 
     print(f"📡 Requesting official live Google servers for custom query search input: '{query_input}'")
     
-# Broaden lookup params and fetch 25 records so filter cuts don't kill list length
     google_url = (
         f"https://www.googleapis.com/youtube/v3/search"
         f"?part=snippet"
@@ -179,7 +176,7 @@ def get_vibe_genre():
                 "duration": "3:30"
             })
 
-        # REINFORCEMENT FILLER: If strict filters leave us short, inject steady records from the neutral pool to hold 10 elements
+
         if len(recommended_songs) < 10:
             from youtube import EMOTION_HARDCODED_MAP
             backup_pool = EMOTION_HARDCODED_MAP.get("neutral", [])

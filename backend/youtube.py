@@ -3,11 +3,11 @@ import requests
 import random
 from flask import Blueprint, jsonify, request
 from google.cloud.firestore_v1 import SERVER_TIMESTAMP
-from firebase_config import db  # Shared Firestore client for history endpoints
+from firebase_config import db  
 
 youtube_bp = Blueprint("youtube", __name__, url_prefix="/youtube")
 
-# MASTER HARDCODED TRACK POOL (Shuffles & returns 10 random items dynamically)
+
 EMOTION_HARDCODED_MAP = {
     "happy": [
         {"videoId": "a7fzkqLozwA", "title": "I Like Me Better", "artist": "Lauv", "thumbnail": "https://img.youtube.com/vi/a7fzkqLozwA/mqdefault.jpg", "duration": "3:17"},
@@ -117,7 +117,6 @@ def recommend_music():
     if not full_pool:
         full_pool = EMOTION_HARDCODED_MAP["neutral"]
         
-    # THE DYNAMIC SHUFFLE LOGIC:
     if len(full_pool) > 10:
         selected_songs = random.sample(full_pool, 10)
     else:
@@ -132,7 +131,7 @@ def recommend_more_songs():
     Takes a currently playing song's title and artist, and queries live recommendation tracks!
     """
     body = request.get_json(silent=True)
-    # The frontend can pass the current song's title and artist keywords
+    
     if not body or "title" not in body or "artist" not in body:
         return jsonify({"error": "Missing 'title' or 'artist' parameter in request body"}), 400
         
@@ -144,7 +143,7 @@ def recommend_more_songs():
 
     print(f"📡 Requesting official live Google recommendations for keyword pool: '{search_query}'")
     
-    # Standard text search query tuned for music — unblockable on all API keys!
+    
     google_url = (
         f"https://www.googleapis.com/youtube/v3/search"
         f"?part=snippet"
@@ -160,7 +159,7 @@ def recommend_more_songs():
         data = response.json()
         
         if "items" not in data or not data["items"]:
-            return jsonify(EMOTION_HARDCODED_MAP["neutral"]), 200 # Safe fallback pool
+            return jsonify(EMOTION_HARDCODED_MAP["neutral"]), 200 
             
         recommended_songs = []
         for item in data["items"]:
@@ -182,8 +181,8 @@ def recommend_more_songs():
         
     except Exception as e:
         print(f"❌ Recommendation System Network Error: {str(e)}")
-        return jsonify(EMOTION_HARDCODED_MAP["neutral"]), 200 # Fallback instead of crashing
-# FIRESTORE RECENT SEARCHES ENDPOINTS (Kept fully intact)
+        return jsonify(EMOTION_HARDCODED_MAP["neutral"]), 200 
+
 
 
 @youtube_bp.route("/recent-searches/<uid>", methods=["POST"])

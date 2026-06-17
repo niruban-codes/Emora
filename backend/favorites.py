@@ -3,10 +3,10 @@ from firebase_admin import firestore
 from firebase_config import db
 from datetime import datetime, timezone
 
-# Fix: Change _name_ to __name__ so Flask registers it correctly
+
 favorites_bp = Blueprint("favorites", __name__)
 
-#  GET /favorites/<uid> 
+ 
 @favorites_bp.route("/<uid>", methods=["GET"])
 def get_favorites(uid):
     if not uid or not uid.strip():
@@ -50,7 +50,7 @@ def get_favorites(uid):
         return jsonify({"error": str(e)}), 500
 
 
-#  POST /favorites/<uid>/add 
+
 @favorites_bp.route("/<uid>/add", methods=["POST"])
 def add_favorite(uid):
     if not uid or not uid.strip():
@@ -90,7 +90,6 @@ def add_favorite(uid):
         return jsonify({"error": str(e)}), 500
 
 
-# DELETE /favorites/<uid>/remove
 @favorites_bp.route("/<uid>/remove", methods=["DELETE"])
 def remove_favorite(uid):
     if not uid or not uid.strip():
