@@ -49,29 +49,27 @@ def _format_doc(doc) -> dict:
         except Exception:
             data["timestamp"] = str(ts)
 
-    return {"id": doc.id, **data}
+    
+    if "emotion" in data and isinstance(data["emotion"], str):
+        data["emotion"] = data["emotion"].capitalize()
 
+    return {"id": doc.id, **data}
 
 
 @history_bp.route("/<uid>", methods=["GET"])
 def get_history(uid: str):
     """
     Return all emotion detections for a user, sorted newest → oldest.
-
-    Success 200:
-      [ { id, emotion, confidence, timestamp, tracks }, ... ]
-
-    Errors:
-      500 — Firestore unreachable
     """
     try:
+        # Changed to query the flat root collection by 'userId' field directly
         docs = (
-            _detections_ref(uid)
+            db.collection("emotion_history")
+            .where("userId", "==", uid)
             .order_by("timestamp", direction="DESCENDING")
             .stream()
         )
         history = [_format_doc(doc) for doc in docs]
-        # Returns an empty list (not 404) when a user has no history yet
         return jsonify(history), 200
 
     except GoogleAPICallError as e:
@@ -79,7 +77,6 @@ def get_history(uid: str):
 
     except Exception as e:
         return jsonify({"error": "Unexpected server error", "details": str(e)}), 500
-
 
 @history_bp.route("/<uid>", methods=["POST"])
 def save_history(uid: str):

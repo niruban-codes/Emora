@@ -121,19 +121,23 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   ),
                   itemCount: filteredList.length,
                   itemBuilder: (context, index) {
-                    final log = filteredList[index];
-                    final String detectedMood = log['emotion'] ?? 'Neutral';
-                    final String timestamp = log['timestamp'] ?? '';
-                    final List<dynamic> tracks = log['tracks'] ?? [];
-                    final String trackName = tracks.isNotEmpty
+                  
+                  final log = filteredList[index];
+                  final String detectedMood = log['emotion'] ?? 'Neutral';
+                  final String timestamp = log['timestamp'] ?? '';
+                  final List<dynamic> tracks = log['tracks'] ?? [];
+                    
+                  final String trackName = tracks.isNotEmpty
                         ? (tracks[0]['title'] ??
                               tracks[0]['name'] ??
                               'Recommended Track Mix')
                         : 'Custom Vibe Playlist';
 
-                    final String subText = "Generated ${tracks.length} tracks";
-                    IconData moodIcon = Icons.lens_blur_rounded;
-                    Color iconColor = const Color(0xFF78909C);
+                  final String subText = "Generated ${tracks.length} tracks";
+                  IconData moodIcon = Icons.lens_blur_rounded;
+                  Color iconColor = const Color(0xFF78909C);
+
+    
 
                     switch (detectedMood.toLowerCase()) {
                       case 'happy':
@@ -160,17 +164,17 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         break;
                     }
 
-                    return _buildHistoryCard(
+                     return _buildHistoryCard(
                       mood: detectedMood,
-                      time: timestamp.length > 16
-                          ? timestamp.substring(0, 16).replaceAll('T', ' ')
-                          : timestamp,
+                      time: _formatDateLabel(timestamp), 
                       trackName: trackName,
                       subText: subText,
                       moodIcon: moodIcon,
                       iconColor: iconColor,
                       trackImage: Icons.music_note_rounded,
                     );
+
+    
                   },
                 );
               },
@@ -180,7 +184,24 @@ class _HistoryScreenState extends State<HistoryScreen> {
       ),
     );
   }
-
+String _formatDateLabel(String rawTimestamp) {
+    if (rawTimestamp.isEmpty) return "Unknown Date";
+    try {
+      // Parses  backend format "YYYY-MM-DD HH:MM:SS"
+      DateTime logDate = DateTime.parse(rawTimestamp.replaceAll(' ', 'T')).toLocal();
+      DateTime now = DateTime.now();
+      
+      if (logDate.year == now.year && logDate.month == now.month && logDate.day == now.day) {
+        return "Today at ${logDate.hour.toString().padLeft(2, '0')}:${logDate.minute.toString().padLeft(2, '0')}";
+      } else if (logDate.year == now.year && logDate.month == now.month && logDate.day == now.day - 1) {
+        return "Yesterday at ${logDate.hour.toString().padLeft(2, '0')}:${logDate.minute.toString().padLeft(2, '0')}";
+      } else {
+        return "${logDate.year}-${logDate.month.toString().padLeft(2, '0')}-${logDate.day.toString().padLeft(2, '0')}";
+      }
+    } catch (e) {
+      return rawTimestamp; 
+    }
+  }
   Widget _buildFilterBar() {
     return SizedBox(
       height: 50,
