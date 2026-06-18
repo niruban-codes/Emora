@@ -6,6 +6,8 @@ class ApiService {
 
   final String baseUrl =
       "https://emora-api-backend-ggccceepbsa2f4dk.eastasia-01.azurewebsites.net";
+  
+  
 
   Future<Map<String, dynamic>?> detectEmotion(File imageFile) async {
     try {
@@ -99,7 +101,7 @@ class ApiService {
 
   Future<List<dynamic>?> getMoodHistoryFromAzure(String uid) async {
     try {
-      Response response = await _dio.get("$baseUrl/history/get/$uid");
+      Response response = await _dio.get("$baseUrl/history/$uid");
       if (response.statusCode == 200) {
         return response.data;
       }
