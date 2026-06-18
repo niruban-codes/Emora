@@ -72,7 +72,6 @@ class FirestoreService {
     }
   }
 
-  // Streams live notifications for the current user, ordered by newest first
   Stream<List<Map<String, dynamic>>> getNotificationsStream() {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return Stream.value([]);
@@ -83,6 +82,28 @@ class FirestoreService {
         .collection('notifications')
         .orderBy('timestamp', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
+        .map(
+          (snapshot) => snapshot.docs.map((doc) {
+            final data = doc.data();
+            data['id'] = doc.id;
+            return data;
+          }).toList(),
+        );
+  }
+
+  Future<void> markNotificationAsRead(String notificationId) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('notifications')
+          .doc(notificationId)
+          .update({'isNew': false});
+    } catch (e) {
+      print("Error marking notification as read: $e");
+    }
   }
 }

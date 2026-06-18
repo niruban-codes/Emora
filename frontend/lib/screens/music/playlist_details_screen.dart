@@ -34,7 +34,7 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
         "https://emora-api-backend-ggccceepbsa2f4dk.eastasia-01.azurewebsites.net/youtube/recommend-music",
       );
       final uid = FirebaseAuth.instance.currentUser?.uid;
-
+      print("🚨 DEBUG - THE UID IS: $uid");
       final response = await http.post(
         uri,
         headers: {'Content-Type': 'application/json'},

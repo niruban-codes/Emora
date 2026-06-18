@@ -29,6 +29,15 @@ class NotificationScreen extends StatelessWidget {
       body: StreamBuilder<List<Map<String, dynamic>>>(
         stream: FirestoreService().getNotificationsStream(),
         builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            print("🚨 FIREBASE ERROR: ${snapshot.error}");
+            return Center(
+              child: Text(
+                "Error: ${snapshot.error}",
+                style: const TextStyle(color: Colors.redAccent),
+              ),
+            );
+          }
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
               child: CircularProgressIndicator(color: Colors.purpleAccent),
@@ -57,12 +66,22 @@ class NotificationScreen extends StatelessWidget {
                   ? _formatTimeAgo(timestamp.toDate())
                   : "Just now";
 
-              return NotificationTile(
-                title: note['title'] ?? 'Notification',
-                subtitle: note['subtitle'] ?? '',
-                time: timeString,
-                icon: _getIcon(note['iconType']),
-                isNew: note['isNew'] ?? false,
+              final bool isNew = note['isNew'] ?? false;
+              final String docId = note['id'] ?? '';
+
+              return GestureDetector(
+                onTap: () {
+                  if (isNew && docId.isNotEmpty) {
+                    FirestoreService().markNotificationAsRead(docId);
+                  }
+                },
+                child: NotificationTile(
+                  title: note['title'] ?? 'Notification',
+                  subtitle: note['subtitle'] ?? '',
+                  time: timeString,
+                  icon: _getIcon(note['iconType']),
+                  isNew: isNew,
+                ),
               );
             },
           );
