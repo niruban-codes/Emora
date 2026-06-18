@@ -109,11 +109,10 @@ def recommend_music():
         return jsonify({"error": "Missing 'emotion' field in request body"}), 400
         
     input_emotion = str(body["emotion"]).strip().lower()
+    uid = body.get("uid")
     
-    # Fetch pool for this specific emotion
     full_pool = EMOTION_HARDCODED_MAP.get(input_emotion, EMOTION_HARDCODED_MAP["neutral"])
     
-    # Safety fallback if the array list is completely empty
     if not full_pool:
         full_pool = EMOTION_HARDCODED_MAP["neutral"]
         
@@ -121,6 +120,20 @@ def recommend_music():
         selected_songs = random.sample(full_pool, 10)
     else:
         selected_songs = full_pool
+    
+    if uid:
+        try:
+            notification_data = {
+                "title": "Playlist Generated",
+                "subtitle": f"Your new '{input_emotion.capitalize()}' playlist is ready with {len(selected_songs)} tracks.",
+                "iconType": "music",
+                "isNew": True,
+                "timestamp": SERVER_TIMESTAMP
+            }
+            db.collection("users").document(uid).collection("notifications").add(notification_data)
+            print(f"✅ Notification pushed to Firebase for user {uid}")
+        except Exception as e:
+            print(f"❌ Failed to send notification: {str(e)}")
         
     return jsonify(selected_songs), 200
 

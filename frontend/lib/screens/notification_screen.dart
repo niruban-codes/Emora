@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:frontend/services/firestore_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NotificationScreen extends StatelessWidget {
   const NotificationScreen({super.key});
@@ -24,46 +26,47 @@ class NotificationScreen extends StatelessWidget {
           ),
         ),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: const [
-          NotificationTile(
-            title: "Mood Sync Successful!",
-            subtitle:
-                "Your morning mood scan was successful! Check your new Peaceful playlist.",
-            time: "2m ago",
-            icon: Icons.auto_awesome,
-            isNew: true,
-          ),
-          NotificationTile(
-            title: "Playlist Update",
-            subtitle:
-                "3 new tracks added to your 'Energetic Afternoon' collection.",
-            time: "1h ago",
-            icon: Icons.queue_music,
-            isNew: true,
-          ),
-          NotificationTile(
-            title: "System Alert",
-            subtitle: "Weekly mood analytics report is now ready for review.",
-            time: "5h ago",
-            icon: Icons.analytics_outlined,
-          ),
-          NotificationTile(
-            title: "AI Model Update",
-            subtitle:
-                "We've enhanced your facial expression detection for better mood accuracy.",
-            time: "Yesterday",
-            icon: Icons.settings_suggest_outlined,
-          ),
-          NotificationTile(
-            title: "Security Check",
-            subtitle:
-                "Your account data is safely encrypted and backed up to the cloud.",
-            time: "2 days ago",
-            icon: Icons.verified_user_outlined,
-          ),
-        ],
+      body: StreamBuilder<List<Map<String, dynamic>>>(
+        stream: FirestoreService().getNotificationsStream(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(color: Colors.purpleAccent),
+            );
+          }
+
+          final notifications = snapshot.data ?? [];
+
+          if (notifications.isEmpty) {
+            return Center(
+              child: Text(
+                "No new notifications",
+                style: GoogleFonts.poppins(color: Colors.white54, fontSize: 16),
+              ),
+            );
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: notifications.length,
+            itemBuilder: (context, index) {
+              final note = notifications[index];
+
+              final timestamp = note['timestamp'] as Timestamp?;
+              final timeString = timestamp != null
+                  ? _formatTimeAgo(timestamp.toDate())
+                  : "Just now";
+
+              return NotificationTile(
+                title: note['title'] ?? 'Notification',
+                subtitle: note['subtitle'] ?? '',
+                time: timeString,
+                icon: _getIcon(note['iconType']),
+                isNew: note['isNew'] ?? false,
+              );
+            },
+          );
+        },
       ),
     );
   }
@@ -158,4 +161,30 @@ class NotificationTile extends StatelessWidget {
       ),
     );
   }
+}
+
+IconData _getIcon(String? type) {
+  switch (type) {
+    case 'music':
+      return Icons.queue_music;
+    case 'alert':
+      return Icons.error_outline;
+    case 'analytics':
+      return Icons.analytics_outlined;
+    case 'system':
+      return Icons.settings_suggest_outlined;
+    case 'success':
+      return Icons.auto_awesome;
+    default:
+      return Icons.notifications_active_outlined;
+  }
+}
+
+String _formatTimeAgo(DateTime date) {
+  final difference = DateTime.now().difference(date);
+  if (difference.inMinutes < 1) return 'Just now';
+  if (difference.inMinutes < 60) return '${difference.inMinutes}m ago';
+  if (difference.inHours < 24) return '${difference.inHours}h ago';
+  if (difference.inDays == 1) return 'Yesterday';
+  return '${difference.inDays} days ago';
 }

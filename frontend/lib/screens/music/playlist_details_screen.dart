@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:frontend/screens/emotion/mood_model.dart';
 import 'package:frontend/models/song_model.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -32,11 +33,12 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
       final uri = Uri.parse(
         "https://emora-api-backend-ggccceepbsa2f4dk.eastasia-01.azurewebsites.net/youtube/recommend-music",
       );
+      final uid = FirebaseAuth.instance.currentUser?.uid;
 
       final response = await http.post(
         uri,
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'emotion': _mood.label.toLowerCase()}),
+        body: jsonEncode({'emotion': _mood.label.toLowerCase(), 'uid': uid}),
       );
 
       print("Azure Response Code: ${response.statusCode}");
@@ -46,7 +48,9 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
         final List<dynamic> data = jsonDecode(response.body);
         if (mounted) {
           setState(() {
-            _songs = data.map((e) => Song.fromJson(e)).toList();
+            _songs = data
+                .map((e) => Song.fromJson(e, defaultMood: _mood.label))
+                .toList();
             _isLoading = false;
           });
         }
