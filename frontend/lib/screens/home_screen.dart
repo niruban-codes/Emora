@@ -279,6 +279,44 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _playlistCard(Map<String, String> playlist) {
+    List<Color> cardGradient;
+    IconData playlistIcon;
+switch (playlist['title']) {
+      case 'Midnight Pulse':
+        cardGradient = [
+          const Color(0xFF8E24AA), // Electric Violet Purple
+          const Color(0xFF311B92), // Deep Cosmic Indigo
+        ];
+        playlistIcon = Icons.music_note_rounded;
+        break;
+      case 'Ocean Breeze':
+        cardGradient = [
+          const Color(0xFF00E5FF), // Glowing Neon Cyan
+          const Color(0xFF006064), // Deep Sea Teal (Neutral)
+        ];
+        playlistIcon = Icons.wb_twilight_rounded;
+        break;
+      case 'Urban Night':
+        cardGradient = [
+          const Color(0xFF2979FF), // Vibrant Sapphire Blue (Sad)
+          const Color(0xFF1A237E), // Midnight Abyss Navy
+        ];
+        playlistIcon = Icons.nightlight_round;
+        break;
+      case 'Rainy Echoes':
+        cardGradient = [
+          const Color(0xFFFF1744), // Electric Neon Rose / Pink
+          const Color(0xFF4A148C), // Velvet Wine Deep Purple
+        ];
+        playlistIcon = Icons.grain_rounded;
+        break;
+      default:
+        cardGradient = [
+          const Color(0xFF2A1A4E),
+          const Color(0xFF0D0A1E),
+        ];
+        playlistIcon = Icons.album_rounded;
+    }
     return GestureDetector(
       onTap: () {
         context.push(
@@ -290,45 +328,84 @@ class _HomeScreenState extends State<HomeScreen>
         );
       },
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(24),
           gradient: LinearGradient(
-            begin: Alignment.topCenter,
+            begin: Alignment.topLeft,
             end: Alignment.bottomCenter,
-            colors: [
-              const Color(0xFF2A1A4E).withOpacity(0.8),
-              const Color(0xFF0D0A1E),
-            ],
+            colors: cardGradient,
           ),
+          border: Border.all(
+            color: Colors.white.withOpacity(0.18),
+            width: 1.2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: cardGradient[0].withOpacity(0.35),
+              blurRadius: 16,
+              offset: const Offset(0, 8),
+            ),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ]
         ),
-        child: Column(
+        child:Stack(
+          children: [
+            // Elegant background contextual abstract watermark icon
+            Positioned(
+              right: -10,
+              top: -10,
+              child: Icon(
+                playlistIcon,
+                size: 64,
+                color: Colors.white.withOpacity(0.08),
+              ),
+            ),
+             Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
-                color: const Color(0xFFA7338A),
-                borderRadius: BorderRadius.circular(100),
+                color: Colors.white.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(color: Colors.white.withOpacity(0.2),width: 0.8),
               ),
               child: Text(
                 playlist['mood']!,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 8,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 8.5,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.2,
                 ),
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 19),
             Text(
               playlist['title']!,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: GoogleFonts.poppins(
                 color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-              ),
+                fontSize: 15.5,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.3,
+                shadows: [
+                  Shadow(
+                    color: Colors.black.withOpacity(0.5),
+                    offset: const Offset(0, 2),
+                    blurRadius: 4,
+                  )
+                   ],
+                 ),
+                ),
+              ],
             ),
           ],
         ),
