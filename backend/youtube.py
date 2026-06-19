@@ -119,7 +119,8 @@ def recommend_music():
     if len(full_pool) > 10:
         selected_songs = random.sample(full_pool, 10)
     else:
-        selected_songs = full_pool
+        selected_songs = full_pool.copy()
+        random.shuffle(selected_songs)
     
     if uid:
         try:
