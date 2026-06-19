@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:frontend/screens/emotion/mood_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../services/firestore_service.dart';
+import 'package:frontend/api_service.dart';
 
 class ResultScreen extends StatefulWidget {
   final MoodModel mood;
@@ -27,6 +28,7 @@ class _ResultScreenState extends State<ResultScreen>
   void initState() {
     super.initState();
     _savePlaylistToFirebase();
+    _saveScanToAzureHistory();
 
     _fadeCtrl = AnimationController(
       vsync: this,
@@ -35,7 +37,6 @@ class _ResultScreenState extends State<ResultScreen>
     _fadeAnim = CurvedAnimation(parent: _fadeCtrl, curve: Curves.easeOut);
   }
 
-  //Create the save method
   Future<void> _savePlaylistToFirebase() async {
     final user = FirebaseAuth.instance.currentUser;
 
@@ -46,7 +47,6 @@ class _ResultScreenState extends State<ResultScreen>
 
     final firestoreService = FirestoreService();
 
-    // Map your mood data into the format for playlist_history
     List<Map<String, dynamic>> playlistData = widget.mood.playlistTitles.map((
       title,
     ) {
@@ -65,6 +65,29 @@ class _ResultScreenState extends State<ResultScreen>
       print("✅ History saved successfully!");
     } catch (e) {
       print("❌ Error saving history: $e");
+    }
+  }
+
+  Future<void> _saveScanToAzureHistory() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final tracks = [
+      {'title': widget.mood.songTitle, 'artist': widget.mood.artist},
+    ];
+
+    try {
+      final success = await ApiService().saveMoodHistoryToAzure(
+        uid: user.uid,
+        emotion: widget.mood.label.toLowerCase(),
+        tracks: tracks,
+      );
+
+      if (success) {
+        print("✅ Scan successfully saved to Azure History!");
+      }
+    } catch (e) {
+      print("❌ Error saving scan to Azure: $e");
     }
   }
 

@@ -6,8 +6,6 @@ class ApiService {
 
   final String baseUrl =
       "https://emora-api-backend-ggccceepbsa2f4dk.eastasia-01.azurewebsites.net";
-  
-  
 
   Future<Map<String, dynamic>?> detectEmotion(File imageFile) async {
     try {
@@ -81,16 +79,12 @@ class ApiService {
     required String uid,
     required String emotion,
     required List<dynamic> tracks,
+    double confidence = 95.0,
   }) async {
     try {
       Response response = await _dio.post(
-        "$baseUrl/history/add",
-        data: {
-          "uid": uid,
-          "emotion": emotion,
-          "timestamp": DateTime.now().toUtc().toIso8601String(),
-          "tracks": tracks,
-        },
+        "$baseUrl/history/$uid",
+        data: {"emotion": emotion, "confidence": confidence, "tracks": tracks},
       );
       return response.statusCode == 201 || response.statusCode == 200;
     } on DioException catch (e) {
