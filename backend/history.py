@@ -62,10 +62,9 @@ def get_history(uid: str):
     Return all emotion detections for a user, sorted newest → oldest.
     """
     try:
-        # Changed to query the flat root collection by 'userId' field directly
+    
         docs = (
-            db.collection("emotion_history")
-            .where("userId", "==", uid)
+            _detections_ref(uid)
             .order_by("timestamp", direction="DESCENDING")
             .stream()
         )
