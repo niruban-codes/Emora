@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../services/firestore_service.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ProfileSettingsScreen extends StatefulWidget {
   const ProfileSettingsScreen({super.key});
@@ -71,7 +72,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back_rounded, color: Colors.white, size: 22,),
           onPressed: () {
             if (context.canPop()) {
               context.pop();
@@ -80,11 +81,11 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
             }
           },
         ),
-        title: const Text(
+        title:  Text(
           'Profile Settings',
-          style: TextStyle(
+          style: GoogleFonts.poppins(
             fontWeight: FontWeight.bold,
-            fontSize: 18,
+            fontSize: 20,
             color: Colors.white,
           ),
         ),
@@ -197,15 +198,15 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         const SizedBox(height: 15),
         Text(
           userName,
-          style: const TextStyle(
-            fontSize: 22,
+          style: GoogleFonts.poppins(
+            fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
         ),
         Text(
           userEmail,
-          style: const TextStyle(
+          style: GoogleFonts.poppins(
             color: ProfileSettingsScreen.textSecondary,
             fontSize: 14,
           ),
@@ -221,7 +222,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         padding: const EdgeInsets.only(bottom: 12, top: 12),
         child: Text(
           label,
-          style: const TextStyle(
+          style: GoogleFonts.poppins(
             color: Colors.white,
             fontSize: 13,
             fontWeight: FontWeight.w900,
@@ -238,7 +239,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       leading: _iconBox(icon),
       title: Text(
         title,
-        style: const TextStyle(
+        style: GoogleFonts.poppins(
           color: Colors.white,
           fontSize: 16,
           fontWeight: FontWeight.w500,
@@ -294,7 +295,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                 if (sub.isNotEmpty)
                   Text(
                     sub,
-                    style: const TextStyle(
+                    style:GoogleFonts.poppins(
                       color: ProfileSettingsScreen.textSecondary,
                       fontSize: 12,
                     ),
@@ -304,7 +305,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
           ),
           Text(
             action,
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               color: connected
                   ? ProfileSettingsScreen.textSecondary
                   : Colors.white,
@@ -322,7 +323,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       leading: _iconBox(icon),
       title: Text(
         title,
-        style: const TextStyle(
+        style:GoogleFonts.poppins(
           color: Colors.white,
           fontSize: 16,
           fontWeight: FontWeight.w500,
@@ -355,7 +356,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
             end: Alignment.bottomRight,
           ),
         ),
-        child: const Row(
+        child:  Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Column(
@@ -363,16 +364,16 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
               children: [
                 Text(
                   'Admin Dashboard',
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 SizedBox(height: 4),
                 Text(
                   'Manage users, music, and platform analytics.',
-                  style: TextStyle(color: Colors.white70, fontSize: 12),
+                  style: GoogleFonts.poppins(color: Colors.white70, fontSize: 11),
                 ),
               ],
             ),
@@ -406,6 +407,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
+                  fontSize: 16,
                 ),
               ),
               content: const Text(
@@ -446,7 +448,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         ),
         label: Text(
           'Log Out',
-          style: TextStyle(
+          style: GoogleFonts.poppins(
             color: ProfileSettingsScreen.logoutTextRed,
             fontWeight: FontWeight.bold,
             fontSize: 16,
