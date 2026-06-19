@@ -13,8 +13,7 @@ class HistoryScreen extends StatefulWidget {
 
 class _HistoryScreenState extends State<HistoryScreen> {
   final ApiService _apiService = ApiService();
-  final String _currentUid =
-      FirebaseAuth.instance.currentUser?.uid ?? 'anonymous_user';
+  late final String _currentUid;
 
   static const Color bgColor = Color(0xFF0D0C1D);
   static const Color cardBg = Color(0xFF1D1B3E);
@@ -37,6 +36,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
   @override
   void initState() {
     super.initState();
+    // 2. Safely grab the actual live user ID during the initState lifecycle execution
+    _currentUid = FirebaseAuth.instance.currentUser?.uid ?? 'anonymous_user';
+    
+    // 3. Fire the request with the validated string sequence
     _moodHistoryFuture = _apiService.getMoodHistoryFromAzure(_currentUid);
   }
 
