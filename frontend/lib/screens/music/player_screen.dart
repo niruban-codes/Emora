@@ -139,9 +139,9 @@ class _PlayerScreenState extends State<PlayerScreen>
                 color: Colors.white.withOpacity(0.1),
               ),
               child: const Icon(
-                Icons.keyboard_arrow_down_rounded,
+                Icons.arrow_back,
                 color: Colors.white,
-                size: 24,
+                size: 18,
               ),
             ),
           ),
@@ -161,15 +161,10 @@ class _PlayerScreenState extends State<PlayerScreen>
               ),
             ],
           ),
-          Container(
+          const SizedBox(
             width: 38,
             height: 38,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white.withOpacity(0.1),
-            ),
-            child: const Icon(Icons.more_vert, color: Colors.white, size: 20),
-          ),
+          )
         ],
       ),
     );
