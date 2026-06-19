@@ -14,6 +14,8 @@ class ProfileSettingsScreen extends StatefulWidget {
   static const Color logoutRedBg = Color(0xFF3B1E2B);
   static const Color logoutTextRed = Color(0xFFEF5350);
   static const Color activeHighlight = Color(0xFFA7338A);
+  static const Color dashboardButtonColor = Color(0xFF9C27B0); 
+  static const Color dashboardGradientEnd = Color(0xFF673AB7);
 
   @override
   State<ProfileSettingsScreen> createState() => _ProfileSettingsScreenState();
@@ -335,8 +337,8 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
           borderRadius: BorderRadius.circular(25),
           gradient: const LinearGradient(
             colors: [
-              Color(0xFFE53935),
-              Color(0xFFB71C1C),
+              ProfileSettingsScreen.dashboardButtonColor,
+              ProfileSettingsScreen.dashboardGradientEnd,
             ], // Admin Red Gradient
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
