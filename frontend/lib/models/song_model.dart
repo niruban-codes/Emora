@@ -5,6 +5,7 @@ class Song {
   final String coverUrl;
   final bool isFavorite;
   final String duration;
+  final String mood;
 
   Song({
     required this.id,
@@ -13,28 +14,35 @@ class Song {
     required this.coverUrl,
     this.isFavorite = false,
     this.duration = '',
+    this.mood = 'All',
   });
 
-  // Dummy Data
-  static List<Song> dummyPlaylist = [
-    Song(
-      id: '1',
-      title: 'Midnight City',
-      artist: 'M83',
-      coverUrl: 'https://picsum.photos/200?1',
-    ),
-    Song(
-      id: '2',
-      title: 'Blinding Lights',
-      artist: 'The Weeknd',
-      coverUrl: 'https://picsum.photos/200?2',
-      isFavorite: true,
-    ),
-    Song(
-      id: '3',
-      title: 'Levitating',
-      artist: 'Dua Lipa',
-      coverUrl: 'https://picsum.photos/200?3',
-    ),
-  ];
+  factory Song.fromJson(
+    Map<String, dynamic> json, {
+    String? defaultMood,
+    bool isFav = false,
+  }) {
+    return Song(
+      id: json['videoId'] ?? json['id'] ?? '',
+      title: json['title'] ?? '',
+      artist: json['artist'] ?? '',
+      coverUrl: json['thumbnail'] ?? json['coverUrl'] ?? '',
+      duration: json['duration'] ?? '',
+      mood: json['mood'] ?? defaultMood ?? 'All',
+      isFavorite: json['isFavorite'] ?? isFav,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'videoId': id,
+      'title': title,
+      'artist': artist,
+      'thumbnail': coverUrl,
+      'duration': duration,
+      'mood': mood,
+      'isFavorite': true,
+      'timestamp': DateTime.now().toIso8601String(),
+    };
+  }
 }

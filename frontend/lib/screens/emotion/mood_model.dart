@@ -16,6 +16,7 @@ class MoodModel {
   final String genre;
   final String description;
 
+
   const MoodModel({
     required this.type,
     required this.label,
@@ -25,6 +26,24 @@ class MoodModel {
     required this.genre,
     required this.description,
   });
+
+ //  Add a copyWith helper method to let us safely inject custom data later
+  MoodModel copyWithTracks({
+    String? customTitle,
+    String? customArtist,
+    String? customGenre,
+    List<dynamic>? tracks,
+  }) {
+    return MoodModel(
+      type: type,
+      label: label,
+      emoji: emoji,
+      songTitle: customTitle ?? songTitle,
+      artist: customArtist ?? artist,
+      genre: customGenre ?? genre,
+      description: description,
+    );
+  }
 
   // Converts the MoodModel into a Map for Firestore storage.
   Map<String, dynamic> toMap() {

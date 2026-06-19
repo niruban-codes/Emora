@@ -13,11 +13,24 @@ class UserEngagementScreen extends StatelessWidget {
         elevation: 0,
         scrolledUnderElevation: 0,
         automaticallyImplyLeading: false,
-        title: const Text("User Engagement", style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text(
+          "User Engagement",
+          style: TextStyle(
+            fontSize: 20,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         leading: const Icon(Icons.arrow_back, color: Colors.white),
         actions: [
-          IconButton(icon: const Icon(Icons.search, color: Colors.white), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.settings, color: Colors.white), onPressed: () {}),
+          IconButton(
+            icon: const Icon(Icons.search, color: Colors.white),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings, color: Colors.white),
+            onPressed: () {},
+          ),
           const SizedBox(width: 8),
         ],
       ),
@@ -27,16 +40,39 @@ class UserEngagementScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 1. ALL 4 QUICK STAT CARDS (Horizontal Scrollable)
-            const Text("Overview", style: TextStyle(fontSize: 16, color: Colors.white70)),
+            const Text(
+              "Overview",
+              style: TextStyle(fontSize: 16, color: Colors.white70),
+            ),
             const SizedBox(height: 12),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  _buildStatCard("Active Users", "5,320", "Online now", const Color(0xFF6C5CE7)),
-                  _buildStatCard("New Users", "780", "+15% this week", const Color(0xFFD43FB1)),
-                  _buildStatCard("Returning Users", "4,200", "82% retention", Colors.blueAccent),
-                  _buildStatCard("Avg. Session", "18m 43s", "-2m from yesterday", Colors.orangeAccent),
+                  _buildStatCard(
+                    "Active Users",
+                    "5,320",
+                    "Online now",
+                    const Color(0xFF6C5CE7),
+                  ),
+                  _buildStatCard(
+                    "New Users",
+                    "780",
+                    "+15% this week",
+                    const Color(0xFFD43FB1),
+                  ),
+                  _buildStatCard(
+                    "Returning Users",
+                    "4,200",
+                    "82% retention",
+                    Colors.blueAccent,
+                  ),
+                  _buildStatCard(
+                    "Avg. Session",
+                    "18m 43s",
+                    "-2m from yesterday",
+                    Colors.orangeAccent,
+                  ),
                 ],
               ),
             ),
@@ -89,9 +125,24 @@ class UserEngagementScreen extends StatelessWidget {
                           sectionsSpace: 0,
                           centerSpaceRadius: 20,
                           sections: [
-                            PieChartSectionData(color: const Color(0xFFD43FB1), value: 40, radius: 12, showTitle: false),
-                            PieChartSectionData(color: const Color(0xFF6C5CE7), value: 35, radius: 12, showTitle: false),
-                            PieChartSectionData(color: const Color(0xFF00FFCC), value: 25, radius: 12, showTitle: false),
+                            PieChartSectionData(
+                              color: const Color(0xFFD43FB1),
+                              value: 40,
+                              radius: 12,
+                              showTitle: false,
+                            ),
+                            PieChartSectionData(
+                              color: const Color(0xFF6C5CE7),
+                              value: 35,
+                              radius: 12,
+                              showTitle: false,
+                            ),
+                            PieChartSectionData(
+                              color: const Color(0xFF00FFCC),
+                              value: 25,
+                              radius: 12,
+                              showTitle: false,
+                            ),
                           ],
                         ),
                       ),
@@ -107,7 +158,7 @@ class UserEngagementScreen extends StatelessWidget {
     );
   }
 
-  // --- UI COMPONENTS ---
+  // UI COMPONENTS
 
   Widget _buildStatCard(String title, String value, String sub, Color accent) {
     return Container(
@@ -121,17 +172,35 @@ class UserEngagementScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontSize: 11, color: Colors.white54)),
+          Text(
+            title,
+            style: const TextStyle(fontSize: 11, color: Colors.white54),
+          ),
           const SizedBox(height: 4),
-          Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
           const SizedBox(height: 2),
-          Text(sub, style: TextStyle(fontSize: 9, color: accent.withOpacity(0.9))),
+          Text(
+            sub,
+            style: TextStyle(fontSize: 9, color: accent.withOpacity(0.9)),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildChartSection({required String title, String? subtitle, double? height, required Widget child}) {
+  Widget _buildChartSection({
+    required String title,
+    String? subtitle,
+    double? height,
+    required Widget child,
+  }) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -141,8 +210,19 @@ class UserEngagementScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)),
-          if (subtitle != null) Text(subtitle, style: const TextStyle(fontSize: 10, color: Colors.white54)),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          if (subtitle != null)
+            Text(
+              subtitle,
+              style: const TextStyle(fontSize: 10, color: Colors.white54),
+            ),
           const SizedBox(height: 15),
           height != null ? SizedBox(height: height, child: child) : child,
         ],
@@ -155,16 +235,19 @@ class UserEngagementScreen extends StatelessWidget {
       BarChartData(
         gridData: const FlGridData(show: false),
         titlesData: FlTitlesData(
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              reservedSize: 30, 
+              reservedSize: 30,
               getTitlesWidget: (val, meta) {
-               
                 return Text(
-                  val.toInt().toString(), 
+                  val.toInt().toString(),
                   style: const TextStyle(fontSize: 9, color: Colors.white54),
                 );
               },
@@ -175,19 +258,33 @@ class UserEngagementScreen extends StatelessWidget {
               showTitles: true,
               getTitlesWidget: (val, meta) {
                 const ageGroups = ['18-24', '25-34', '35-44', '45-54', '55+'];
-                return Text(ageGroups[val.toInt() % 5], style: const TextStyle(fontSize: 9, color: Colors.white54));
+                return Text(
+                  ageGroups[val.toInt() % 5],
+                  style: const TextStyle(fontSize: 9, color: Colors.white54),
+                );
               },
             ),
           ),
         ),
         borderData: FlBorderData(show: false),
-        barGroups: List.generate(5, (i) => BarChartGroupData(
-          x: i,
-          barRods: [
-            BarChartRodData(toY: 10.0 - i, color: const Color(0xFFD43FB1), width: 7),
-            BarChartRodData(toY: 8.0 - i, color: const Color(0xFF6C5CE7), width: 7),
-          ],
-        )),
+        barGroups: List.generate(
+          5,
+          (i) => BarChartGroupData(
+            x: i,
+            barRods: [
+              BarChartRodData(
+                toY: 10.0 - i,
+                color: const Color(0xFFD43FB1),
+                width: 7,
+              ),
+              BarChartRodData(
+                toY: 8.0 - i,
+                color: const Color(0xFF6C5CE7),
+                width: 7,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -200,12 +297,22 @@ class UserEngagementScreen extends StatelessWidget {
         borderData: FlBorderData(show: false),
         lineBarsData: [
           LineChartBarData(
-            spots: [const FlSpot(0, 2), const FlSpot(1, 3.5), const FlSpot(2, 2.8), const FlSpot(3, 5), const FlSpot(4, 4), const FlSpot(5, 6)],
+            spots: [
+              const FlSpot(0, 2),
+              const FlSpot(1, 3.5),
+              const FlSpot(2, 2.8),
+              const FlSpot(3, 5),
+              const FlSpot(4, 4),
+              const FlSpot(5, 6),
+            ],
             isCurved: true,
             color: const Color(0xFF00FFCC),
             barWidth: 3,
-            belowBarData: BarAreaData(show: true, color: const Color(0xFF00FFCC).withOpacity(0.1)),
-          )
+            belowBarData: BarAreaData(
+              show: true,
+              color: const Color(0xFF00FFCC).withOpacity(0.1),
+            ),
+          ),
         ],
       ),
     );
@@ -218,8 +325,20 @@ class UserEngagementScreen extends StatelessWidget {
         children: [
           Text(flag, style: const TextStyle(fontSize: 16)),
           const SizedBox(width: 10),
-          Expanded(child: Text(name, style: const TextStyle(fontSize: 12, color: Colors.white))),
-          Text(pct, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF00FFCC))),
+          Expanded(
+            child: Text(
+              name,
+              style: const TextStyle(fontSize: 12, color: Colors.white),
+            ),
+          ),
+          Text(
+            pct,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF00FFCC),
+            ),
+          ),
         ],
       ),
     );

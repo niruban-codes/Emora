@@ -4,12 +4,9 @@ import 'package:dio/dio.dart';
 class ApiService {
   final Dio _dio = Dio();
 
-  // Localhost connection string for testing on your computer.
-  // Note: If you are running on an Android Emulator, change "127.0.0.1" to "10.0.2.2"
   final String baseUrl =
       "https://emora-api-backend-ggccceepbsa2f4dk.eastasia-01.azurewebsites.net";
 
-  // 1. AI EMOTION DETECTION (Camera Screen Bridge)
   Future<Map<String, dynamic>?> detectEmotion(File imageFile) async {
     try {
       String fileName = imageFile.path.split('/').last;
@@ -27,7 +24,7 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
-        return response.data; // Returns facial analysis results dict
+        return response.data as Map<String, dynamic>;
       }
     } on DioException catch (e) {
       print("AI Detection Server Error: ${e.response?.data ?? e.message}");
@@ -35,12 +32,11 @@ class ApiService {
     return null;
   }
 
-  // 2. GET USER PLAYLISTS (Library UI Bridge)
   Future<List<dynamic>?> getUserLibrary(String uid) async {
     try {
       Response response = await _dio.get("$baseUrl/library/$uid");
       if (response.statusCode == 200) {
-        return response.data; // Returns array of saved user playlists
+        return response.data;
       }
     } on DioException catch (e) {
       print("Library Fetch Error: ${e.response?.data ?? e.message}");
@@ -48,7 +44,6 @@ class ApiService {
     return null;
   }
 
-  // 3. SAVE PLAYLIST (Firestore Sync Bridge)
   Future<bool> savePlaylistToLibrary(
     String uid,
     String name,
@@ -67,7 +62,6 @@ class ApiService {
     }
   }
 
-  // 4. DELETE PLAYLIST (Library Maintenance Bridge)
   Future<bool> deletePlaylistFromLibrary(String uid, String playlistId) async {
     try {
       Response response = await _dio.delete(
@@ -79,5 +73,35 @@ class ApiService {
       print("Delete Playlist Error: ${e.response?.data ?? e.message}");
       return false;
     }
+  }
+
+  Future<bool> saveMoodHistoryToAzure({
+    required String uid,
+    required String emotion,
+    required List<dynamic> tracks,
+    double confidence = 95.0,
+  }) async {
+    try {
+      Response response = await _dio.post(
+        "$baseUrl/history/$uid",
+        data: {"emotion": emotion, "confidence": confidence, "tracks": tracks},
+      );
+      return response.statusCode == 201 || response.statusCode == 200;
+    } on DioException catch (e) {
+      print("Azure History sync failed: ${e.response?.data ?? e.message}");
+      return false;
+    }
+  }
+
+  Future<List<dynamic>?> getMoodHistoryFromAzure(String uid) async {
+    try {
+      Response response = await _dio.get("$baseUrl/history/$uid");
+      if (response.statusCode == 200) {
+        return response.data;
+      }
+    } on DioException catch (e) {
+      print("Azure History retrieval failed: ${e.response?.data ?? e.message}");
+    }
+    return null;
   }
 }

@@ -5,9 +5,19 @@ from flask import Blueprint, jsonify, request
 
 explore_bp = Blueprint("explore", __name__, url_prefix="/explore")
 
-# PERFECTLY MAPPED STATIC CODES FOR ZERO-QUOTA INSTANT LOADING
 EXPLORE_STATIC_MAP = {
-    
+    "sinhala": [
+        {"videoId": "heKksPAwfeE", "title": "Sansarini", "artist": "Yasas Medagedara", "thumbnail": "https://img.youtube.com/vi/heKksPAwfeE/mqdefault.jpg", "duration": "3:30"},
+        {"videoId": "-Bqdiuy5tTM", "title": "Meedum Dumaraye", "artist": "Kasun Kalhara", "thumbnail": "https://img.youtube.com/vi/-Bqdiuy5tTM/mqdefault.jpg", "duration": "3:30"},
+        {"videoId": "oJYPppbnt1c", "title": "Ehem Beluwama Diha", "artist": "Yasas Medagedara", "thumbnail": "https://img.youtube.com/vi/oJYPppbnt1c/mqdefault.jpg", "duration": "3:30"},
+        {"videoId": "vsRQnDiIg2Y", "title": "Prathihari", "artist": "Supun Perera", "thumbnail": "https://img.youtube.com/vi/vsRQnDiIg2Y/mqdefault.jpg", "duration": "3:30"},
+        {"videoId": "iIm4gcybpsI", "title": "Kuweni", "artist": "Ridma Weerawardena", "thumbnail": "https://img.youtube.com/vi/iIm4gcybpsI/mqdefault.jpg", "duration": "3:30"},
+        {"videoId": "GAoVQbWRdyc", "title": "Kanda Gena", "artist": "Chanuka Mora", "thumbnail": "https://img.youtube.com/vi/GAoVQbWRdyc/mqdefault.jpg", "duration": "3:30"},
+        {"videoId": "Z42aFor5MiM", "title": "Thamarasa", "artist": "Dinesh Gamage", "thumbnail": "https://img.youtube.com/vi/Z42aFor5MiM/mqdefault.jpg", "duration": "3:30"},
+        {"videoId": "6V62okYjrCc", "title": "Mandaram Kathawe", "artist": "Anushka Udana", "thumbnail": "https://img.youtube.com/vi/6V62okYjrCc/mqdefault.jpg", "duration": "3:30"},
+        {"videoId": "V5IZR7-MWko", "title": "Tharumal Kada Gannemi", "artist": "Sahan Chamikara", "thumbnail": "https://img.youtube.com/vi/V5IZR7-MWko/mqdefault.jpg", "duration": "3:30"},
+        {"videoId": "G-IS-scTJDo", "title": "Kohe Ho Ma", "artist": "Bhashi Devanga", "thumbnail": "https://img.youtube.com/vi/G-IS-scTJDo/mqdefault.jpg", "duration": "3:30"}
+    ],
     "tamil": [
         {"videoId": "yKDWXC4o5nA", "title": "Pookkalae Sattru Oyivedungal", "artist": "A. R. Rahman ft. Haricharan & Shreya Ghoshal", "thumbnail": "https://img.youtube.com/vi/yKDWXC4o5nA/mqdefault.jpg", "duration": "3:30"},
         {"videoId": "Wxqu1eVJ4Vs", "title": "Mersal Arasan", "artist": "A. R. Rahman ft. G.V. Prakash Kumar", "thumbnail": "https://img.youtube.com/vi/Wxqu1eVJ4Vs/mqdefault.jpg", "duration": "3:30"},
@@ -19,6 +29,18 @@ EXPLORE_STATIC_MAP = {
         {"videoId": "dsrku40uZMc", "title": "Vilambara Idaiweli", "artist": "Hiphop Tamizha", "thumbnail": "https://img.youtube.com/vi/dsrku40uZMc/mqdefault.jpg", "duration": "3:30"},
         {"videoId": "067FqlIxEWA", "title": "Dheema Dheema", "artist": "Harris Jayaraj", "thumbnail": "https://img.youtube.com/vi/067FqlIxEWA/mqdefault.jpg", "duration": "3:30"},
         {"videoId": "4Bsc2uI_LsM", "title": "Oorum Blood-um", "artist": "G. V. Prakash Kumar", "thumbnail": "https://img.youtube.com/vi/4Bsc2uI_LsM/mqdefault.jpg", "duration": "3:30"}
+    ],
+    "korean": [
+        {"videoId": "bvJ_cNsCqE4", "title": "Dreaming", "artist": "NCT DREAM", "thumbnail": "https://img.youtube.com/vi/bvJ_cNsCqE4/mqdefault.jpg", "duration": "3:06"},
+        {"videoId": "MA_B8RU9BsQ", "title": "Walk", "artist": "NCT 127", "thumbnail": "https://img.youtube.com/vi/MA_B8RU9BsQ/mqdefault.jpg", "duration": "3:29"},
+        {"videoId": "-GQg25oP0S4", "title": "Super", "artist": "SEVENTEEN", "thumbnail": "https://img.youtube.com/vi/-GQg25oP0S4/mqdefault.jpg", "duration": "3:20"},
+        {"videoId": "JsOOis4bBFg", "title": "S-Class", "artist": "Stray Kids", "thumbnail": "https://img.youtube.com/vi/JsOOis4bBFg/mqdefault.jpg", "duration": "3:16"},
+        {"videoId": "3J7rt7bkDCY", "title": "Boy With Luv", "artist": "BTS", "thumbnail": "https://img.youtube.com/vi/3J7rt7bkDCY/mqdefault.jpg", "duration": "3:49"},
+        {"videoId": "BL-aIpCLWnU", "title": "Black Mamba", "artist": "aespa", "thumbnail": "https://img.youtube.com/vi/BL-aIpCLWnU/mqdefault.jpg", "duration": "2:54"},
+        {"videoId": "uR8Mrt1IpXg", "title": "Psycho", "artist": "Red Velvet", "thumbnail": "https://img.youtube.com/vi/uR8Mrt1IpXg/mqdefault.jpg", "duration": "3:31"},
+        {"videoId": "UyEkTQ0OVXw", "title": "Replay", "artist": "SHINee", "thumbnail": "https://img.youtube.com/vi/UyEkTQ0OVXw/mqdefault.jpg", "duration": "3:35"},
+        {"videoId": "fTc5tuEn6_U", "title": "Everytime", "artist": "CHEN x Punch", "thumbnail": "https://img.youtube.com/vi/fTc5tuEn6_U/mqdefault.jpg", "duration": "3:09"},
+        {"videoId": "XAULcrSh80E", "title": "Gabriela", "artist": "KATSEYE", "thumbnail": "https://img.youtube.com/vi/XAULcrSh80E/mqdefault.jpg", "duration": "2:41"}
     ],
     "party songs": [
         {"videoId": "KT6t9R6pqkM", "title": "Where Is The Party", "artist": "Yuvan Shankar Raja", "thumbnail": "https://img.youtube.com/vi/KT6t9R6pqkM/mqdefault.jpg", "duration": "3:30"},
@@ -128,19 +150,17 @@ def get_vibe_genre():
     if not query_input:
         return jsonify({"error": "Missing 'query' parameter"}), 400
 
-    # 1. CHECK LOCAL STORAGE POOLS FIRST (Protects your Quota Limit 100%)
+
     if query_input in EXPLORE_STATIC_MAP:
         print(f"🎯 Local storage pool hit for category tile: '{query_input}'. Serving instant data.")
         return jsonify(EXPLORE_STATIC_MAP[query_input]), 200
 
-    # 2. RUNTIME FALLBACK ONLY FOR LIVE CUSTOM SEARCHES
     api_key = os.getenv("YOUTUBE_API_KEY")
     if not api_key:
         return jsonify({"error": "Server API key configuration missing"}), 500
 
     print(f"📡 Requesting official live Google servers for custom query search input: '{query_input}'")
     
-# Broaden lookup params and fetch 25 records so filter cuts don't kill list length
     google_url = (
         f"https://www.googleapis.com/youtube/v3/search"
         f"?part=snippet"
@@ -179,7 +199,7 @@ def get_vibe_genre():
                 "duration": "3:30"
             })
 
-        # REINFORCEMENT FILLER: If strict filters leave us short, inject steady records from the neutral pool to hold 10 elements
+
         if len(recommended_songs) < 10:
             from youtube import EMOTION_HARDCODED_MAP
             backup_pool = EMOTION_HARDCODED_MAP.get("neutral", [])

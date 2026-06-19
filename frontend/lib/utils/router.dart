@@ -1,7 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
-
-// ── Screens ────────────────────────────────────────────────────────────────
+//Screens
 import 'package:frontend/screens/splash_screen.dart';
 import 'package:frontend/screens/launch_screen.dart';
 import 'package:frontend/screens/auth/register_screen.dart';
@@ -38,9 +37,6 @@ final appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/',
   routes: [
-    // ═══════════════════════════════════════════════════════════════════════
-    // FULL SCREEN ROUTES (No Bottom Navigation Bar)
-    // ═══════════════════════════════════════════════════════════════════════
     GoRoute(
       path: '/',
       parentNavigatorKey: _rootNavigatorKey,
@@ -67,8 +63,8 @@ final appRouter = GoRouter(
       builder: (context, state) {
         final extra = state.extra as Map<String, dynamic>;
         return GenrePlaylistScreen(
-          genre: extra['genre'] as String,
-          songs: extra['songs'] as List<Song>?, 
+          genre: (extra['genre'] as String?) ?? 'Unknown Genre',
+          songs: extra['songs'] as List<Song>?,
         );
       },
     ),
@@ -106,26 +102,96 @@ final appRouter = GoRouter(
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) {
         final extra = state.extra as Map<String, dynamic>;
-        final songs = extra['songs'] as List<Song>;
-        final index = extra['index'] as int;
+        final songs = extra['songs'] as List<Song>? ?? [];
+        final index = extra['index'] as int? ?? 0;
+
+        if (songs.isEmpty) {
+          return const Scaffold(body: Center(child: Text("No tracks found")));
+        }
+
+        final safeIndex = index.clamp(0, songs.length - 1);
         return PlayerScreen(
-          currentSong: songs[index],
+          currentSong: songs[safeIndex],
           playlist: songs,
-          initialIndex: index,
+          initialIndex: safeIndex,
         );
       },
     ),
+    GoRoute(
+      path: '/result',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) {
+        try {
+          final extra = state.extra;
 
-    // ═══════════════════════════════════════════════════════════════════════
-    // SHELL ROUTES (Wrapped in MainLayout with Bottom Navigation Bar)
-    // ═══════════════════════════════════════════════════════════════════════
+          if (extra is Map<String, dynamic>) {
+            if (extra.containsKey('mood') && extra['mood'] is MoodModel) {
+              return ResultScreen(mood: extra['mood'] as MoodModel);
+            }
+
+            final emotionStr =
+                (extra['dominant_emotion'] ??
+                        extra['emotion'] ??
+                        extra['mood'] ??
+                        'neutral')
+                    .toString();
+            return ResultScreen(mood: MoodModel.fromString(emotionStr));
+          }
+
+          if (extra is MoodModel) {
+            return ResultScreen(mood: extra);
+          }
+
+          return ResultScreen(mood: MoodModel.fromString('neutral'));
+        } catch (e, stackTrace) {
+          debugPrint(
+            "❌ GoRouter Result Processing Exception caught safely: $e",
+          );
+          return ResultScreen(mood: MoodModel.fromString('neutral'));
+        }
+      },
+    ),
+    GoRoute(
+      path: '/playlist',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) {
+        try {
+          final extra = state.extra;
+
+          if (extra is Map<String, dynamic>) {
+            final emotionStr =
+                (extra['dominant_emotion'] ??
+                        extra['emotion'] ??
+                        extra['mood'] ??
+                        'neutral')
+                    .toString();
+            return PlaylistDetailsScreen(
+              mood: MoodModel.fromString(emotionStr),
+            );
+          }
+
+          if (extra is MoodModel) {
+            return PlaylistDetailsScreen(mood: extra);
+          }
+
+          if (extra is String) {
+            return PlaylistDetailsScreen(mood: MoodModel.fromString(extra));
+          }
+
+          return PlaylistDetailsScreen(mood: MoodModel.fromString('neutral'));
+        } catch (e, stackTrace) {
+          debugPrint("❌ GoRouter Playlist Navigation Error: $e");
+          debugPrint("Stacktrace: $stackTrace");
+          return PlaylistDetailsScreen(mood: MoodModel.fromString('neutral'));
+        }
+      },
+    ),
+
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
-        // Return the MainLayout, passing the shell to display the current tab
         return MainLayout(navigationShell: navigationShell);
       },
       branches: [
-        // ── Branch 0: HOME ──
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -135,7 +201,6 @@ final appRouter = GoRouter(
           ],
         ),
 
-        // ── Branch 1: EXPLORE ──
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -145,35 +210,15 @@ final appRouter = GoRouter(
           ],
         ),
 
-        // ── Branch 2: LIBRARY (and its sub-pages) ──
         StatefulShellBranch(
           routes: [
             GoRoute(
               path: '/library',
               builder: (context, state) => const LibraryScreen(),
             ),
-            GoRoute(
-              path: '/result',
-              builder: (context, state) {
-                final mood = state.extra as MoodModel?;
-                return ResultScreen(
-                  mood: mood ?? MoodModel.fromString('peaceful'),
-                );
-              },
-            ),
-            GoRoute(
-              path: '/playlist',
-              builder: (context, state) {
-                final mood = state.extra as MoodModel?;
-                return PlaylistDetailsScreen(
-                  mood: mood ?? MoodModel.fromString('peaceful'),
-                );
-              },
-            ),
           ],
         ),
 
-        // ── Branch 3: HISTORY ──
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -183,7 +228,6 @@ final appRouter = GoRouter(
           ],
         ),
 
-        // ── Branch 4: PROFILE (and its sub-pages) ──
         StatefulShellBranch(
           routes: [
             GoRoute(

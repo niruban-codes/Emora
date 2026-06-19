@@ -1,17 +1,16 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend/models/song_model.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class GenrePlaylistScreen extends StatefulWidget {
   final String genre;
-  final List<Song>? songs; // Made nullable to detect dynamic loading
+  final List<Song>? songs;
 
-  const GenrePlaylistScreen({
-    super.key,
-    required this.genre,
-    this.songs,
-  });
+  const GenrePlaylistScreen({super.key, required this.genre, this.songs});
 
   @override
   State<GenrePlaylistScreen> createState() => _GenrePlaylistScreenState();
@@ -24,7 +23,7 @@ class _GenrePlaylistScreenState extends State<GenrePlaylistScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.songs != null) {
+    if (widget.songs != null && widget.songs!.isNotEmpty) {
       _displaySongs = widget.songs!;
     } else {
       _fetchTrendingSongs();
@@ -34,13 +33,28 @@ class _GenrePlaylistScreenState extends State<GenrePlaylistScreen> {
   Future<void> _fetchTrendingSongs() async {
     setState(() => _isLoading = true);
     try {
-      // TODO----Connect actual backend API service fetch function here later
-      await Future.delayed(const Duration(seconds: 2));
+      final uri = Uri.parse(
+        "https://emora-api-backend-ggccceepbsa2f4dk.eastasia-01.azurewebsites.net/explore/vibe-genre?query=${Uri.encodeComponent(widget.genre)}",
+      );
+
+      final response = await http.get(uri);
+      print("API Response: ${response.statusCode} - ${response.body}");
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+
+        setState(() {
+          _displaySongs = data.map((e) => Song.fromJson(e)).toList();
+          _isLoading = false;
+        });
+      } else {
+        throw Exception("Failed to load songs");
+      }
+    } catch (e) {
       setState(() {
         _isLoading = false;
       });
-    } catch (e) {
-      setState(() => _isLoading = false);
+
+      debugPrint("Error fetching songs: $e");
     }
   }
 
@@ -64,7 +78,7 @@ class _GenrePlaylistScreenState extends State<GenrePlaylistScreen> {
     );
   }
 
-  // ── Top Bar ───────────────────────────────────────────────────────────────
+  //Top Bar
   Widget _buildTopBar(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -84,7 +98,7 @@ class _GenrePlaylistScreenState extends State<GenrePlaylistScreen> {
     );
   }
 
-  // ── Header ────────────────────────────────────────────────────────────────
+  //Header
   Widget _buildHeader() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -114,7 +128,7 @@ class _GenrePlaylistScreenState extends State<GenrePlaylistScreen> {
     );
   }
 
-  // ── Song List ─────────────────────────────────────────────────────────────
+  //Song List
   Widget _buildSongList(BuildContext context) {
     if (_isLoading) {
       return const Center(
@@ -140,27 +154,24 @@ class _GenrePlaylistScreenState extends State<GenrePlaylistScreen> {
       separatorBuilder: (_, __) => const SizedBox(height: 10),
       itemBuilder: (context, index) => _buildSongTile(context, index),
     );
-  }    
+  }
 
   Widget _buildSongTile(BuildContext context, int index) {
     final song = _displaySongs[index];
 
     return GestureDetector(
       onTap: () {
-        context.push('/player', extra: {
-          'songs': _displaySongs,
-          'index': index,
-        });
+        context.push(
+          '/player',
+          extra: {'songs': _displaySongs, 'index': index},
+        );
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           color: const Color(0xFF14122A),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: Colors.white.withOpacity(0.06),
-            width: 1,
-          ),
+          border: Border.all(color: Colors.white.withOpacity(0.06), width: 1),
         ),
         child: Row(
           children: [
@@ -221,7 +232,6 @@ class _GenrePlaylistScreenState extends State<GenrePlaylistScreen> {
               ),
             ),
             const SizedBox(width: 10),
-            // More icon
             Icon(
               Icons.more_vert,
               color: Colors.white.withOpacity(0.3),

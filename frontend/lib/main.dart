@@ -4,10 +4,8 @@ import 'firebase_options.dart';
 import './utils/router.dart';
 
 void main() async {
-  // ✅ Required before Firebase.initializeApp()
   WidgetsFlutterBinding.ensureInitialized();
 
-  // ✅ Initialize Firebase using the generated options
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(const MyApp());

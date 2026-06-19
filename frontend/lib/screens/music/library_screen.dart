@@ -130,37 +130,12 @@ class _LibraryScreenState extends State<LibraryScreen> {
               itemBuilder: (context, index) {
                 final item = _libraryItems[index];
                 return GestureDetector(
-                  // NEW CODE
                   onTap: () {
                     if (item['title'] == 'Liked Songs') {
-                      // Keep original Liked Songs behavior
                       context.push('/favorites', extra: 'All');
                     } else {
-                      // Map the string title to the correct EmotionType enum
-                      MoodType selectedType =
-                          MoodType.neutral; // Default fallback
-
-                      switch (item['title']) {
-                        case 'Happy':
-                          selectedType = MoodType.happy;
-                          break;
-                        case 'Sad':
-                          selectedType = MoodType.sad;
-                          break;
-                        case 'Fear':
-                          selectedType = MoodType.fear;
-                          break;
-                        case 'Angry':
-                          selectedType = MoodType.angry;
-                          break;
-                        case 'Surprise':
-                          selectedType = MoodType.surprise;
-                          break;
-                      }
-
-                      final fullMoodModel = getMoodByType(selectedType);
-
-                      context.push('/playlist', extra: fullMoodModel);
+                      final String selectedMood = item['title'].toString();
+                      context.push('/playlist', extra: selectedMood);
                     }
                   },
                   child: _buildMoodCard(
@@ -189,7 +164,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
     return Container(
       height: 110,
       decoration: BoxDecoration(
-        color: const Color(0xFF16142E), // Slightly lighter than bg
+        color: const Color(0xFF16142E),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: isHighlight
@@ -208,7 +183,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
       child: Stack(
         clipBehavior: Clip.antiAlias,
         children: [
-          // Elegant subtle gradient matching the icon color
           Positioned(
             right: -30,
             top: -20,
@@ -241,7 +215,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   decoration: BoxDecoration(
                     color: isHighlight
                         ? baseColor.withOpacity(0.2)
-                        : const Color(0xFF0D0C1D), // Dark inner circle
+                        : const Color(0xFF0D0C1D),
                     shape: BoxShape.circle,
                     border: Border.all(
                       color: isHighlight
@@ -271,7 +245,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       const SizedBox(height: 4),
                       Text(
                         subtitle,
-                        // 👇 Kept Poppins for Card Subtitle
                         style: GoogleFonts.poppins(
                           color: Colors.white.withOpacity(0.5),
                           fontSize: 13,
@@ -282,7 +255,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   ),
                 ),
 
-                // Chevron Icon to indicate action
                 Icon(
                   Icons.chevron_right_rounded,
                   color: Colors.white.withOpacity(0.2),

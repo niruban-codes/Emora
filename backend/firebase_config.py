@@ -40,6 +40,4 @@ def _initialize_firebase() -> firestore.Client:
 
     return firestore.client()
 
-# Module-level Firestore client — import this in other files:
-#   from firebase_config import db
 db: firestore.Client = _initialize_firebase()

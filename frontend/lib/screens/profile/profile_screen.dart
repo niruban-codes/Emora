@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:firebase_auth/firebase_auth.dart'; 
-import '../../../services/firestore_service.dart'; 
-//import 'package:frontend/screens/result_screen.dart'; //remove later
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import '../../../services/firestore_service.dart';
 
 class ProfileSettingsScreen extends StatefulWidget {
   const ProfileSettingsScreen({super.key});
@@ -21,22 +21,21 @@ class ProfileSettingsScreen extends StatefulWidget {
   State<ProfileSettingsScreen> createState() => _ProfileSettingsScreenState();
 }
 
-//  Added the State class
 class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   String userName = "Loading...";
   String userEmail = "";
-  // Define your hardcoded admin emails
+  String? profilePicUrl;
+
+  // hardcoded admin emails
   final List<String> _adminEmails = [
     'niru2324@gmail.com',
-    'sparkswills40@gmail.com', // Replace with your actual admin email
+    'sparkswills40@gmail.com',
     'admin@emora.com',
     'geethmapiyaratne285@gmail.com',
     'nirubannallirajah@gmail.com',
     'hafsanafli2003@gmail.com',
-    'dinithia962@gmail.com', 
+    'dinithia962@gmail.com',
   ];
-
-  // Check if the current logged-in user is an admin
   bool get _isAdmin {
     final user = FirebaseAuth.instance.currentUser;
     return user != null &&
@@ -58,6 +57,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         setState(() {
           userName = data['name'] ?? "No Name";
           userEmail = data['email'] ?? user.email ?? "";
+          profilePicUrl = data['profilePicUrl'];
         });
       }
     }
@@ -72,7 +72,13 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => context.pop(),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/home');
+            }
+          },
         ),
         title: const Text(
           'Profile Settings',
@@ -101,8 +107,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
               'Mood Analytics',
             ),
 
-            
-
             const SizedBox(height: 25),
             _buildSectionLabel('APP PREFERENCES'),
             _buildSwitchTile(
@@ -110,36 +114,12 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
               'Push Notifications',
               true,
             ),
-            // const SizedBox(height: 30),
-            // ElevatedButton.icon(
-            //   style: ElevatedButton.styleFrom(
-            //     backgroundColor: Colors.deepPurple, 
-            //     minimumSize: const Size(double.infinity, 50),
-            //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-            //   ),
-            //   icon: const Icon(Icons.layers_rounded, color: Colors.white),
-            //   label: const Text(
-            //     "Test Result Screen UI", 
-            //     style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-            //   ),
-            //   onPressed: () {
-            //     Navigator.push(
-            //       context,
-            //       MaterialPageRoute(
-            //         builder: (context) => ResultScreen(
-            //           detectedEmotion: "Surprise", 
-            //           confidenceScore: 0.95,
-            //         ),
-            //       ),
-            //     );
-            //   },
-            // ),
 
             const SizedBox(height: 30),
             if (_isAdmin) _buildAdminCard(context),
 
             const SizedBox(height: 30),
-            _buildLogoutButton(context), // 
+            _buildLogoutButton(context),
 
             const SizedBox(height: 40),
           ],
@@ -163,12 +143,49 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                   width: 3,
                 ),
               ),
-              child: const CircleAvatar(
-                radius: 55,
-                backgroundImage: NetworkImage(
-                  'https://i.imgur.com/8Km9t9S.png',
-                ),
-              ),
+              child: profilePicUrl != null && profilePicUrl!.isNotEmpty
+                  ? (profilePicUrl!.startsWith('assets/')
+                        ? CircleAvatar(
+                            radius: 55,
+                            backgroundColor: ProfileSettingsScreen.cardColor,
+                            backgroundImage: AssetImage(profilePicUrl!),
+                            onBackgroundImageError: (_, __) {
+                              debugPrint(
+                                "Failed to load local asset avatar path.",
+                              );
+                            },
+                          )
+                        : CircleAvatar(
+                            radius: 55,
+                            backgroundColor: ProfileSettingsScreen.cardColor,
+                            child: CachedNetworkImage(
+                              imageUrl: profilePicUrl!,
+                              imageBuilder: (context, imageProvider) =>
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      image: DecorationImage(
+                                        image: imageProvider,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                              placeholder: (context, url) =>
+                                  const CircularProgressIndicator(
+                                    color: ProfileSettingsScreen.accentPurple,
+                                  ),
+                              errorWidget: (context, url, error) => const Icon(
+                                Icons.person,
+                                size: 50,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ))
+                  : const CircleAvatar(
+                      radius: 55,
+                      backgroundColor: ProfileSettingsScreen.cardColor,
+                      backgroundImage: AssetImage('assets/avatars/Girl 07.png'),
+                    ),
             ),
             const CircleAvatar(
               radius: 16,
@@ -179,7 +196,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         ),
         const SizedBox(height: 15),
         Text(
-          userName, //  Uses the variable from Firestore
+          userName,
           style: const TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
@@ -187,7 +204,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
           ),
         ),
         Text(
-          userEmail, // Uses the variable from Firestore
+          userEmail,
           style: const TextStyle(
             color: ProfileSettingsScreen.textSecondary,
             fontSize: 14,
@@ -201,14 +218,14 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     return Align(
       alignment: Alignment.centerLeft,
       child: Padding(
-        padding: const EdgeInsets.only(bottom: 12, top: 12), 
+        padding: const EdgeInsets.only(bottom: 12, top: 12),
         child: Text(
           label,
           style: const TextStyle(
-            color: Colors.white,           
-            fontSize: 13,                  
-            fontWeight: FontWeight.w900,  
-            letterSpacing: 1.3,           
+            color: Colors.white,
+            fontSize: 13,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1.3,
           ),
         ),
       ),
@@ -219,12 +236,12 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: _iconBox(icon),
-     title: Text(
+      title: Text(
         title,
         style: const TextStyle(
-          color: Colors.white, 
-          fontSize: 16,                    
-          fontWeight: FontWeight.w500,      
+          color: Colors.white,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
           letterSpacing: 0.5,
         ),
       ),
@@ -233,12 +250,8 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         color: ProfileSettingsScreen.textSecondary,
       ),
       onTap: () async {
-        // Added async
         if (title == 'Edit Profile') {
-          // 1. Wait for the user to return from Account Settings
           await context.push('/account-settings');
-
-          // 2. Refresh data from Firestore automatically
           _fetchUserData();
         } else if (title == 'Insights') {
           context.push('/insights');
@@ -259,7 +272,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: ProfileSettingsScreen.cardColor, //  1. Added Prefix
+        color: ProfileSettingsScreen.cardColor,
         borderRadius: BorderRadius.circular(15),
         border: connected ? null : Border.all(color: Colors.white10, width: 1),
       ),
@@ -281,7 +294,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                 if (sub.isNotEmpty)
                   Text(
                     sub,
-                    //  2. Added Prefix & removed 'const'
                     style: const TextStyle(
                       color: ProfileSettingsScreen.textSecondary,
                       fontSize: 12,
@@ -292,7 +304,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
           ),
           Text(
             action,
-            //  3. Added Prefix & removed 'const'
             style: TextStyle(
               color: connected
                   ? ProfileSettingsScreen.textSecondary
@@ -312,9 +323,9 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       title: Text(
         title,
         style: const TextStyle(
-          color: Colors.white, 
-          fontSize: 16, 
-          fontWeight: FontWeight.w500,     
+          color: Colors.white,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
           letterSpacing: 0.5,
         ),
       ),
@@ -326,7 +337,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     );
   }
 
-  // Admin Dashboard Card 
+  // Admin Dashboard Card
   Widget _buildAdminCard(BuildContext context) {
     return GestureDetector(
       onTap: () => context.push('/admin-dashboard'),
@@ -339,7 +350,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
             colors: [
               ProfileSettingsScreen.dashboardButtonColor,
               ProfileSettingsScreen.dashboardGradientEnd,
-            ], // Admin Red Gradient
+            ], 
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -372,7 +383,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     );
   }
 
-  //  Logout Button with Firebase Sign Out 
+  //  Logout Button with Firebase Sign Out
   Widget _buildLogoutButton(BuildContext context) {
     return Container(
       width: double.infinity,
@@ -383,7 +394,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       ),
       child: TextButton.icon(
         onPressed: () async {
-          // 1. Show confirmation dialog
           final confirm = await showDialog<bool>(
             context: context,
             builder: (context) => AlertDialog(
@@ -424,10 +434,8 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
             ),
           );
 
-          // 2. If confirmed sign out from Firebase and navigate to login
           if (confirm == true) {
-            await FirebaseAuth.instance
-                .signOut(); //  actual Firebase sign out
+            await FirebaseAuth.instance.signOut();
             if (context.mounted) context.go('/login');
           }
         },
