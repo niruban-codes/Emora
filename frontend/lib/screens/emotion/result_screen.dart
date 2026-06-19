@@ -43,6 +43,19 @@ class _ResultScreenState extends State<ResultScreen>
     _fadeAnim = CurvedAnimation(parent: _fadeCtrl, curve: Curves.easeOut);
   }
 
+  @override
+  void didUpdateWidget(ResultScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.mood != widget.mood) {
+      setState(() {
+        _isLoadingSongs = true;
+        _recommendedSongs = [];
+      });
+      _initializeData();
+    }
+  }
+
   Future<void> _initializeData() async {
     await _fetchRecommendedSongs();
     _savePlaylistToFirebase();
