@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class UserEngagementScreen extends StatelessWidget {
-  const UserEngagementScreen({super.key});
+  final VoidCallback? onBackToDashboard;
+  const UserEngagementScreen({super.key, this.onBackToDashboard});
 
   @override
   Widget build(BuildContext context) {
@@ -21,25 +22,23 @@ class UserEngagementScreen extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        leading: const Icon(Icons.arrow_back, color: Colors.white),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search, color: Colors.white),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.settings, color: Colors.white),
-            onPressed: () {},
-          ),
-          const SizedBox(width: 8),
-        ],
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            if (onBackToDashboard != null) {
+              onBackToDashboard!(); 
+            } else {
+              Navigator.pop(context);
+            }
+          },
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. ALL 4 QUICK STAT CARDS (Horizontal Scrollable)
+            // 1. ALL 4 QUICK STAT CARDS 
             const Text(
               "Overview",
               style: TextStyle(fontSize: 16, color: Colors.white70),
@@ -52,7 +51,7 @@ class UserEngagementScreen extends StatelessWidget {
               crossAxisCount: 2,
               mainAxisSpacing: 12,
               crossAxisSpacing: 12,
-              childAspectRatio: 1.6, // Adjusts the height-to-width proportion
+              childAspectRatio: 1.6, 
               children: [
                 _buildStatCard("Active Users", "5,320", "Online now", const Color(0xFF6C5CE7)),
                 _buildStatCard("New Users", "780", "+15% this week", const Color(0xFFD43FB1)),

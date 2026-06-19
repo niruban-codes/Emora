@@ -14,15 +14,19 @@ class MainWrapper extends StatefulWidget {
 
 class _MainWrapperState extends State<MainWrapper> {
   int _currentIndex = 0;
+  late final List<Widget> _screens;
 
-  // The 5 screens mapped to the icons
-  final List<Widget> _screens = [
-    const DashboardScreen(),        // Panel 1 (Dashboard)
-    const EmotionAnalyticsScreen(), // Panel 3 (Logs)
-    const UserEngagementScreen(),   // Panel 2 (Users)
-    const MusicAnalyticsScreen(),   // Panel 4 (Music)
-    const AdminControlScreen(),     // Panel 5 (System)
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _screens = [
+      DashboardScreen(onExitAdmin: () => Navigator.pop(context)),
+      EmotionAnalyticsScreen(onBackToDashboard: () => setState(() => _currentIndex = 0)),
+      UserEngagementScreen(onBackToDashboard: () => setState(() => _currentIndex = 0)),
+      MusicAnalyticsScreen(onBackToDashboard: () => setState(() => _currentIndex = 0)),
+      AdminControlScreen(onBackToDashboard: () => setState(() => _currentIndex = 0)),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
