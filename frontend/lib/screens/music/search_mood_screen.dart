@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend/models/song_model.dart';
+import 'package:frontend/api_service.dart';
 
 class SearchMoodScreen extends StatefulWidget {
   const SearchMoodScreen({super.key});
@@ -12,6 +13,7 @@ class SearchMoodScreen extends StatefulWidget {
 
 class _SearchMoodScreenState extends State<SearchMoodScreen> {
   final TextEditingController _searchController = TextEditingController();
+  bool _isSearching = false;
   final List<_LanguageItem> _languages = const [
     _LanguageItem(label: 'Tamil', symbol: 'த'),
     _LanguageItem(label: 'Sinhala', symbol: 'ස'),
@@ -57,6 +59,35 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _handleSearch(String query) async {
+    if (query.trim().isEmpty) return;
+
+    FocusScope.of(context).unfocus();
+    setState(() => _isSearching = true);
+
+    final results = await ApiService().searchYouTube(query);
+
+    if (mounted) setState(() => _isSearching = false);
+
+    if (results != null && results.isNotEmpty && mounted) {
+      final List<Song> parsedSongs = results
+          .map((e) => Song.fromJson(e))
+          .toList();
+
+      context.push(
+        '/genre-playlist',
+        extra: {'genre': 'Search: "$query"', 'songs': parsedSongs},
+      );
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No songs found. Try a different search!'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    }
   }
 
   @override
@@ -129,6 +160,8 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
       ),
       child: TextField(
         controller: _searchController,
+        textInputAction: TextInputAction.search,
+        onSubmitted: _handleSearch,
         style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
         decoration: InputDecoration(
           hintText: 'Artists, songs, or podcasts',
@@ -136,11 +169,23 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
             color: Colors.white.withOpacity(0.35),
             fontSize: 13,
           ),
-          prefixIcon: Icon(
-            Icons.search_rounded,
-            color: Colors.white.withOpacity(0.35),
-            size: 22,
-          ),
+          prefixIcon: _isSearching
+              ? const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      color: Color(0xFFCE93D8),
+                      strokeWidth: 2,
+                    ),
+                  ),
+                )
+              : Icon(
+                  Icons.search_rounded,
+                  color: Colors.white.withOpacity(0.35),
+                  size: 22,
+                ),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 16),
         ),

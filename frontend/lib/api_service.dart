@@ -104,4 +104,19 @@ class ApiService {
     }
     return null;
   }
+
+  Future<List<dynamic>?> searchYouTube(String query) async {
+    try {
+      Response response = await _dio.post(
+        "$baseUrl/youtube/search",
+        data: {"query": query},
+      );
+      if (response.statusCode == 200) {
+        return response.data;
+      }
+    } on DioException catch (e) {
+      print("Search Error: ${e.response?.data ?? e.message}");
+    }
+    return null;
+  }
 }

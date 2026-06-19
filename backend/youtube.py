@@ -219,3 +219,57 @@ def get_recent_searches(uid: str):
         return jsonify(search_history), 200
     except Exception as e:
         return jsonify({"error": "Database retrieval failure", "details": str(e)}), 500
+
+@youtube_bp.route("/search", methods=["POST"])
+def search_youtube():
+    """POST /youtube/search"""
+    body = request.get_json(silent=True)
+    if not body or "query" not in body:
+        return jsonify({"error": "Missing 'query' field"}), 400
+
+    search_query = body["query"]
+    api_key = os.getenv("YOUTUBE_API_KEY")
+    
+    if not api_key:
+        return jsonify({"error": "Server API configuration missing"}), 500
+
+    print(f"📡 User searching YouTube for: '{search_query}'")
+    
+    google_url = (
+        f"https://www.googleapis.com/youtube/v3/search"
+        f"?part=snippet"
+        f"&q={search_query}"
+        f"&type=video"
+        f"&videoCategoryId=10" 
+        f"&maxResults=15"
+        f"&key={api_key}"
+    )
+    
+    try:
+        response = requests.get(google_url, timeout=8)
+        data = response.json()
+        
+        if "items" not in data or not data["items"]:
+            return jsonify([]), 200 
+            
+        search_results = []
+        for item in data["items"]:
+            if "videoId" not in item["id"]:
+                continue
+                
+            video_id = item["id"]["videoId"]
+            snippet = item["snippet"]
+            
+            search_results.append({
+                "videoId": video_id,
+                "title": snippet.get("title", "Unknown Title"),
+                "artist": snippet.get("channelTitle", "Unknown Artist").replace(" - Topic", ""),
+                "thumbnail": f"https://img.youtube.com/vi/{video_id}/mqdefault.jpg",
+                "duration": "3:30"
+            })
+            
+        return jsonify(search_results), 200
+        
+    except Exception as e:
+        print(f"❌ YouTube Search Network Error: {str(e)}")
+        return jsonify([]), 500
