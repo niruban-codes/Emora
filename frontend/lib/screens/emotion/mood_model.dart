@@ -64,7 +64,7 @@ class MoodModel {
   Color get primaryColor {
     switch (type) {
       case MoodType.happy:
-        return const Color(0xFFAB47BC); // warm amber
+        return const Color(0xFFE5A93C); // warm amber
       case MoodType.sad:
         return const Color(0xFF42A5F5); // cool blue
       case MoodType.neutral:
@@ -74,7 +74,7 @@ class MoodModel {
       case MoodType.angry:
         return const Color(0xFFEF5350); // tense red
       case MoodType.surprise:
-        return const Color(0xFF9C27B0); // purple
+        return const Color(0xFF4CB0A6); // GREEN
     }
   }
 
@@ -82,7 +82,7 @@ class MoodModel {
   Color get secondaryColor {
     switch (type) {
       case MoodType.happy:
-        return const Color(0xFFFFF176); // yellow
+        return const Color(0xFFF57F17); // yellow
       case MoodType.sad:
         return const Color(0xFF7E57C2); // purple-blue
       case MoodType.neutral:
@@ -90,9 +90,9 @@ class MoodModel {
       case MoodType.fear:
         return const Color(0xFF4A148C); // yellow-green
       case MoodType.angry:
-        return const Color(0xFFFF7043); // deep orange
+        return const Color(0xFF4A1514); // deep orange
       case MoodType.surprise:
-        return const Color(0xFF4CAF50); // green
+        return const Color(0xFF1B5E20); // green
     }
   }
 
@@ -110,7 +110,7 @@ class MoodModel {
       case MoodType.angry:
         return const Color(0xFFFF8A80);
       case MoodType.surprise:
-        return const Color(0xFFE040FB);
+        return const Color(0xB3A7FFEB);
     }
   }
 

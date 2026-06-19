@@ -185,7 +185,7 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0D1135),
+      backgroundColor: const Color(0xFF0D0C1D),
       body: FadeTransition(
         opacity: _fadeAnim,
         child: SafeArea(
@@ -200,7 +200,7 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
                     children: [
                       _buildSubtitle(),
                       _buildViewfinder(),
-                      _buildStatusChips(),
+                      
                       Column(
                         children: [
                           _buildCaptureButton(),
@@ -305,7 +305,10 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
                       gradient: RadialGradient(
                         center: Alignment.center,
                         radius: 1.2,
-                        colors: [Color(0xFF1E1A35), Color(0xFF0D1135)],
+                        colors: [
+                         Color(0xFF1E1A35),
+                         Color(0xFF0D0C1D)
+                        ],
                       ),
                     ),
                   ),
@@ -460,40 +463,7 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
     );
   }
 
-  Widget _buildStatusChips() {
-    final chips = [
-      (Icons.face_retouching_natural_outlined, 'Face Detected'),
-      (Icons.lightbulb_outline, 'Lighting OK'),
-      (Icons.center_focus_strong_outlined, 'In Focus'),
-    ];
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: chips.map((chip) {
-        return Container(
-          margin: const EdgeInsets.symmetric(horizontal: 6),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.06),
-            borderRadius: BorderRadius.circular(100),
-            border: Border.all(color: Colors.white.withOpacity(0.12)),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(chip.$1, color: const Color(0xFF8B2D8B), size: 13),
-              const SizedBox(width: 5),
-              Text(
-                chip.$2,
-                style: GoogleFonts.poppins(color: Colors.white60, fontSize: 10),
-              ),
-            ],
-          ),
-        );
-      }).toList(),
-    );
-  }
-
+  
   Widget _buildCaptureButton() {
     return SizedBox(
       width: double.infinity,
