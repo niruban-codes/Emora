@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class EmotionAnalyticsScreen extends StatefulWidget {
-  const EmotionAnalyticsScreen({super.key});
-
+  final VoidCallback? onBackToDashboard;
+  const EmotionAnalyticsScreen({super.key, this.onBackToDashboard}); 
   @override
   State<EmotionAnalyticsScreen> createState() => _EmotionAnalyticsScreenState();
 }
@@ -21,7 +21,16 @@ class _EmotionAnalyticsScreenState extends State<EmotionAnalyticsScreen> {
         scrolledUnderElevation: 0,
         automaticallyImplyLeading: false,
         title: const Text("Emotion Analytics", style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold)),
-        leading: const Icon(Icons.arrow_back, color: Colors.white),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            if (widget.onBackToDashboard != null) {
+              widget.onBackToDashboard!(); // Navigates back to the Dashboard index
+            } else {
+              Navigator.pop(context);
+            }
+          },
+        ),
         actions: [
           // 1. THE DROPDOWN BOX (Timeframe Selector)
           Container(
@@ -67,6 +76,7 @@ class _EmotionAnalyticsScreenState extends State<EmotionAnalyticsScreen> {
     );
   }
 
+  // WATHSILUNI... remove this when you set Python backend image URLs later
   Widget _buildMoodDonut() {
     return Container(
       width: double.infinity,
@@ -98,12 +108,12 @@ class _EmotionAnalyticsScreenState extends State<EmotionAnalyticsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _analyticsLegend(Colors.yellow, "Happy", "30%"),
-                    _analyticsLegend(Colors.blue, "Sad", "20%"),
-                    _analyticsLegend(Colors.grey, "Neutral", "25%"),
-                    _analyticsLegend(Colors.green, "Surprise", "10%"),
-                    _analyticsLegend(Colors.purple, "Fear", "10%"),
-                    _analyticsLegend(Colors.orange, "Angry", "5%"),
+                    AnalyticsLegend(Colors.yellow, "Happy", "30%"),
+                    AnalyticsLegend(Colors.blue, "Sad", "20%"),
+                    AnalyticsLegend(Colors.grey, "Neutral", "25%"),
+                    AnalyticsLegend(Colors.green, "Surprise", "10%"),
+                    AnalyticsLegend(Colors.purple, "Fear", "10%"),
+                    AnalyticsLegend(Colors.orange, "Angry", "5%"),
                   ],
                 ),
               ),
@@ -146,9 +156,11 @@ class _EmotionAnalyticsScreenState extends State<EmotionAnalyticsScreen> {
 }
 
 
-  class _analyticsLegend extends StatelessWidget {
-    final Color color; final String label; final String percentage;
-    const _analyticsLegend(this.color, this.label, this.percentage);
+  class AnalyticsLegend extends StatelessWidget {
+    final Color color; 
+    final String label; 
+    final String percentage;
+    const AnalyticsLegend(this.color, this.label, this.percentage,{super.key});
 
     @override
     Widget build(BuildContext context) => Padding(

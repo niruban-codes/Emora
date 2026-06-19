@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 //import 'package:fl_chart/fl_chart.dart';
 
 class MusicAnalyticsScreen extends StatelessWidget {
-  const MusicAnalyticsScreen({super.key});
+  final VoidCallback? onBackToDashboard; 
+  const MusicAnalyticsScreen({super.key, this.onBackToDashboard});
 
   @override
   Widget build(BuildContext context) {
@@ -14,12 +15,16 @@ class MusicAnalyticsScreen extends StatelessWidget {
         scrolledUnderElevation: 0,
         automaticallyImplyLeading: false,
         title: const Text("Music Analytics", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
-        leading: const Icon(Icons.arrow_back, color: Colors.white),
-        actions: [
-          IconButton(icon: const Icon(Icons.search, color: Colors.white), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.settings, color: Colors.white), onPressed: () {}),
-          const SizedBox(width: 8),
-        ],
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            if (onBackToDashboard != null) {
+              onBackToDashboard!(); // Navigates back to the Dashboard index
+            } else {
+              Navigator.pop(context);
+            }
+          },
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16),

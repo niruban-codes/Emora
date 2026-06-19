@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 //import 'package:fl_chart/fl_chart.dart';
 
 class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({super.key});
+  final VoidCallback? onExitAdmin; 
+  const DashboardScreen({super.key, this.onExitAdmin});
 
   @override
   Widget build(BuildContext context) {
@@ -13,12 +14,16 @@ class DashboardScreen extends StatelessWidget {
         elevation: 0,
         automaticallyImplyLeading: false,
         title: const Text("Admin Dashboard", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
-        leading: const Icon(Icons.arrow_back, color: Colors.white),
-        actions: [
-          IconButton(icon: const Icon(Icons.search, color: Colors.white), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.settings, color: Colors.white), onPressed: () {}),
-          const SizedBox(width: 8),
-        ],
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            if (onExitAdmin != null) {
+              onExitAdmin!(); // Safely triggers the pop action from the wrapper level
+            } else {
+              Navigator.pop(context);
+            }
+          },
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20),

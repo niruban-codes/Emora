@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AdminControlScreen extends StatelessWidget {
-  const AdminControlScreen({super.key});
+  final VoidCallback? onBackToDashboard;
+  const AdminControlScreen({super.key, this.onBackToDashboard}); 
 
   @override
   Widget build(BuildContext context) {
@@ -13,12 +14,16 @@ class AdminControlScreen extends StatelessWidget {
         scrolledUnderElevation: 0,
         automaticallyImplyLeading: false,
         title: const Text("Admin Controls", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
-        leading: const Icon(Icons.arrow_back, color: Colors.white),
-        actions: [
-          IconButton(icon: const Icon(Icons.search, color: Colors.white), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.settings, color: Colors.white), onPressed: () {}),
-          const SizedBox(width: 8),
-        ],
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            if (onBackToDashboard != null) {
+              onBackToDashboard!(); // Navigates back to the Dashboard index
+            } else {
+              Navigator.pop(context);
+            }
+          },
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -67,9 +72,8 @@ class AdminControlScreen extends StatelessWidget {
   // UI WIDGETS
 
   Widget _buildSmallStatCard(String val, String label, IconData icon, Color color) {
-    return Expanded(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 4),
+    return Container(
+        // margin: const EdgeInsets.symmetric(horizontal: 4),
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(color: const Color(0xFF252648), borderRadius: BorderRadius.circular(12)),
         child: Column(
@@ -86,9 +90,8 @@ class AdminControlScreen extends StatelessWidget {
             Text(label, style: const TextStyle(fontSize: 12, color: Colors.white54)),
           ],
         ),
-      ),
-    );
-  }
+      );
+    }
 
   Widget _buildMenuSection(String title, List<Widget> tiles) {
     return Column(
