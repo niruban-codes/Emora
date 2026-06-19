@@ -51,7 +51,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white70),
+          icon: const Icon(Icons.arrow_back_rounded, color: Colors.white, size: 22,),
           onPressed: () => context.go('/home'),
         ),
         title: Text(
