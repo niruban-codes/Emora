@@ -122,7 +122,7 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
             GestureDetector(
               onTap: () => context.pop(),
               child: const Icon(
-                Icons.arrow_back_ios_new_rounded,
+                Icons.arrow_back,
                 color: Colors.white,
                 size: 22,
               ),
@@ -422,12 +422,6 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
                 color: Colors.white.withOpacity(0.5),
                 fontSize: 13,
               ),
-            ),
-            const SizedBox(width: 8),
-            Icon(
-              Icons.more_vert_rounded,
-              color: Colors.white.withOpacity(0.45),
-              size: 20,
             ),
           ],
         ),
