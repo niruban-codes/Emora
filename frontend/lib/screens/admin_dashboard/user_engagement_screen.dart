@@ -45,47 +45,22 @@ class UserEngagementScreen extends StatelessWidget {
               style: TextStyle(fontSize: 16, color: Colors.white70),
             ),
             const SizedBox(height: 12),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  _buildStatCard(
-                    "Active Users",
-                    "5,320",
-                    "Online now",
-                    const Color(0xFF6C5CE7),
-                  ),
-                  _buildStatCard(
-                    "New Users",
-                    "780",
-                    "+15% this week",
-                    const Color(0xFFD43FB1),
-                  ),
-                  _buildStatCard(
-                    "Returning Users",
-                    "4,200",
-                    "82% retention",
-                    Colors.blueAccent,
-                  ),
-                  _buildStatCard(
-                    "Avg. Session",
-                    "18m 43s",
-                    "-2m from yesterday",
-                    Colors.orangeAccent,
-                  ),
-                ],
-              ),
+          
+            GridView.count(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisCount: 2,
+              mainAxisSpacing: 12,
+              crossAxisSpacing: 12,
+              childAspectRatio: 1.6, // Adjusts the height-to-width proportion
+              children: [
+                _buildStatCard("Active Users", "5,320", "Online now", const Color(0xFF6C5CE7)),
+                _buildStatCard("New Users", "780", "+15% this week", const Color(0xFFD43FB1)),
+                _buildStatCard("Returning Users", "4,200", "82% retention", Colors.blueAccent),
+                _buildStatCard("Avg. Session", "18m 43s", "-2m from yesterday", Colors.orangeAccent),
+              ],
             ),
             const SizedBox(height: 25),
-
-            // 2. USER DEMOGRAPHICS (Age & Gender)
-            _buildChartSection(
-              title: "User Demographics",
-              subtitle: "Age & Gender Distribution",
-              height: 220,
-              child: _buildDemographicsBarChart(),
-            ),
-            const SizedBox(height: 20),
 
             // 3. DAILY ACTIVE USERS (Line Chart)
             _buildChartSection(
@@ -95,63 +70,6 @@ class UserEngagementScreen extends StatelessWidget {
               child: _buildDALineChart(),
             ),
             const SizedBox(height: 20),
-
-            // 4. BOTTOM DATA ROW: COUNTRIES & ACTIVITIES
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: _buildChartSection(
-                    title: "Top Countries",
-                    child: Column(
-                      children: [
-                        _countryRow("🇱🇰", "Sri Lanka", "45%"),
-                        _countryRow("🇺🇸", "USA", "22%"),
-                        _countryRow("🇮🇳", "India", "18%"),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 15),
-                Expanded(
-                  flex: 2,
-                  child: _buildChartSection(
-                    title: "Top Activities",
-                    child: SizedBox(
-                      height: 100,
-                      child: PieChart(
-                        PieChartData(
-                          sectionsSpace: 0,
-                          centerSpaceRadius: 20,
-                          sections: [
-                            PieChartSectionData(
-                              color: const Color(0xFFD43FB1),
-                              value: 40,
-                              radius: 12,
-                              showTitle: false,
-                            ),
-                            PieChartSectionData(
-                              color: const Color(0xFF6C5CE7),
-                              value: 35,
-                              radius: 12,
-                              showTitle: false,
-                            ),
-                            PieChartSectionData(
-                              color: const Color(0xFF00FFCC),
-                              value: 25,
-                              radius: 12,
-                              showTitle: false,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 30),
           ],
         ),
       ),
@@ -162,8 +80,8 @@ class UserEngagementScreen extends StatelessWidget {
 
   Widget _buildStatCard(String title, String value, String sub, Color accent) {
     return Container(
-      width: 150,
-      margin: const EdgeInsets.only(right: 12),
+      //width: 150,
+      margin: const EdgeInsets.only(right: 0),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: const Color(0xFF252648),
@@ -230,64 +148,6 @@ class UserEngagementScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDemographicsBarChart() {
-    return BarChart(
-      BarChartData(
-        gridData: const FlGridData(show: false),
-        titlesData: FlTitlesData(
-          topTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-          rightTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              reservedSize: 30,
-              getTitlesWidget: (val, meta) {
-                return Text(
-                  val.toInt().toString(),
-                  style: const TextStyle(fontSize: 9, color: Colors.white54),
-                );
-              },
-            ),
-          ),
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              getTitlesWidget: (val, meta) {
-                const ageGroups = ['18-24', '25-34', '35-44', '45-54', '55+'];
-                return Text(
-                  ageGroups[val.toInt() % 5],
-                  style: const TextStyle(fontSize: 9, color: Colors.white54),
-                );
-              },
-            ),
-          ),
-        ),
-        borderData: FlBorderData(show: false),
-        barGroups: List.generate(
-          5,
-          (i) => BarChartGroupData(
-            x: i,
-            barRods: [
-              BarChartRodData(
-                toY: 10.0 - i,
-                color: const Color(0xFFD43FB1),
-                width: 7,
-              ),
-              BarChartRodData(
-                toY: 8.0 - i,
-                color: const Color(0xFF6C5CE7),
-                width: 7,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 
   Widget _buildDALineChart() {
     return LineChart(
@@ -311,32 +171,6 @@ class UserEngagementScreen extends StatelessWidget {
             belowBarData: BarAreaData(
               show: true,
               color: const Color(0xFF00FFCC).withOpacity(0.1),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _countryRow(String flag, String name, String pct) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          Text(flag, style: const TextStyle(fontSize: 16)),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              name,
-              style: const TextStyle(fontSize: 12, color: Colors.white),
-            ),
-          ),
-          Text(
-            pct,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF00FFCC),
             ),
           ),
         ],

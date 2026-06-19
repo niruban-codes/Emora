@@ -30,7 +30,13 @@ class AdminControlScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(vertical: 10),
               child: Text("Quick Stats", style: TextStyle(color: Colors.white70, fontSize: 13)),
             ),
-            Row(
+            GridView.count(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisCount: 2,
+              mainAxisSpacing: 12,
+              crossAxisSpacing: 12,
+              childAspectRatio: 2.1, 
               children: [
                 _buildSmallStatCard("22,450", "Active Users", Icons.people_alt_rounded, Colors.blueAccent),
                 _buildSmallStatCard("85", "Songs Uploaded", Icons.music_note_rounded, Colors.redAccent),
@@ -46,31 +52,10 @@ class AdminControlScreen extends StatelessWidget {
               _buildMenuTile(Icons.vpn_key_rounded, Colors.pinkAccent, "Roles & Permissions", "Set user roles and access levels"),
             ]),
 
-            // 3. CONTENT MODERATION SECTION
-            _buildMenuSection("Content Moderation", [
-              _buildMenuTile(
-                Icons.verified_user_rounded, Colors.indigoAccent, "Moderate Content", "Review and manage reported content",
-                badge: "Moderation Queue 3",
-              ),
-              _buildMenuTile(Icons.settings_outlined, Colors.deepPurpleAccent, "Moderation Settings", "Automate content filtering"),
-            ]),
-
-            // 4. APP SETTINGS SECTION
+            // 3. APP SETTINGS SECTION
             _buildMenuSection("App Settings", [
               _buildMenuTile(Icons.settings, Colors.pink, "General Settings", "Update app preferences and configurations"),
               _buildMenuTile(Icons.notifications_active, Colors.purple, "Notification Settings", "Manage admin notifications"),
-              _buildMenuTile(Icons.monetization_on_rounded, Colors.deepPurple, "Subscription Settings", "Control subscription plans and payments"),
-            ]),
-
-            // 5. REPORTS & LOGS SECTION
-            _buildMenuSection("Reports & Logs", [
-              _buildMenuTile(Icons.show_chart_rounded, Colors.purpleAccent, "Usage Reports", "View detailed usage analytics"),
-              _buildMenuTile(Icons.bar_chart_rounded, Colors.indigo, "Analytics Dashboard", "View and analyze platform performance"),
-              _buildMenuTile(Icons.assignment_rounded, Colors.pinkAccent, "Audit Vlogs", "Track admin actions and changes"),
-              _buildMenuTile(
-                Icons.report_problem_rounded, Colors.purple, "Reports & Moderation", "Moderate reported content and users",
-                badge: "Pending 10",
-              ),
             ]),
             const SizedBox(height: 30),
           ],
@@ -92,13 +77,13 @@ class AdminControlScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(icon, color: color, size: 14),
-                const SizedBox(width: 4),
-                Text(val, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.white)),
+                Icon(icon, color: color, size: 18),
+                const SizedBox(width: 6),
+                Text(val, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white)),
               ],
             ),
             const SizedBox(height: 4),
-            Text(label, style: const TextStyle(fontSize: 8, color: Colors.white54)),
+            Text(label, style: const TextStyle(fontSize: 12, color: Colors.white54)),
           ],
         ),
       ),
