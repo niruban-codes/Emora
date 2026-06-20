@@ -243,14 +243,9 @@ class _ResultScreenState extends State<ResultScreen>
   Widget _circleBtn(IconData icon, {VoidCallback? onTap}) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        width: 38,
-        height: 38,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.white.withOpacity(0.1),
-        ),
-        child: Icon(icon, color: Colors.white, size: 20),
+      behavior: HitTestBehavior.opaque,
+      child: Padding(padding: const EdgeInsets.all(8.0),
+      child: Icon(icon, color: Colors.white, size: 22),
       ),
     );
   }
