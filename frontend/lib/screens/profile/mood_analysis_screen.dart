@@ -28,6 +28,11 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen> {
   static const Color purpleAccent = Color(0xFF8E248D);
   static const Color greenAccent = Color(0xFF12D790);
 
+  final List<String> _months = [
+    "January", "February", "March", "April", "May", "June", 
+    "July", "August", "September", "October", "November", "December"
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -275,7 +280,7 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen> {
         _moodChip("Neutral", percentages['Neutral'] ?? "0%", const Color(0xFF78909C), Icons.lens_blur_rounded),
         _moodChip("Fear", percentages['Fear'] ?? "0%", const Color(0xFF7E57C2), Icons.sentiment_very_dissatisfied_outlined),
         _moodChip("Angry", percentages['Angry'] ?? "0%", const Color(0xFFEF5350), Icons.local_fire_department_outlined),
-        _moodChip("Surprised", percentages['Surprised'] ?? "0%", const Color(0xFF4DB6AC), Icons.flare_rounded),
+        _moodChip("Surprise", percentages['Surprise'] ?? "0%", const Color(0xFF4DB6AC), Icons.flare_rounded),
       ],
     );
   }
@@ -371,7 +376,7 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "October 2023",
+                "${_months[DateTime.now().month - 1]} ${DateTime.now().year}",
                 style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontSize: 16,
