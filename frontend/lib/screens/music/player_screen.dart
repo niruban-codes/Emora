@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:frontend/models/song_model.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class PlayerScreen extends StatefulWidget {
   final Song currentSong;
@@ -37,6 +39,49 @@ class _PlayerScreenState extends State<PlayerScreen>
   bool _hasError = false;
   final Set<String> _favorites = {};
   Song get _song => widget.playlist[_currentIndex];
+
+  final String baseUrl = "https://emora-api-backend-ggccceepbsa2f4dk.eastasia-01.azurewebsites.net/favorites";
+  final String currentUid = "test_user_uid";
+
+  Future<void> _toggleFavorite() async {
+    final song = _song;
+    final isFav = song.isFavorite;
+
+    setState(() {
+      song.isFavorite = !isFav;
+    });
+
+    try {
+      if (isFav) {
+        final response = await http.delete(
+          Uri.parse('$baseUrl/$currentUid/remove'),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode({"videoId": song.id}),
+        );
+        if (response.statusCode != 200) throw Exception("Failed to remove");
+      } else {
+        final response = await http.post(
+          Uri.parse('$baseUrl/$currentUid/add'),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode({
+            "videoId": song.id,
+            "title": song.title,
+            "artist": song.artist,
+            "thumbnail": song.coverUrl,
+            "mood": song.mood, 
+          }),
+        );
+        if (response.statusCode != 200) throw Exception("Failed to save");
+      }
+    } catch (e) {
+      setState(() {
+        song.isFavorite = isFav;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error updating favorite: $e')),
+      );
+    }
+  }
 
   @override
   void initState() {
@@ -218,7 +263,7 @@ class _PlayerScreenState extends State<PlayerScreen>
           ),
           // Favourite toggle
           GestureDetector(
-            onTap: () => setState(() {}),
+            onTap: _toggleFavorite,
             child: Icon(
               _song.isFavorite ? Icons.favorite : Icons.favorite_border,
               color: _song.isFavorite ? Colors.pinkAccent : Colors.white38,

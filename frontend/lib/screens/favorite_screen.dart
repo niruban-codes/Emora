@@ -1,26 +1,63 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http/http.dart' as http;
 import 'package:frontend/models/song_model.dart';
 
 class _FavSong {
+  // final String title;
+  // final String artist;
+  // final String duration;
+  // final String mood;
+  // final Color moodColor;
+  // final IconData icon;
+  // final String coverUrl;
+  final String id;
+  final String videoId;
   final String title;
   final String artist;
-  final String duration;
   final String mood;
-  final Color moodColor;
-  final IconData icon;
   final String coverUrl;
 
   const _FavSong({
+    // required this.title,
+    // required this.artist,
+    // required this.duration,
+    // required this.mood,
+    // required this.moodColor,
+    // required this.icon,
+    // required this.coverUrl,
+    required this.id,
+    required this.videoId,
     required this.title,
     required this.artist,
-    required this.duration,
     required this.mood,
-    required this.moodColor,
-    required this.icon,
     required this.coverUrl,
   });
+  factory _FavSong.fromJson(Map<String, dynamic> json) {
+    return _FavSong(
+      id: json['id'] ?? '',
+      videoId: json['videoId'] ?? '',
+      title: json['title'] ?? 'Unknown Title',
+      artist: json['artist'] ?? 'Unknown Artist',
+      mood: json['mood'] ?? 'Neutral',
+      coverUrl: json['thumbnail'] ?? '',
+    );
+  }
+
+  Color get moodColor {
+    switch (mood.toLowerCase()) {
+      case 'happy': return const Color(0xFFFFB74D);
+      case 'sad': return const Color(0xFF64B5F6);
+      case 'fear': return const Color(0xFF9575CD);
+      case 'angry': return const Color(0xFFE57373);
+      case 'surprise': return const Color(0xFF4DB6AC);
+      default: return const Color(0xFF90A4AE);
+    }
+  }
+
+  String get duration => '3:30';
 }
 
 // mood buttons
@@ -39,95 +76,27 @@ class _FavoritesScreenState extends State<FavoritesScreen>
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
 
+  final String baseUrl = "https://emora-api-backend-ggccceepbsa2f4dk.eastasia-01.azurewebsites.net/favorites";
+  final String currentUid = "test_user_uid";
+
+  List<_FavSong> _allSongs = [];
+  bool _isLoading = true;
   String _selectedMood = 'All';
   int? _playingIndex;
 
-  // swap out for real data source
-  final List<_FavSong> _allSongs = const [
-    _FavSong(
-      title: 'Morning Zen',
-      artist: 'Serenity Now',
-      duration: '3:45',
-      mood: 'Happy',
-      moodColor: Color(0xFFFFB74D),
-      icon: Icons.sentiment_very_satisfied_rounded,
-      coverUrl: 'https://picsum.photos/seed/morningzen/100/100',
-    ),
-    _FavSong(
-      title: 'Quiet Waters',
-      artist: 'Flowing Echoes',
-      duration: '4:12',
-      mood: 'Neutral',
-      moodColor: Color(0xFF90A4AE),
-      icon: Icons.lens_blur_rounded,
-      coverUrl: 'https://picsum.photos/seed/quietwaters/100/100',
-    ),
-    _FavSong(
-      title: 'First Light',
-      artist: 'Ambient Dreams',
-      duration: '2:58',
-      mood: 'Happy',
-      moodColor: Color(0xFFFFB74D),
-      icon: Icons.sentiment_very_satisfied_rounded,
-      coverUrl: 'https://picsum.photos/seed/firstlight/100/100',
-    ),
-    _FavSong(
-      title: 'Soft Horizon',
-      artist: 'Luna Park',
-      duration: '5:30',
-      mood: 'Sad',
-      moodColor: Color(0xFF64B5F6),
-      icon: Icons.sentiment_dissatisfied_rounded,
-      coverUrl: 'https://picsum.photos/seed/softhorizon/100/100',
-    ),
-    _FavSong(
-      title: 'Dew Drops',
-      artist: "Nature's Whisper",
-      duration: '3:15',
-      mood: 'Neutral',
-      moodColor: Color(0xFF90A4AE),
-      icon: Icons.lens_blur_rounded,
-      coverUrl: 'https://picsum.photos/seed/dewdrops/100/100',
-    ),
-    _FavSong(
-      title: 'Velvet Thunder',
-      artist: 'Storm Studio',
-      duration: '4:00',
-      mood: 'Angry',
-      moodColor: Color(0xFFE57373),
-      icon: Icons.local_fire_department_outlined,
-      coverUrl: 'https://picsum.photos/seed/velvetthunder/100/100',
-    ),
-    _FavSong(
-      title: 'Shadow Walk',
-      artist: 'Dark Corridor',
-      duration: '3:33',
-      mood: 'Fear',
-      moodColor: Color(0xFF9575CD),
-      icon: Icons.sentiment_very_dissatisfied_outlined,
-      coverUrl: 'https://picsum.photos/seed/shadowwalk/100/100',
-    ),
-    _FavSong(
-      title: 'Electric Spark',
-      artist: 'Flash Lab',
-      duration: '2:47',
-      mood: 'Surprise',
-      moodColor: Color(0xFF4DB6AC),
-      icon: Icons.flare_rounded,
-      coverUrl: 'https://picsum.photos/seed/electricspark/100/100',
-    ),
-  ];
 
   List<_FavSong> get _filtered => _selectedMood == 'All'
       ? _allSongs
-      : _allSongs.where((s) => s.mood == _selectedMood).toList();
-
+      : _allSongs.where((s) {
+          return s.mood.trim().toLowerCase() == _selectedMood.trim().toLowerCase();
+        }).toList();
+        
   Song _toSong(_FavSong s) => Song(
-    id: 'default-id',
+    id: s.videoId,
     title: s.title,
     artist: s.artist,
     duration: s.duration,
-    coverUrl: 'default-cover-url',
+    coverUrl: s.coverUrl,
   );
 
   void _navigateToPlayer(List<_FavSong> songs, int index) {
@@ -146,6 +115,45 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     );
     _fadeAnim = CurvedAnimation(parent: _animController, curve: Curves.easeOut);
     _animController.forward();
+    _fetchFavorites();
+  }
+
+  Future<void> _fetchFavorites() async {
+    setState(() => _isLoading = true);
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/$currentUid'));
+      if (response.statusCode == 200) {
+        final List dynamicList = json.decode(response.body);
+        setState(() {
+          _allSongs = dynamicList.map((json) => _FavSong.fromJson(json)).toList();
+          _isLoading = false;
+        });
+      } else {
+        throw Exception("Server error");
+      }
+    } catch (e) {
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load favorites: $e')),
+      );
+    }
+  }
+
+  Future<void> _removeFromFavorites(String videoId) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/$currentUid/remove'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"videoId": videoId}),
+      );
+      if (response.statusCode == 200) {
+        _fetchFavorites(); // Instantly refreshes the list layout
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to remove: $e')),
+      );
+    }
   }
 
   @override
@@ -169,7 +177,11 @@ class _FavoritesScreenState extends State<FavoritesScreen>
               const SizedBox(height: 16),
               _buildMoodFilter(),
               const SizedBox(height: 8),
-              Expanded(child: _buildSongList(songs)),
+              Expanded(
+                child: _isLoading
+                  ? const Center(child: CircularProgressIndicator(color: Color(0xFFA7338A)))
+                  : _buildSongList(songs),
+              ),
               if (_playingIndex != null) _buildMiniPlayer(songs),
             ],
           ),
@@ -545,7 +557,9 @@ class _FavoritesScreenState extends State<FavoritesScreen>
             _optionTile(
               Icons.favorite_rounded,
               'Remove from Favorites',
-              () => Navigator.pop(context),
+              () { Navigator.pop(context);
+              _removeFromFavorites(song.videoId); 
+              },
               color: const Color(0xFFE040FB),
             ),
             _optionTile(

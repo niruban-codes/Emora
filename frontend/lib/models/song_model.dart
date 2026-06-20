@@ -3,7 +3,7 @@ class Song {
   final String title;
   final String artist;
   final String coverUrl;
-  final bool isFavorite;
+  bool isFavorite;
   final String duration;
   final String mood;
 
