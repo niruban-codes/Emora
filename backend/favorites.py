@@ -40,6 +40,7 @@ def get_favorites(uid):
                     "title": data.get("title"),
                     "artist": data.get("artist"),
                     "thumbnail": data.get("thumbnail"),
+                    "mood": data.get("mood", "Neutral"),
                     "addedAt": added_at,
                 }
             )
@@ -60,7 +61,7 @@ def add_favorite(uid):
     if not data:
         return jsonify({"error": "Request body is required"}), 400
 
-    required_fields = ["videoId", "title", "artist", "thumbnail"]
+    required_fields = ["videoId", "title", "artist", "thumbnail","mood"]
     missing = [f for f in required_fields if not data.get(f)]
     if missing:
         return jsonify({"error": f"Missing required fields: {', '.join(missing)}"}), 400
@@ -80,6 +81,7 @@ def add_favorite(uid):
                 "title": data["title"],
                 "artist": data["artist"],
                 "thumbnail": data["thumbnail"],
+                "mood": data["mood"],
                 "addedAt": datetime.now(timezone.utc),
             }
         )
