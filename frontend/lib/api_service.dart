@@ -104,6 +104,19 @@ class ApiService {
     }
     return null;
   }
+  
+  // Fetch calculation metrics for the analytics dashboard
+  Future<Map<String, dynamic>?> getMoodAnalyticsFromAzure(String uid) async {
+    try {
+      Response response = await _dio.get("$baseUrl/history/$uid/analytics");
+      if (response.statusCode == 200) {
+        return response.data as Map<String, dynamic>;
+      }
+    } on DioException catch (e) {
+      print(" Azure Analytics bridge failure: ${e.response?.data ?? e.message}");
+    }
+    return null;
+  }
 
   Future<List<dynamic>?> searchYouTube(String query) async {
     try {
