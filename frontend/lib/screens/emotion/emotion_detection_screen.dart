@@ -230,17 +230,12 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
         children: [
           GestureDetector(
             onTap: () => context.pop(),
-            child: Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.1),
-              ),
-              child: const Icon(
-                Icons.arrow_back,
+            child: const Padding(
+              padding: EdgeInsets.all(8.0),
+              child:  Icon(
+                Icons.arrow_back_rounded,
                 color: Colors.white,
-                size: 20,
+                size: 22,
               ),
             ),
           ),
