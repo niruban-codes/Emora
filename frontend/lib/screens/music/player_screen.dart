@@ -176,17 +176,12 @@ class _PlayerScreenState extends State<PlayerScreen>
         children: [
           GestureDetector(
             onTap: () => context.pop(),
-            child: Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.1),
-              ),
-              child: const Icon(
-                Icons.arrow_back,
+            child: const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Icon(
+                Icons.arrow_back_rounded,
                 color: Colors.white,
-                size: 18,
+                size: 22,
               ),
             ),
           ),
@@ -196,13 +191,13 @@ class _PlayerScreenState extends State<PlayerScreen>
                 'NOW PLAYING',
                 style: GoogleFonts.poppins(
                   color: Colors.white54,
-                  fontSize: 10,
+                  fontSize: 16,
                   letterSpacing: 2,
                 ),
               ),
               Text(
                 '${_currentIndex + 1} / ${widget.playlist.length}',
-                style: GoogleFonts.poppins(color: Colors.white38, fontSize: 11),
+                style: GoogleFonts.poppins(color: Colors.white38, fontSize: 13),
               ),
             ],
           ),
