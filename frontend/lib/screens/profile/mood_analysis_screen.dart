@@ -1,9 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../api_service.dart';
 
-class MoodAnalyticsScreen extends StatelessWidget {
+class MoodAnalyticsScreen extends StatefulWidget {
   const MoodAnalyticsScreen({super.key});
+
+  @override
+  State<MoodAnalyticsScreen> createState() => _MoodAnalyticsScreenState();
+}
+
+class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen> {
+  final ApiService _apiService = ApiService();
+  late Future<Map<String, dynamic>?> _analyticsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    final uid = FirebaseAuth.instance.currentUser?.uid ?? 'anonymous_user';
+    _analyticsFuture = _apiService.getMoodAnalyticsFromAzure(uid);
+  }
 
   static const Color bgColor = Color(0xFF0D0C1D);
   static const Color cardBg = Color(0xFF1D1B3E);
@@ -32,61 +49,88 @@ class MoodAnalyticsScreen extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildDailyAverageCard(),
-            const SizedBox(height: 20),
-            Row(
+      body: FutureBuilder<Map<String, dynamic>?>(
+        future: _analyticsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(pinkAccent),
+              ),
+            );
+          }
+
+          if (snapshot.hasError || !snapshot.hasData || snapshot.data == null) {
+            return Center(
+              child: Text(
+                "Unable to load data metrics",
+                style: GoogleFonts.poppins(color: Colors.white54, fontSize: 14),
+              ),
+            );
+          }
+
+          final data = snapshot.data!;
+          final dailyAvg = data['daily_average'] ?? "0.0";
+          final distribution = data['mood_distribution'] as Map<dynamic, dynamic>? ?? {};
+          final peakMood = data['primary_peak'] ?? "Peaceful";
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: _buildStateCard(
-                    "Today's Peak",
-                    "Peaceful",
-                    "Maintained for 6 hours",
-                    Icons.wb_sunny_outlined,
-                    purpleAccent,
+                _buildDailyAverageCard(dailyAvg),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildStateCard(
+                        "Today's Peak",
+                        peakMood,
+                        "Maintained for hours",
+                        Icons.wb_sunny_outlined,
+                        purpleAccent,
+                      ),
+                    ),
+                    const SizedBox(width: 15),
+                    Expanded(
+                      child: _buildStateCard(
+                        "Active State",
+                        "Creative",
+                        "Higher than yesterday",
+                        Icons.auto_awesome,
+                        const Color(0xFFC06CFF),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 30),
+                Text(
+                  "Mood Distribution",
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(width: 15),
-                Expanded(
-                  child: _buildStateCard(
-                    "Active State",
-                    "Creative",
-                    "Higher than yesterday",
-                    Icons.auto_awesome,
-                    const Color(0xFFC06CFF),
-                  ),
-                ),
+                const SizedBox(height: 15),
+                _buildMoodDistributionGrid(distribution),
+                const SizedBox(height: 30),
+                _buildWeeklyTrendCard(),
+                const SizedBox(height: 30),
+                _buildCalendarGrid(),
+                const SizedBox(height: 25),
+                _buildViewMonthlyButton(context),
+                const SizedBox(height: 30),
               ],
             ),
-            const SizedBox(height: 30),
-            Text(
-              "Mood Distribution",
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 15),
-            _buildMoodDistributionGrid(),
-            const SizedBox(height: 30),
-            _buildWeeklyTrendCard(),
-            const SizedBox(height: 30),
-            _buildCalendarGrid(),
-            const SizedBox(height: 25),
-            _buildViewMonthlyButton(context),
-            const SizedBox(height: 30),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildDailyAverageCard() {
+  Widget _buildDailyAverageCard(String average) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -124,7 +168,7 @@ class MoodAnalyticsScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                "7.8",
+                average,
                 style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontSize: 30,
@@ -221,37 +265,17 @@ class MoodAnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMoodDistributionGrid() {
+  Widget _buildMoodDistributionGrid(Map<dynamic, dynamic> percentages) {
     return Wrap(
       spacing: 10,
       runSpacing: 10,
       children: [
-        _moodChip(
-          "Happy",
-          "42%",
-          Color(0xFFFFB347),
-          Icons.sentiment_very_satisfied_rounded,
-        ),
-        _moodChip(
-          "Sad",
-          "15%",
-          Color(0xFF42A5F5),
-          Icons.sentiment_dissatisfied_rounded,
-        ),
-        _moodChip("Neutral", "28%", Color(0xFF78909C), Icons.lens_blur_rounded),
-        _moodChip(
-          "Fear",
-          "12%",
-          Color(0xFF7E57C2),
-          Icons.sentiment_very_dissatisfied_outlined,
-        ),
-        _moodChip(
-          "Angry",
-          "8%",
-          Color(0xFFEF5350),
-          Icons.local_fire_department_outlined,
-        ),
-        _moodChip("Surprised", "20%", Color(0xFF4DB6AC), Icons.flare_rounded),
+        _moodChip("Happy", percentages['Happy'] ?? "0%", const Color(0xFFFFB347), Icons.sentiment_very_satisfied_rounded),
+        _moodChip("Sad", percentages['Sad'] ?? "0%", const Color(0xFF42A5F5), Icons.sentiment_dissatisfied_rounded),
+        _moodChip("Neutral", percentages['Neutral'] ?? "0%", const Color(0xFF78909C), Icons.lens_blur_rounded),
+        _moodChip("Fear", percentages['Fear'] ?? "0%", const Color(0xFF7E57C2), Icons.sentiment_very_dissatisfied_outlined),
+        _moodChip("Angry", percentages['Angry'] ?? "0%", const Color(0xFFEF5350), Icons.local_fire_department_outlined),
+        _moodChip("Surprised", percentages['Surprised'] ?? "0%", const Color(0xFF4DB6AC), Icons.flare_rounded),
       ],
     );
   }
