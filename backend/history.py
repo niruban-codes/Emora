@@ -171,3 +171,86 @@ def delete_history(uid: str, doc_id: str):
 
     except Exception as e:
         return jsonify({"error": "Unexpected server error", "details": str(e)}), 500
+
+
+@history_bp.route("/<uid>/analytics", methods=["GET"])
+def get_mood_analytics(uid: str):
+    """
+    Fetch all emotion history logs for a user, calculate aggregate statistics,
+    and return clean numbers to feed the Mood Analytics and Monthly UI screens.
+    """
+    try:
+        # 1. Fetch all records from Firestore
+        docs = _detections_ref(uid).stream()
+        history = [_format_doc(doc) for doc in docs]
+
+        total_scans = len(history)
+
+        # Default placeholder package if the user hasn't scanned their face yet
+        if total_scans == 0:
+            return jsonify({
+                "daily_average": "0.0",
+                "mood_distribution": {
+                    "Happy": "0%", "Sad": "0%", "Neutral": "0%",
+                    "Fear": "0%", "Angry": "0%", "Surprised": "0%"
+                },
+                "happy_tracks_count": 0,
+                "sad_tracks_count": 0,
+                "primary_peak": "None",
+                "total_scans": 0
+            }), 200
+
+        # 2. Setup counters for Mood Distribution mapping
+        counts = {"Happy": 0, "Sad": 0, "Neutral": 0, "Fear": 0, "Angry": 0, "Surprised": 0}
+        
+        # Setup weights for the 10-point Weighted Vibe Index average calculation
+        weights = {"Happy": 10, "Surprised": 8, "Neutral": 6, "Sad": 4, "Fear": 3, "Angry": 1}
+        
+        total_weight_score = 0
+        happy_tracks_total = 0
+        sad_tracks_total = 0
+
+        # 3. Loop through history data array to compute values
+        for record in history:
+            emotion = record.get("emotion", "Neutral") # Defaults to Neutral if edge-case blank
+            tracks_list = record.get("tracks", [])
+
+            # Increment specific emotion counter if it fits our keys
+            if emotion in counts:
+                counts[emotion] += 1
+                total_weight_score += weights[emotion]
+            else:
+                # Fallback for unexpected string variants
+                total_weight_score += 6 
+
+            # Count generated music recommendation arrays
+            if emotion == "Happy":
+                happy_tracks_total += len(tracks_list)
+            elif emotion == "Sad":
+                sad_tracks_total += len(tracks_list)
+
+        # 4. Final Math Formatting Calculations
+        daily_avg = round(total_weight_score / total_scans, 1)
+        
+        distribution_percentages = {}
+        for mood, count in counts.items():
+            percentage = round((count / total_scans) * 100)
+            distribution_percentages[mood] = f"{percentage}%"
+
+        # Identify which mood was recorded the most
+        primary_peak = max(counts, key=counts.get) if any(counts.values()) else "Neutral"
+
+        # 5. Pack everything neatly into JSON for Flutter
+        analytics_payload = {
+            "daily_average": str(daily_avg),
+            "mood_distribution": distribution_percentages,
+            "happy_tracks_count": happy_tracks_total,
+            "sad_tracks_count": sad_tracks_total,
+            "primary_peak": primary_peak,
+            "total_scans": total_scans
+        }
+
+        return jsonify(analytics_payload), 200
+
+    except Exception as e:
+        return jsonify({"error": "Failed calculating analytics engines", "details": str(e)}), 500
