@@ -186,20 +186,12 @@ class _FavoritesScreenState extends State<FavoritesScreen>
         children: [
           GestureDetector(
             onTap: () => context.pop(),
-            child: Container(
-              width: 38,
-              height: 38,
-              decoration: const BoxDecoration(
-                color: Color(0xFF1E1A35),
-                shape: BoxShape.circle,
-              ),
               child: const Icon(
-                Icons.arrow_back_ios_new_rounded,
+                Icons.arrow_back_rounded,
                 color: Colors.white70,
-                size: 18,
+                size: 22,
               ),
             ),
-          ),
           Expanded(
             child: Center(
               child: Text(
