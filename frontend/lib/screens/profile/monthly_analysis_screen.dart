@@ -33,6 +33,11 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
   static const Color neutralColor = Color(0xFF78909C);
   static const Color sadColor = Color(0xFF42A5F5);
   static const Color energeticColor = Color(0xFFEF5350);
+  
+  final List<String> _months = [
+  "January", "February", "March", "April", "May", "June", 
+  "July", "August", "September", "October", "November", "December"
+];
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +71,7 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
           }
 
           final data = snapshot.data!;
+          print("DEBUG ENDPOINT PAYLOAD: $data");
           final distribution = data['mood_distribution'] as Map<dynamic, dynamic>? ?? {};
           final happyTracks = data['happy_tracks_count'] ?? 0;
           final sadTracks = data['sad_tracks_count'] ?? 0;
@@ -98,7 +104,8 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
           );
         },
       ),
-
+    );
+  }
   Widget _buildCalendarCard() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -113,7 +120,7 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
             children: [
               Icon(Icons.chevron_left, color: Colors.white30),
               Text(
-                "October 2023",
+                "${_months[DateTime.now().month - 1]} ${DateTime.now().year}",
                 style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontSize: 16,
@@ -266,7 +273,7 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
             children: [
               _buildDonutChart(),
               const SizedBox(width: 30),
-              const Expanded(child: _ChartLegend(percentages: percentages)),
+              Expanded(child: _ChartLegend(percentages: percentages)),
             ],
           ),
           const SizedBox(height: 35),
@@ -403,7 +410,7 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
               ),
               SizedBox(height: 2),
               Text(
-                "Oct 12th: 98% Accuracy",
+                "${_months[DateTime.now().month - 1]} ${DateTime.now().day}${_getDaySuffix(DateTime.now().day)}: 98% Accuracy",
                 style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontSize: 16,
@@ -415,6 +422,16 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
         ],
       ),
     );
+  }
+}
+
+String _getDaySuffix(int day) {
+  if (day >= 11 && day <= 13) return 'th';
+  switch (day % 10) {
+    case 1: return 'st';
+    case 2: return 'nd';
+    case 3: return 'rd';
+    default: return 'th';
   }
 }
 
@@ -454,7 +471,7 @@ class _ChartLegend extends StatelessWidget {
         _LItem(const Color(0xFFFFB347), "Happy: ${percentages['Happy'] ?? '0%'}"),
         _LItem(const Color(0xFF78909C), "Neutral: ${percentages['Neutral'] ?? '0%'}"),
         _LItem(const Color(0xFF42A5F5), "Sad: ${percentages['Sad'] ?? '0%'}"),
-        _LItem(const Color(0xFF4DB6AC), "Surprised: ${percentages['Surprised'] ?? '0%'}"),
+        _LItem(const Color(0xFF4DB6AC), "Surprise: ${percentages['Surprise'] ?? '0%'}"),
         _LItem(const Color(0xFF7E57C2), "Fear: ${percentages['Fear'] ?? '0%'}"),
         _LItem(const Color(0xFFEF5350), "Angry: ${percentages['Angry'] ?? '0%'}"),
       ],
