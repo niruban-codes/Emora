@@ -188,11 +188,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                       backgroundImage: AssetImage('assets/avatars/Girl 07.png'),
                     ),
             ),
-            const CircleAvatar(
-              radius: 16,
-              backgroundColor: ProfileSettingsScreen.accentPurple,
-              child: Icon(Icons.edit, size: 16, color: Colors.white),
-            ),
           ],
         ),
         const SizedBox(height: 15),
