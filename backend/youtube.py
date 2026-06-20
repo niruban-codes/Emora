@@ -19,7 +19,17 @@ EMOTION_HARDCODED_MAP = {
         {"videoId": "tD4HCZe-tew", "title": "Can't Stop the Feeling!", "artist": "Justin Timberlake", "thumbnail": "https://img.youtube.com/vi/tD4HCZe-tew/mqdefault.jpg", "duration": "3:56"},
         {"videoId": "fWNaR-rxAic", "title": "Call Me Maybe", "artist": "Carly Rae Jepsen", "thumbnail": "https://img.youtube.com/vi/fWNaR-rxAic/mqdefault.jpg", "duration": "3:13"},
         {"videoId": "oF8efZmoGZE", "title": "Shower", "artist": "Becky G", "thumbnail": "https://img.youtube.com/vi/oF8efZmoGZE/mqdefault.jpg", "duration": "3:26"},
-        {"videoId": "UlANZSYZ2Js", "title": "What Makes You Beautiful", "artist": "One Direction", "thumbnail": "https://img.youtube.com/vi/UlANZSYZ2Js/mqdefault.jpg", "duration": "3:18"}
+        {"videoId": "UlANZSYZ2Js", "title": "What Makes You Beautiful", "artist": "One Direction", "thumbnail": "https://img.youtube.com/vi/UlANZSYZ2Js/mqdefault.jpg", "duration": "3:18"},
+        {"videoId": "nfWlot6h_JM", "title": "Shake It Off", "artist": "Taylor Swift", "thumbnail": "https://img.youtube.com/vi/nfWlot6h_JM/mqdefault.jpg", "duration": "3:39"},
+        {"videoId": "ZbZSe6N_BXs", "title": "Happy", "artist": "Pharrell Williams", "thumbnail": "https://img.youtube.com/vi/ZbZSe6N_BXs/mqdefault.jpg", "duration": "3:53"},
+        {"videoId": "6JCLY0Rlx6Q", "title": "Shut Up and Dance", "artist": "WALK THE MOON", "thumbnail": "https://img.youtube.com/vi/6JCLY0Rlx6Q/mqdefault.jpg", "duration": "3:19"},
+        {"videoId": "TUVcZfQe-Kw", "title": "Levitating", "artist": "Dua Lipa feat. DaBaby", "thumbnail": "https://img.youtube.com/vi/TUVcZfQe-Kw/mqdefault.jpg", "duration": "3:23"},
+        {"videoId": "gdZLi9oWNZg", "title": "Dynamite", "artist": "BTS", "thumbnail": "https://img.youtube.com/vi/gdZLi9oWNZg/mqdefault.jpg", "duration": "3:19"},
+        {"videoId": "OPf0YbXqDm0", "title": "Uptown Funk", "artist": "Mark Ronson feat. Bruno Mars", "thumbnail": "https://img.youtube.com/vi/OPf0YbXqDm0/mqdefault.jpg", "duration": "4:30"},
+        {"videoId": "UqyT8IEBkvY", "title": "24K Magic", "artist": "Bruno Mars", "thumbnail": "https://img.youtube.com/vi/UqyT8IEBkvY/mqdefault.jpg", "duration": "3:46"},
+        {"videoId": "7oBU7d5oenQ", "title": "Good Time", "artist": "Owl City & Carly Rae Jepsen", "thumbnail": "https://img.youtube.com/vi/7oBU7d5oenQ/mqdefault.jpg", "duration": "3:26"},
+        {"videoId": "SmbmeOgWsqE", "title": "Good As Hell", "artist": "Lizzo", "thumbnail": "https://img.youtube.com/vi/SmbmeOgWsqE/mqdefault.jpg", "duration": "2:46"},
+        {"videoId": "ekr2nIex040", "title": "APT.", "artist": "ROSÉ & Bruno Mars", "thumbnail": "https://img.youtube.com/vi/ekr2nIex040/mqdefault.jpg", "duration": "2:54"}
     ],
     "neutral": [
         {"videoId": "ApXoWvfEYVU", "title": "Sunflower", "artist": "Post Malone & Swae Lee", "thumbnail": "https://img.youtube.com/vi/ApXoWvfEYVU/mqdefault.jpg", "duration": "2:42"},
@@ -36,54 +46,83 @@ EMOTION_HARDCODED_MAP = {
         {"videoId": "zABLecsR5UE", "title": "Someone You Loved", "artist": "Lewis Capaldi", "thumbnail": "https://img.youtube.com/vi/zABLecsR5UE/mqdefault.jpg", "duration": "3:06"},
         {"videoId": "VF-r5TtlT9w", "title": "Adore You", "artist": "Harry Styles", "thumbnail": "https://img.youtube.com/vi/VF-r5TtlT9w/mqdefault.jpg", "duration": "3:39"},
         {"videoId": "SlPhMPnQ58k", "title": "Memories", "artist": "Maroon 5", "thumbnail": "https://img.youtube.com/vi/SlPhMPnQ58k/mqdefault.jpg", "duration": "3:16"},
-        {"videoId": "W-TE_Ys4iwM", "title": "Story of My Life", "artist": "One Direction", "thumbnail": "https://img.youtube.com/vi/W-TE_Ys4iwM/mqdefault.jpg", "duration": "4:08"}
+        {"videoId": "W-TE_Ys4iwM", "title": "Story of My Life", "artist": "One Direction", "thumbnail": "https://img.youtube.com/vi/W-TE_Ys4iwM/mqdefault.jpg", "duration": "4:08"},
+        {"videoId": "A8dH4cKGa6s", "title": "Ordinary", "artist": "Alex Warren", "thumbnail": "https://img.youtube.com/vi/A8dH4cKGa6s/mqdefault.jpg", "duration": "2:34"},
+        {"videoId": "UM3389FUnKo", "title": "Night Changes", "artist": "One Direction", "thumbnail": "https://img.youtube.com/vi/UM3389FUnKo/mqdefault.jpg", "duration": "3:42"},
+        {"videoId": "KRUWn3dLoRg", "title": "Ghost", "artist": "Justin Bieber", "thumbnail": "https://img.youtube.com/vi/KRUWn3dLoRg/mqdefault.jpg", "duration": "2:33"},
+        {"videoId": "PaOGelP1JE0", "title": "Home", "artist": "Chris Mason", "thumbnail": "https://img.youtube.com/vi/PaOGelP1JE0/mqdefault.jpg", "duration": "3:52"},
+        {"videoId": "K4DyBUG242c", "title": "On & On", "artist": "Cartoon & Jéja", "thumbnail": "https://img.youtube.com/vi/K4DyBUG242c/mqdefault.jpg", "duration": "3:27"},
+        {"videoId": "RJOqJ-RitOg", "title": "Just Hold On", "artist": "Steve Aoki & Louis Tomlinson", "thumbnail": "https://img.youtube.com/vi/RJOqJ-RitOg/mqdefault.jpg", "duration": "3:19"},
+        {"videoId": "U9pGr6KMdyg", "title": "Where We Started", "artist": "Lost Sky feat. Jex", "thumbnail": "https://img.youtube.com/vi/U9pGr6KMdyg/mqdefault.jpg", "duration": "3:41"},
+        {"videoId": "u9raS7-NisU", "title": "Daylight", "artist": "Taylor Swift", "thumbnail": "https://img.youtube.com/vi/u9raS7-NisU/mqdefault.jpg", "duration": "4:53"},
+        {"videoId": "rbmdfEQODOw", "title": "The Fate of Ophelia", "artist": "Taylor Swift", "thumbnail": "https://img.youtube.com/vi/rbmdfEQODOw/mqdefault.jpg", "duration": "3:59"},
+        {"videoId": "T8_o-hCDvk", "title": "Clouds", "artist": "JVKE", "thumbnail": "https://img.youtube.com/vi/T8_o-hCDvk/mqdefault.jpg", "duration": "2:44"}
     ],
     "sad": [
-        {"videoId": "nb8CnIo_-_A", "title": "Babydoll", "artist": "Dominic Fike", "thumbnail": "https://img.youtube.com/vi/nb8CnIo_-_A/mqdefault.jpg", "duration": "1:40"},
-        {"videoId": "sElE_BfQ67s", "title": "Apocalypse", "artist": "Cigarettes After Sex", "thumbnail": "https://img.youtube.com/vi/sElE_BfQ67s/mqdefault.jpg", "duration": "4:51"},
-        {"videoId": "odeHP8N4LKc", "title": "Let It Happen", "artist": "Tame Impala", "thumbnail": "https://img.youtube.com/vi/odeHP8N4LKc/mqdefault.jpg", "duration": "7:51"},
-        {"videoId": "pyGU-UudvrM", "title": "I Thought I Saw Your Face Today", "artist": "She & Him", "thumbnail": "https://img.youtube.com/vi/pyGU-UudvrM/mqdefault.jpg", "duration": "2:51"},
-        {"videoId": "lcCbn6wXdFw", "title": "Machakari (From 'Sillunu Oru Kadhal')", "artist": "A.R. Rahman", "thumbnail": "https://img.youtube.com/vi/lcCbn6wXdFw/mqdefault.jpg", "duration": "3:59"},
-        {"videoId": "FvOpPeKSf_4", "title": "Glimpse of Us", "artist": "Joji", "thumbnail": "https://img.youtube.com/vi/FvOpPeKSf_4/mqdefault.jpg", "duration": "3:54"},
-        {"videoId": "c8zq4kAn_O0", "title": "back to friends", "artist": "sombr", "thumbnail": "https://img.youtube.com/vi/c8zq4kAn_O0/mqdefault.jpg", "duration": "3:22"},
-        {"videoId": "b3-lyX9O6kY", "title": "Iravingu Theevai (From '96')", "artist": "Govind Vasantha", "thumbnail": "https://img.youtube.com/vi/b3-lyX9O6kY/mqdefault.jpg", "duration": "4:18"},
-        {"videoId": "DCYmJDO2_IE", "title": "Cinnamon Girl", "artist": "Lana Del Rey", "thumbnail": "https://img.youtube.com/vi/DCYmJDO2_IE/mqdefault.jpg", "duration": "5:01"},
-        {"videoId": "U2SVCCENLjE", "title": "Co2", "artist": "Prateek Kuhad", "thumbnail": "https://img.youtube.com/vi/U2SVCCENLjE/mqdefault.jpg", "duration": "2:44"},
-        {"videoId": "GCdwKhTtNNw", "title": "Sweater Weather", "artist": "The Neighbourhood", "thumbnail": "https://img.youtube.com/vi/GCdwKhTtNNw/mqdefault.jpg", "duration": "4:13"},
-        {"videoId": "7wD4H3rghYU", "title": "Sundari Kannal (From 'Thalapathy')", "artist": "Ilaiyaraaja", "thumbnail": "https://img.youtube.com/vi/7wD4H3rghYU/mqdefault.jpg", "duration": "7:31"},
-        {"videoId": "RBumgq5yVrA", "title": "Let Her Go", "artist": "Passenger", "thumbnail": "https://img.youtube.com/vi/RBumgq5yVrA/mqdefault.jpg", "duration": "4:15"},
-        {"videoId": "5e4INH1yr9c", "title": "Nothing's New", "artist": "Rio Romeo", "thumbnail": "https://img.youtube.com/vi/5e4INH1yr9c/mqdefault.jpg", "duration": "3:29"},
-        {"videoId": "MwpMEbgC7DA", "title": "Another Love", "artist": "Tom Odell", "thumbnail": "https://img.youtube.com/vi/MwpMEbgC7DA/mqdefault.jpg", "duration": "4:08"},
-        {"videoId": "8kX6LwuhKLs", "title": "Happier", "artist": "Olivia Rodrigo", "thumbnail": "https://img.youtube.com/vi/8kX6LwuhKLs/mqdefault.jpg", "duration": "2:57"},
-        {"videoId": "3XqqkrJENB4", "title": "Cry", "artist": "Cigarettes After Sex", "thumbnail": "https://img.youtube.com/vi/3XqqkrJENB4/mqdefault.jpg", "duration": "4:17"},
-        {"videoId": "KtlgYxa6BMU", "title": "The Night We Met", "artist": "Lord Huron", "thumbnail": "https://img.youtube.com/vi/KtlgYxa6BMU/mqdefault.jpg", "duration": "3:29"},
-        {"videoId": "TdrL3QxjyVw", "title": "Summertime Sadness", "artist": "Lana Del Rey", "thumbnail": "https://img.youtube.com/vi/TdrL3QxjyVw/mqdefault.jpg", "duration": "4:26"},
+        {"videoId": "Cd0Y5yTEbKQ", "title": "Forbidden Fruit", "artist": "Sam Tinnesz X Tommee Profitt X brooke", "thumbnail": "https://img.youtube.com/vi/Cd0Y5yTEbKQ/mqdefault.jpg", "duration": "3:25"},
+        {"videoId": "aY30nSWhX9g", "title": "Don't Let It Break Your Heart", "artist": "Louis Tomlinson", "thumbnail": "https://img.youtube.com/vi/aY30nSWhX9g/mqdefault.jpg", "duration": "3:25"},
+        {"videoId": "4fqwVBuunxY", "title": "Hurts So Good", "artist": "Astrid S", "thumbnail": "https://img.youtube.com/vi/4fqwVBuunxY/mqdefault.jpg", "duration": "3:29"},
+        {"videoId": "m4iPSPoe1Y8", "title": "See You Again", "artist": "Wiz Khalifa feat. Charlie Puth", "thumbnail": "https://img.youtube.com/vi/m4iPSPoe1Y8/mqdefault.jpg", "duration": "3:58"},
+        {"videoId": "2PRvp-mP_q0", "title": "drivers license", "artist": "Olivia Rodrigo", "thumbnail": "https://img.youtube.com/vi/2PRvp-mP_q0/mqdefault.jpg", "duration": "4:07"},
+        {"videoId": "WQq98YPV8yk", "title": "Moral of the Story", "artist": "Ashe", "thumbnail": "https://img.youtube.com/vi/WQq98YPV8yk/mqdefault.jpg", "duration": "3:21"},
+        {"videoId": "8TpcBDJZsJA", "title": "Happier", "artist": "Ed Sheeran", "thumbnail": "https://img.youtube.com/vi/8TpcBDJZsJA/mqdefault.jpg", "duration": "3:41"},
+        {"videoId": "eiG_DUXD8YQ", "title": "Treat You Better", "artist": "Shawn Mendes", "thumbnail": "https://img.youtube.com/vi/eiG_DUXD8YQ/mqdefault.jpg", "duration": "3:08"},
+        {"videoId": "jKIEUdAMtrQ", "title": "Minefields", "artist": "Faouzia & John Legend", "thumbnail": "https://img.youtube.com/vi/jKIEUdAMtrQ/mqdefault.jpg", "duration": "3:13"},
+        {"videoId": "AG-erEMhumc", "title": "you broke me first", "artist": "Tate McRae", "thumbnail": "https://img.youtube.com/vi/AG-erEMhumc/mqdefault.jpg", "duration": "2:49"},
+        {"videoId": "V1Pl8CzNzCw", "title": "lovely", "artist": "Billie Eilish & Khalid", "thumbnail": "https://img.youtube.com/vi/V1Pl8CzNzCw/mqdefault.jpg", "duration": "3:20"},
+        {"videoId": "51u5fnyrGj4", "title": "Arcade", "artist": "Duncan Laurence", "thumbnail": "https://img.youtube.com/vi/51u5fnyrGj4/mqdefault.jpg", "duration": "3:04"},
+        {"videoId": "hLQl3WQQoQ0", "title": "Someone Like You", "artist": "Adele", "thumbnail": "https://img.youtube.com/vi/hLQl3WQQoQ0/mqdefault.jpg", "duration": "4:45"},
+        {"videoId": "mzQ8eepcJGQ", "title": "I'm Not The Only One", "artist": "Sam Smith", "thumbnail": "https://img.youtube.com/vi/mzQ8eepcJGQ/mqdefault.jpg", "duration": "3:59"},
+        {"videoId": "8v_4O44sfjM", "title": "jar of hearts", "artist": "Christina Perri", "thumbnail": "https://img.youtube.com/vi/8v_4O44sfjM/mqdefault.jpg", "duration": "4:06"},
+        {"videoId": "5-ZiKXrnvog", "title": "Dynasty", "artist": "MIIA", "thumbnail": "https://img.youtube.com/vi/5-ZiKXrnvog/mqdefault.jpg", "duration": "3:46"},
         {"videoId": "a2giXO6eyuI", "title": "Set Fire to the Rain", "artist": "Adele", "thumbnail": "https://img.youtube.com/vi/a2giXO6eyuI/mqdefault.jpg", "duration": "4:03"},
-        {"videoId": "27CBPR7CSks", "title": "Kun Faya Kun (From 'Rockstar')", "artist": "A.R. Rahman", "thumbnail": "https://img.youtube.com/vi/27CBPR7CSks/mqdefault.jpg", "duration": "6:21"}
-    ],
+        {"videoId": "Pvcc5yEPpTc", "title": "We Don't Talk Anymore", "artist": "Charlie Puth feat. Selena Gomez", "thumbnail": "https://img.youtube.com/vi/Pvcc5yEPpTc/mqdefault.jpg", "duration": "3:37"},
+        {"videoId": "50VNCymT-Cs", "title": "Let Me Down Slowly", "artist": "Alec Benjamin", "thumbnail": "https://img.youtube.com/vi/50VNCymT-Cs/mqdefault.jpg", "duration": "2:49"},
+        {"videoId": "Ow7Zg2AUZks", "title": "Before You Go", "artist": "Lewis Capaldi", "thumbnail": "https://img.youtube.com/vi/Ow7Zg2AUZks/mqdefault.jpg", "duration": "3:35"}
+    ],  
     "surprise": [
-        {"videoId": "tR3PbDt5Q4Q", "title": "Irumbile Oru Idhaiyam (From 'Enthiran')", "artist": "A.R. Rahman feat. Lady Kash", "thumbnail": "https://img.youtube.com/vi/tR3PbDt5Q4Q/mqdefault.jpg", "duration": "4:59"},
-        {"videoId": "fChxPoKGPI0", "title": "Endhira Logathu Sundariye (From '2.0')", "artist": "A.R. Rahman", "thumbnail": "https://img.youtube.com/vi/fChxPoKGPI0/mqdefault.jpg", "duration": "5:33"},
-        {"videoId": "fJ9rUzIMcZQ", "title": "Bohemian Rhapsody", "artist": "Queen", "thumbnail": "https://img.youtube.com/vi/fJ9rUzIMcZQ/mqdefault.jpg", "duration": "5:55"},
-        {"videoId": "PEM0Vs8jf1w", "title": "Golden Hour", "artist": "JVKE", "thumbnail": "https://img.youtube.com/vi/PEM0Vs8jf1w/mqdefault.jpg", "duration": "3:52"},
-        {"videoId": "vxzfsBDx590", "title": "Vaathi Coming (From 'Master')", "artist": "Anirudh Ravichander", "thumbnail": "https://img.youtube.com/vi/vxzfsBDx590/mqdefault.jpg", "duration": "3:55"},
-        {"videoId": "4Bsc2uI_LsM", "title": "Oorum Blood (From 'Dude')", "artist": "Sai Abhyankkar feat. Paal Dabba", "thumbnail": "https://img.youtube.com/vi/4Bsc2uI_LsM/mqdefault.jpg", "duration": "4:29"},
-        {"videoId": "2ogKpj5QuSY", "title": "Aaluma Doluma (From 'Vedalam')", "artist": "Anirudh Ravichander", "thumbnail": "https://img.youtube.com/vi/2ogKpj5QuSY/mqdefault.jpg", "duration": "3:27"},
-        {"videoId": "d-JBBNg8YKs", "title": "SICKO MODE", "artist": "Travis Scott", "thumbnail": "https://img.youtube.com/vi/d-JBBNg8YKs/mqdefault.jpg", "duration": "5:15"},
-        {"videoId": "5GJWxDKyk3A", "title": "Mr. Brightside", "artist": "The Killers", "thumbnail": "https://img.youtube.com/vi/5GJWxDKyk3A/mqdefault.jpg", "duration": "3:44"},
-        
+        {"videoId": "IpFX2vq8HKw", "title": "blue", "artist": "yung kai", "thumbnail": "https://img.youtube.com/vi/IpFX2vq8HKw/mqdefault.jpg", "duration": "3:24"},
+        {"videoId": "1wq47tabJh0", "title": "Mood", "artist": "Yagih Mael", "thumbnail": "https://img.youtube.com/vi/1wq47tabJh0/mqdefault.jpg", "duration": "3:22"},
+        {"videoId": "V9PVRfjEBTI", "title": "BIRDS OF A FEATHER", "artist": "Billie Eilish", "thumbnail": "https://img.youtube.com/vi/V9PVRfjEBTI/mqdefault.jpg", "duration": "3:30"},
+        {"videoId": "f5-IY_Ja1RM", "title": "her", "artist": "JVKE", "thumbnail": "https://img.youtube.com/vi/f5-IY_Ja1RM/mqdefault.jpg", "duration": "3:21"},
+        {"videoId": "JAERpGGh-wA", "title": "Infinity", "artist": "One Direction", "thumbnail": "https://img.youtube.com/vi/JAERpGGh-wA/mqdefault.jpg", "duration": "4:09"},
+        {"videoId": "09efb966Bn8", "title": "Beauty And A Beat (Acoustic)", "artist": "Justin Bieber", "thumbnail": "https://img.youtube.com/vi/09efb966Bn8/mqdefault.jpg", "duration": "3:10"},
+        {"videoId": "KrgJp7Z1Hv8", "title": "It'll Be Okay", "artist": "Shawn Mendes", "thumbnail": "https://img.youtube.com/vi/KrgJp7Z1Hv8/mqdefault.jpg", "duration": "3:43"},
+        {"videoId": "aZDlaZCpKYw", "title": "pick up the phone", "artist": "Henry Moodie", "thumbnail": "https://img.youtube.com/vi/aZDlaZCpKYw/mqdefault.jpg", "duration": "3:24"},
+        {"videoId": "W8a4sUabCUo", "title": "Dandelions", "artist": "Ruth B.", "thumbnail": "https://img.youtube.com/vi/W8a4sUabCUo/mqdefault.jpg", "duration": "3:53"},
+        {"videoId": "k4V3Mo61fJM", "title": "Fix You", "artist": "Coldplay", "thumbnail": "https://img.youtube.com/vi/k4V3Mo61fJM/mqdefault.jpg", "duration": "4:56"},
+        {"videoId": "A8dH4cKGa6s", "title": "Ordinary", "artist": "Alex Warren", "thumbnail": "https://img.youtube.com/vi/A8dH4cKGa6s/mqdefault.jpg", "duration": "2:34"},
+        {"videoId": "KRUWn3dLoRg", "title": "Ghost", "artist": "Justin Bieber", "thumbnail": "https://img.youtube.com/vi/KRUWn3dLoRg/mqdefault.jpg", "duration": "2:33"},
+        {"videoId": "8ofCZObsnOo", "title": "Hold On", "artist": "Chord Overstreet", "thumbnail": "https://img.youtube.com/vi/8ofCZObsnOo/mqdefault.jpg", "duration": "3:19"},
+        {"videoId": "iKzRIweSBLA", "title": "Perfect", "artist": "Ed Sheeran", "thumbnail": "https://img.youtube.com/vi/iKzRIweSBLA/mqdefault.jpg", "duration": "4:23"},
+        {"videoId": "vv3um0BlygY", "title": "Enchanted", "artist": "Taylor Swift", "thumbnail": "https://img.youtube.com/vi/vv3um0BlygY/mqdefault.jpg", "duration": "5:52"},
+        {"videoId": "Io2Yjy3nV_c", "title": "YOUTH", "artist": "Troye Sivan", "thumbnail": "https://img.youtube.com/vi/Io2Yjy3nV_c/mqdefault.jpg", "duration": "3:05"},
+        {"videoId": "RVv_rate258", "title": "Why Don't You Stay", "artist": "Jeff Satur", "thumbnail": "https://img.youtube.com/vi/RVv_rate258/mqdefault.jpg", "duration": "3:47"},
+        {"videoId": "r8EVmdyJp-M", "title": "24/7, 365", "artist": "elijah woods", "thumbnail": "https://img.youtube.com/vi/r8EVmdyJp-M/mqdefault.jpg", "duration": "3:11"},
+        {"videoId": "J_QGZspO4gg", "title": "Snowman", "artist": "Sia", "thumbnail": "https://img.youtube.com/vi/J_QGZspO4gg/mqdefault.jpg", "duration": "2:45"},
+        {"videoId": "GxldQ9eX2wo", "title": "Until I Found You", "artist": "Stephen Sanchez", "thumbnail": "https://img.youtube.com/vi/GxldQ9eX2wo/mqdefault.jpg", "duration": "2:57"}
     ],
     "fear": [
-        {"videoId": "kN0iD0pI3o0", "title": "breathin", "artist": "Ariana Grande", "thumbnail": "https://img.youtube.com/vi/kN0iD0pI3o0/mqdefault.jpg", "duration": "3:18"},
-        {"videoId": "Svfd999aej8", "title": "Keep Breathing", "artist": "Ingrid Michaelson", "thumbnail": "https://img.youtube.com/vi/Svfd999aej8/mqdefault.jpg", "duration": "3:26"},
-        {"videoId": "HNBCVM4KbUM", "title": "Three Little Birds", "artist": "Bob Marley & The Wailers", "thumbnail": "https://img.youtube.com/vi/HNBCVM4KbUM/mqdefault.jpg", "duration": "3:00"},
-        {"videoId": "C8QJmI_V3j4", "title": "By Your Side", "artist": "Sade", "thumbnail": "https://img.youtube.com/vi/C8QJmI_V3j4/mqdefault.jpg", "duration": "4:41"},
         {"videoId": "k4V3Mo61fJM", "title": "Fix You (Live)", "artist": "Coldplay", "thumbnail": "https://img.youtube.com/vi/k4V3Mo61fJM/mqdefault.jpg", "duration": "5:22"},
-        {"videoId": "3jL4S4X97sQ", "title": "Vienna", "artist": "Billy Joel", "thumbnail": "https://img.youtube.com/vi/3jL4S4X97sQ/mqdefault.jpg", "duration": "3:34"},
-        {"videoId": "GBSu_ltDu1w", "title": "Blackbird", "artist": "The Beatles", "thumbnail": "https://img.youtube.com/vi/GBSu_ltDu1w/mqdefault.jpg", "duration": "2:18"},
+        {"videoId": "psuRGfAaju4", "title": "Fireflies", "artist": "Owl City", "thumbnail": "https://img.youtube.com/vi/psuRGfAaju4/mqdefault.jpg", "duration": "3:48"},
+        {"videoId": "HhjHYkPQ8F0", "title": "Alone, Pt. II", "artist": "Alan Walker & Ava Max", "thumbnail": "https://img.youtube.com/vi/HhjHYkPQ8F0/mqdefault.jpg", "duration": "2:59"},
         {"videoId": "h3pJZSTQqIg", "title": "Strawberry Swing", "artist": "Coldplay", "thumbnail": "https://img.youtube.com/vi/h3pJZSTQqIg/mqdefault.jpg", "duration": "4:09"},
-        {"videoId": "bEeaS6fuUoA", "title": "Lovely Day", "artist": "Bill Withers", "thumbnail": "https://img.youtube.com/vi/bEeaS6fuUoA/mqdefault.jpg", "duration": "4:15"},
-        {"videoId": "36tggrpRoTI", "title": "In My Blood", "artist": "Shawn Mendes", "thumbnail": "https://img.youtube.com/vi/36tggrpRoTI/mqdefault.jpg", "duration": "3:31"}
+        {"videoId": "JAERpGGh-wA", "title": "Infinity", "artist": "One Direction", "thumbnail": "https://img.youtube.com/vi/JAERpGGh-wA/mqdefault.jpg", "duration": "4:09"},
+        {"videoId": "ZNra8eK0K6k", "title": "How Far I'll Go", "artist": "Alessia Cara", "thumbnail": "https://img.youtube.com/vi/ZNra8eK0K6k/mqdefault.jpg", "duration": "2:55"},
+        {"videoId": "up3_D60P6l8", "title": "The Water Is Fine", "artist": "Chloe Ament", "thumbnail": "https://img.youtube.com/vi/up3_D60P6l8/mqdefault.jpg", "duration": "4:10"},
+        {"videoId": "Xdv83MFJd7U", "title": "Seasons In The Sun", "artist": "Westlife", "thumbnail": "https://img.youtube.com/vi/Xdv83MFJd7U/mqdefault.jpg", "duration": "4:01"},
+        {"videoId": "OT5msu-dap8", "title": "Shape Of My Heart", "artist": "Backstreet Boys", "thumbnail": "https://img.youtube.com/vi/OT5msu-dap8/mqdefault.jpg", "duration": "3:50"},
+        {"videoId": "KKQl-pIRQMY", "title": "Photograph", "artist": "Ed Sheeran", "thumbnail": "https://img.youtube.com/vi/KKQl-pIRQMY/mqdefault.jpg", "duration": "4:19"},
+        {"videoId": "PEM0Vs8jf1w", "title": "Golden Hour", "artist": "JVKE", "thumbnail": "https://img.youtube.com/vi/PEM0Vs8jf1w/mqdefault.jpg", "duration": "3:52"},
+        {"videoId": "ElN_4vUvTPs", "title": "Human Nature", "artist": "Michael Jackson", "thumbnail": "https://img.youtube.com/vi/ElN_4vUvTPs/mqdefault.jpg", "duration": "4:06"},
+        {"videoId": "f5-IY_Ja1RM", "title": "Her", "artist": "JVKE", "thumbnail": "https://img.youtube.com/vi/f5-IY_Ja1RM/mqdefault.jpg", "duration": "3:21"},
+        {"videoId": "ddShTTQKao0", "title": "Heaven", "artist": "Calum Scott", "thumbnail": "https://img.youtube.com/vi/ddShTTQKao0/mqdefault.jpg", "duration": "3:14"},
+        {"videoId": "DCYmJDO2_IE", "title": "Cinnamon Girl", "artist": "Lana Del Rey", "thumbnail": "https://img.youtube.com/vi/DCYmJDO2_IE/mqdefault.jpg", "duration": "5:01"},
+        {"videoId": "85NWn-k1p58", "title": "Fade", "artist": "Jeff Satur", "thumbnail": "https://img.youtube.com/vi/85NWn-k1p58/mqdefault.jpg", "duration": "4:22"},
+        {"videoId": "96C7zX178-s", "title": "Right Now", "artist": "One Direction", "thumbnail": "https://img.youtube.com/vi/96C7zX178-s/mqdefault.jpg", "duration": "3:20"},
+        {"videoId": "W8a4sUabCUo", "title": "Dandelions", "artist": "Ruth B.", "thumbnail": "https://img.youtube.com/vi/W8a4sUabCUo/mqdefault.jpg", "duration": "3:53"},
+        {"videoId": "b-BYf-BpC3Y", "title": "Different Kind Of Beautiful", "artist": "Alec Benjamin", "thumbnail": "https://img.youtube.com/vi/b-BYf-BpC3Y/mqdefault.jpg", "duration": "3:21"},
+        {"videoId": "GZXHBgjQjNM", "title": "Drowning", "artist": "Backstreet Boys", "thumbnail": "https://img.youtube.com/vi/GZXHBgjQjNM/mqdefault.jpg", "duration": "4:28"}
     ],
     "angry": [
         {"videoId": "ElN_4vUvTPs", "title": "Human Nature", "artist": "Michael Jackson", "thumbnail": "https://img.youtube.com/vi/ElN_4vUvTPs/mqdefault.jpg", "duration": "4:06"},
@@ -96,7 +135,17 @@ EMOTION_HARDCODED_MAP = {
         {"videoId": "8UY5BGFLtK0", "title": "Payphone", "artist": "Maroon 5 feat. Wiz Khalifa", "thumbnail": "https://img.youtube.com/vi/8UY5BGFLtK0/mqdefault.jpg", "duration": "3:52"},
         {"videoId": "MiAoetOXKcY", "title": "Say Yes To Heaven", "artist": "Lana Del Rey", "thumbnail": "https://img.youtube.com/vi/MiAoetOXKcY/mqdefault.jpg", "duration": "3:29"},
         {"videoId": "tdVAqxNLXiw", "title": "Yellow", "artist": "Coldplay", "thumbnail": "https://img.youtube.com/vi/tdVAqxNLXiw/mqdefault.jpg", "duration": "4:27"},
-        {"videoId": "450p7goxZqg", "title": "All of Me", "artist": "John Legend", "thumbnail": "https://img.youtube.com/vi/450p7goxZqg/mqdefault.jpg", "duration": "4:43"}
+        {"videoId": "450p7goxZqg", "title": "All of Me", "artist": "John Legend", "thumbnail": "https://img.youtube.com/vi/450p7goxZqg/mqdefault.jpg", "duration": "4:43"},
+        {"videoId": "KIfYtDl4B2g", "title": "Numb", "artist": "Linkin Park", "thumbnail": "https://img.youtube.com/vi/KIfYtDl4B2g/mqdefault.jpg", "duration": "3:07"},
+        {"videoId": "7wtfhZwyrcc", "title": "Believer", "artist": "Imagine Dragons", "thumbnail": "https://img.youtube.com/vi/7wtfhZwyrcc/mqdefault.jpg", "duration": "3:24"},
+        {"videoId": "mWRsgZuwf_8", "title": "Demons", "artist": "Imagine Dragons", "thumbnail": "https://img.youtube.com/vi/mWRsgZuwf_8/mqdefault.jpg", "duration": "2:57"},
+        {"videoId": "uEDhGX-UTeI", "title": "Bad Liar", "artist": "Imagine Dragons", "thumbnail": "https://img.youtube.com/vi/uEDhGX-UTeI/mqdefault.jpg", "duration": "4:20"},
+        {"videoId": "s7-GTShjcqY", "title": "Darkside", "artist": "NEONI", "thumbnail": "https://img.youtube.com/vi/s7-GTShjcqY/mqdefault.jpg", "duration": "3:15"},
+        {"videoId": "T3E9Wjbq44E", "title": "Stereo Hearts", "artist": "Gym Class Heroes feat. Adam Levine", "thumbnail": "https://img.youtube.com/vi/T3E9Wjbq44E/mqdefault.jpg", "duration": "3:31"},
+        {"videoId": "FyqjDe9e_hE", "title": "Sorry Not Sorry", "artist": "Demi Lovato", "thumbnail": "https://img.youtube.com/vi/FyqjDe9e_hE/mqdefault.jpg", "duration": "3:23"},
+        {"videoId": "rW843YCHrh0", "title": "Drag Me Down", "artist": "One Direction", "thumbnail": "https://img.youtube.com/vi/rW843YCHrh0/mqdefault.jpg", "duration": "3:12"},
+        {"videoId": "Kr4EQDVETuA", "title": "Billie Jean", "artist": "Michael Jackson", "thumbnail": "https://img.youtube.com/vi/Kr4EQDVETuA/mqdefault.jpg", "duration": "4:54"},
+        {"videoId": "DGfcVrU5XSY", "title": "Really Don't Care", "artist": "Demi Lovato feat. Cher Lloyd", "thumbnail": "https://img.youtube.com/vi/DGfcVrU5XSY/mqdefault.jpg", "duration": "3:21"}
     ]
   
 }
@@ -116,8 +165,8 @@ def recommend_music():
     if not full_pool:
         full_pool = EMOTION_HARDCODED_MAP["neutral"]
         
-    if len(full_pool) > 10:
-        selected_songs = random.sample(full_pool, 10)
+    if len(full_pool) > 20:
+        selected_songs = random.sample(full_pool, 20)
     else:
         selected_songs = full_pool.copy()
         random.shuffle(selected_songs)
