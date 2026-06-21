@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:frontend/screens/emotion/mood_model.dart';
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
@@ -128,12 +129,22 @@ class _LibraryScreenState extends State<LibraryScreen> {
               separatorBuilder: (context, index) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
                 final item = _libraryItems[index];
-                return _buildMoodCard(
-                  title: item['title'],
-                  subtitle: item['subtitle'],
-                  icon: item['icon'],
-                  baseColor: item['baseColor'],
-                  isHighlight: index == 0, // Highlight the "Liked Songs"
+                return GestureDetector(
+                  onTap: () {
+                    if (item['title'] == 'Liked Songs') {
+                      context.push('/favorites', extra: 'All');
+                    } else {
+                      final String selectedMood = item['title'].toString();
+                      context.push('/playlist', extra: selectedMood);
+                    }
+                  },
+                  child: _buildMoodCard(
+                    title: item['title'],
+                    subtitle: item['subtitle'],
+                    icon: item['icon'],
+                    baseColor: item['baseColor'],
+                    isHighlight: index == 0,
+                  ),
                 );
               },
             ),
@@ -153,7 +164,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
     return Container(
       height: 110,
       decoration: BoxDecoration(
-        color: const Color(0xFF16142E), // Slightly lighter than bg
+        color: const Color(0xFF16142E),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: isHighlight
@@ -172,7 +183,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
       child: Stack(
         clipBehavior: Clip.antiAlias,
         children: [
-          // Elegant subtle gradient matching the icon color
           Positioned(
             right: -30,
             top: -20,
@@ -205,7 +215,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   decoration: BoxDecoration(
                     color: isHighlight
                         ? baseColor.withOpacity(0.2)
-                        : const Color(0xFF0D0C1D), // Dark inner circle
+                        : const Color(0xFF0D0C1D),
                     shape: BoxShape.circle,
                     border: Border.all(
                       color: isHighlight
@@ -235,7 +245,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       const SizedBox(height: 4),
                       Text(
                         subtitle,
-                        // 👇 Kept Poppins for Card Subtitle
                         style: GoogleFonts.poppins(
                           color: Colors.white.withOpacity(0.5),
                           fontSize: 13,
@@ -246,7 +255,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   ),
                 ),
 
-                // Chevron Icon to indicate action
                 Icon(
                   Icons.chevron_right_rounded,
                   color: Colors.white.withOpacity(0.2),

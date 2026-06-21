@@ -11,13 +11,8 @@ class LaunchScreen extends StatelessWidget {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // 1. Full-screen Background Image
-          Image.asset(
-            'assets/images/launch_bg.png', // Make sure to export this from Figma
-            fit: BoxFit.cover,
-          ),
+          Image.asset('assets/images/launch_bg.png', fit: BoxFit.cover),
 
-          // 2. Gradient Overlay (Ensures text is readable)
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -33,7 +28,7 @@ class LaunchScreen extends StatelessWidget {
             ),
           ),
 
-          // 3. UI Content
+          //UI Content
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(
@@ -43,11 +38,10 @@ class LaunchScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Top Right Logo
                   Align(
                     alignment: Alignment.topRight,
                     child: Image.asset(
-                      'assets/images/logo.png', // Export the infinity logo from Figma
+                      'assets/images/logo.png',
                       width: 48,
                       height: 48,
                     ),
@@ -60,8 +54,7 @@ class LaunchScreen extends StatelessWidget {
                     blendMode: BlendMode.srcIn,
                     shaderCallback: (bounds) =>
                         const LinearGradient(
-                          begin: Alignment
-                              .topCenter, // Adjust these to change gradient direction
+                          begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [Color(0xFFF38BDC), Color(0xFFDBA4CF)],
                         ).createShader(
@@ -71,7 +64,6 @@ class LaunchScreen extends StatelessWidget {
                       '"Where Words Fail,\nMusic Speaks."',
                       textAlign: TextAlign.center,
                       style: GoogleFonts.arvo(
-                        // The text color MUST be white for the gradient mask to work
                         color: Colors.white,
                         fontSize: 28,
                         fontWeight: FontWeight.w400,
@@ -87,7 +79,6 @@ class LaunchScreen extends StatelessWidget {
                     alignment: Alignment.center,
                     child: ElevatedButton(
                       onPressed: () {
-                        // Navigate to Register or Home
                         context.push('/register');
                       },
                       style: ElevatedButton.styleFrom(
@@ -128,7 +119,6 @@ class LaunchScreen extends StatelessWidget {
                       ),
                       GestureDetector(
                         onTap: () {
-                          // Navigate to Login Screen
                           context.push('/login');
                         },
                         child: Text(
@@ -142,7 +132,7 @@ class LaunchScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16), // Bottom padding
+                  const SizedBox(height: 16),
                 ],
               ),
             ),

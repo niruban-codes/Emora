@@ -1,28 +1,72 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http/http.dart' as http;
 import 'package:frontend/models/song_model.dart';
 
-// ── Dummy song model (replace with your real Song/model import) ────────────
 class _FavSong {
+  // final String title;
+  // final String artist;
+  // final String duration;
+  // final String mood;
+  // final Color moodColor;
+  // final IconData icon;
+  // final String coverUrl;
+  final String id;
+  final String videoId;
   final String title;
   final String artist;
-  final String duration;
   final String mood;
-  final Color moodColor;
-  final IconData icon;
+  final String coverUrl;
 
   const _FavSong({
+    // required this.title,
+    // required this.artist,
+    // required this.duration,
+    // required this.mood,
+    // required this.moodColor,
+    // required this.icon,
+    // required this.coverUrl,
+    required this.id,
+    required this.videoId,
     required this.title,
     required this.artist,
-    required this.duration,
     required this.mood,
-    required this.moodColor,
-    required this.icon,
+    required this.coverUrl,
   });
+  factory _FavSong.fromJson(Map<String, dynamic> json) {
+    return _FavSong(
+      id: json['id'] ?? '',
+      videoId: json['videoId'] ?? '',
+      title: json['title'] ?? 'Unknown Title',
+      artist: json['artist'] ?? 'Unknown Artist',
+      mood: json['mood'] ?? 'Neutral',
+      coverUrl: json['thumbnail'] ?? '',
+    );
+  }
+
+  Color get moodColor {
+    switch (mood.toLowerCase()) {
+      case 'happy':
+        return const Color(0xFFFFB74D);
+      case 'sad':
+        return const Color(0xFF64B5F6);
+      case 'fear':
+        return const Color(0xFF9575CD);
+      case 'angry':
+        return const Color(0xFFE57373);
+      case 'surprise':
+        return const Color(0xFF4DB6AC);
+      default:
+        return const Color(0xFF90A4AE);
+    }
+  }
+
+  String get duration => '3:30';
 }
 
-// ── Mood filter chip data ──────────────────────────────────────────────────
+// mood buttons
 const _kMoods = ['All', 'Happy', 'Sad', 'Neutral', 'Fear', 'Angry', 'Surprise'];
 
 class FavoritesScreen extends StatefulWidget {
@@ -37,92 +81,30 @@ class _FavoritesScreenState extends State<FavoritesScreen>
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
 
+  final String baseUrl =
+      "https://emora-api-backend-ggccceepbsa2f4dk.eastasia-01.azurewebsites.net/favorites";
+  final String currentUid = "test_user_uid";
+
+  List<_FavSong> _allSongs = [];
+  bool _isLoading = true;
   String _selectedMood = 'All';
   int? _playingIndex;
 
-  // ── Sample data — swap out for real data source ──────────────────────────
-  final List<_FavSong> _allSongs = const [
-    _FavSong(
-      title: 'Morning Zen',
-      artist: 'Serenity Now',
-      duration: '3:45',
-      mood: 'Happy',
-      moodColor: Color(0xFFFFB74D),
-      icon: Icons.sentiment_very_satisfied_rounded,
-    ),
-    _FavSong(
-      title: 'Quiet Waters',
-      artist: 'Flowing Echoes',
-      duration: '4:12',
-      mood: 'Neutral',
-      moodColor: Color(0xFF90A4AE),
-      icon: Icons.lens_blur_rounded,
-    ),
-    _FavSong(
-      title: 'First Light',
-      artist: 'Ambient Dreams',
-      duration: '2:58',
-      mood: 'Happy',
-      moodColor: Color(0xFFFFB74D),
-      icon: Icons.sentiment_very_satisfied_rounded,
-    ),
-    _FavSong(
-      title: 'Soft Horizon',
-      artist: 'Luna Park',
-      duration: '5:30',
-      mood: 'Sad',
-      moodColor: Color(0xFF64B5F6),
-      icon: Icons.sentiment_dissatisfied_rounded,
-    ),
-    _FavSong(
-      title: 'Dew Drops',
-      artist: "Nature's Whisper",
-      duration: '3:15',
-      mood: 'Neutral',
-      moodColor: Color(0xFF90A4AE),
-      icon: Icons.lens_blur_rounded,
-    ),
-    _FavSong(
-      title: 'Velvet Thunder',
-      artist: 'Storm Studio',
-      duration: '4:00',
-      mood: 'Angry',
-      moodColor: Color(0xFFE57373),
-      icon: Icons.local_fire_department_outlined,
-    ),
-    _FavSong(
-      title: 'Shadow Walk',
-      artist: 'Dark Corridor',
-      duration: '3:33',
-      mood: 'Fear',
-      moodColor: Color(0xFF9575CD),
-      icon: Icons.sentiment_very_dissatisfied_outlined,
-    ),
-    _FavSong(
-      title: 'Electric Spark',
-      artist: 'Flash Lab',
-      duration: '2:47',
-      mood: 'Surprise',
-      moodColor: Color(0xFF4DB6AC),
-      icon: Icons.flare_rounded,
-    ),
-  ];
-
   List<_FavSong> get _filtered => _selectedMood == 'All'
       ? _allSongs
-      : _allSongs.where((s) => s.mood == _selectedMood).toList();
+      : _allSongs.where((s) {
+          return s.mood.trim().toLowerCase() ==
+              _selectedMood.trim().toLowerCase();
+        }).toList();
 
-  // ── Convert _FavSong → real Song for PlayerScreen ─────────────────────────
-  // Adjust field names to match your actual Song model constructor.
   Song _toSong(_FavSong s) => Song(
-        id: 'default-id',
-        title: s.title,
-        artist: s.artist,
-        duration: s.duration,
-        coverUrl: 'default-cover-url',
-      );
+    id: s.videoId,
+    title: s.title,
+    artist: s.artist,
+    duration: s.duration,
+    coverUrl: s.coverUrl,
+  );
 
-  // ── Push /player and keep mini-player in sync ─────────────────────────────
   void _navigateToPlayer(List<_FavSong> songs, int index) {
     setState(() => _playingIndex = index);
     final realSongs = songs.map(_toSong).toList();
@@ -136,9 +118,49 @@ class _FavoritesScreenState extends State<FavoritesScreen>
       duration: const Duration(milliseconds: 500),
       vsync: this,
     );
-    _fadeAnim =
-        CurvedAnimation(parent: _animController, curve: Curves.easeOut);
+    _fadeAnim = CurvedAnimation(parent: _animController, curve: Curves.easeOut);
     _animController.forward();
+    _fetchFavorites();
+  }
+
+  Future<void> _fetchFavorites() async {
+    setState(() => _isLoading = true);
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/$currentUid'));
+      if (response.statusCode == 200) {
+        final List dynamicList = json.decode(response.body);
+        setState(() {
+          _allSongs = dynamicList
+              .map((json) => _FavSong.fromJson(json))
+              .toList();
+          _isLoading = false;
+        });
+      } else {
+        throw Exception("Server error");
+      }
+    } catch (e) {
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to load favorites: $e')));
+    }
+  }
+
+  Future<void> _removeFromFavorites(String videoId) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/$currentUid/remove'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"videoId": videoId}),
+      );
+      if (response.statusCode == 200) {
+        _fetchFavorites(); // Instantly refreshes the list layout
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to remove: $e')));
+    }
   }
 
   @override
@@ -147,7 +169,6 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     super.dispose();
   }
 
-  // ── Build ────────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
     final songs = _filtered;
@@ -163,7 +184,15 @@ class _FavoritesScreenState extends State<FavoritesScreen>
               const SizedBox(height: 16),
               _buildMoodFilter(),
               const SizedBox(height: 8),
-              Expanded(child: _buildSongList(songs)),
+              Expanded(
+                child: _isLoading
+                    ? const Center(
+                        child: CircularProgressIndicator(
+                          color: Color(0xFFA7338A),
+                        ),
+                      )
+                    : _buildSongList(songs),
+              ),
               if (_playingIndex != null) _buildMiniPlayer(songs),
             ],
           ),
@@ -180,15 +209,10 @@ class _FavoritesScreenState extends State<FavoritesScreen>
         children: [
           GestureDetector(
             onTap: () => context.pop(),
-            child: Container(
-              width: 38,
-              height: 38,
-              decoration: const BoxDecoration(
-                color: Color(0xFF1E1A35),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.arrow_back_ios_new_rounded,
-                  color: Colors.white70, size: 18),
+            child: const Icon(
+              Icons.arrow_back_rounded,
+              color: Colors.white70,
+              size: 22,
             ),
           ),
           Expanded(
@@ -203,7 +227,6 @@ class _FavoritesScreenState extends State<FavoritesScreen>
               ),
             ),
           ),
-          // Play-all → opens PlayerScreen at index 0
           GestureDetector(
             onTap: () {
               if (songs.isNotEmpty) _navigateToPlayer(songs, 0);
@@ -215,8 +238,11 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                 shape: BoxShape.circle,
                 border: Border.all(color: const Color(0xFFA7338A), width: 2),
               ),
-              child: const Icon(Icons.play_arrow_rounded,
-                  color: Color(0xFFA7338A), size: 22),
+              child: const Icon(
+                Icons.play_arrow_rounded,
+                color: Color(0xFFA7338A),
+                size: 22,
+              ),
             ),
           ),
         ],
@@ -240,8 +266,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
             onTap: () => setState(() => _selectedMood = mood),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
               decoration: BoxDecoration(
                 color: selected
                     ? const Color(0xFFA7338A)
@@ -256,8 +281,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                 style: GoogleFonts.poppins(
                   color: selected ? Colors.white : Colors.white60,
                   fontSize: 12,
-                  fontWeight:
-                      selected ? FontWeight.w600 : FontWeight.w400,
+                  fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
                 ),
               ),
             ),
@@ -274,8 +298,11 @@ class _FavoritesScreenState extends State<FavoritesScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.favorite_border_rounded,
-                color: Colors.white24, size: 52),
+            const Icon(
+              Icons.favorite_border_rounded,
+              color: Colors.white24,
+              size: 52,
+            ),
             const SizedBox(height: 12),
             Text(
               'No favorites yet',
@@ -297,46 +324,40 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     );
   }
 
-  // ── Single song tile — tap opens full PlayerScreen ────────────────────────
+  //  Single song tile — tap opens full PlayerScreen
   Widget _buildSongTile(List<_FavSong> songs, int index) {
     final song = songs[index];
     final isPlaying = _playingIndex == index;
 
     return GestureDetector(
-      onTap: () => _navigateToPlayer(songs, index), // ← full screen player
+      onTap: () => _navigateToPlayer(songs, index),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecoration(
-          color: isPlaying
-              ? const Color(0xFF2A1060)
-              : const Color(0xFF1E1A35),
+          color: isPlaying ? const Color(0xFF2A1060) : const Color(0xFF1E1A35),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color:
-                isPlaying ? const Color(0xFFA7338A) : Colors.transparent,
+            color: isPlaying ? const Color(0xFFA7338A) : Colors.transparent,
           ),
         ),
         child: Row(
           children: [
-            // Thumbnail / icon
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: const Color(0xFF0D0C1D),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                isPlaying ? Icons.equalizer_rounded : song.icon,
-                color:
-                    isPlaying ? const Color(0xFFA7338A) : song.moodColor,
-                size: 26,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.network(
+                song.coverUrl,
+                width: 48,
+                height: 48,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => const Icon(
+                  Icons.music_note_rounded,
+                  color: Color(0xFFA7338A),
+                ),
               ),
             ),
             const SizedBox(width: 12),
-            // Title + artist
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -344,9 +365,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                   Text(
                     song.title,
                     style: GoogleFonts.poppins(
-                      color: isPlaying
-                          ? const Color(0xFFA7338A)
-                          : Colors.white,
+                      color: isPlaying ? const Color(0xFFA7338A) : Colors.white,
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
@@ -362,23 +381,21 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                 ],
               ),
             ),
-            // Duration
             Text(
               song.duration,
-              style: GoogleFonts.poppins(
-                color: Colors.white38,
-                fontSize: 12,
-              ),
+              style: GoogleFonts.poppins(color: Colors.white38, fontSize: 12),
             ),
             const SizedBox(width: 8),
-            // Three-dot menu — stopPropagation so it doesn't trigger tile tap
             GestureDetector(
               onTap: () => _showSongOptions(context, song),
               behavior: HitTestBehavior.opaque,
               child: const Padding(
                 padding: EdgeInsets.all(4),
-                child: Icon(Icons.more_vert_rounded,
-                    color: Colors.white38, size: 20),
+                child: Icon(
+                  Icons.more_vert_rounded,
+                  color: Colors.white38,
+                  size: 20,
+                ),
               ),
             ),
           ],
@@ -387,11 +404,10 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     );
   }
 
-  // ── Mini player bar — tap title area opens full PlayerScreen ──────────────
   Widget _buildMiniPlayer(List<_FavSong> songs) {
     final song = songs[_playingIndex!];
     return GestureDetector(
-      onTap: () => _navigateToPlayer(songs, _playingIndex!), // ← full screen
+      onTap: () => _navigateToPlayer(songs, _playingIndex!),
       child: Container(
         margin: const EdgeInsets.fromLTRB(16, 8, 16, 12),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -403,12 +419,15 @@ class _FavoritesScreenState extends State<FavoritesScreen>
         ),
         child: Row(
           children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.white12,
-                borderRadius: BorderRadius.circular(10),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.network(
+                song.coverUrl,
+                width: 40,
+                height: 40,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) =>
+                    const Icon(Icons.music_note_rounded, color: Colors.white),
               ),
               child: Icon(song.icon, color: Colors.white, size: 22),
             ),
@@ -429,12 +448,13 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                   Text(
                     song.artist,
                     style: GoogleFonts.poppins(
-                        color: Colors.white70, fontSize: 11),
+                      color: Colors.white70,
+                      fontSize: 11,
+                    ),
                   ),
                 ],
               ),
             ),
-            // Prev — GestureDetector absorbs tap so it doesn't bubble to parent
             GestureDetector(
               onTap: () {
                 if (_playingIndex! > 0) {
@@ -444,12 +464,14 @@ class _FavoritesScreenState extends State<FavoritesScreen>
               behavior: HitTestBehavior.opaque,
               child: const Padding(
                 padding: EdgeInsets.all(6),
-                child: Icon(Icons.skip_previous_rounded,
-                    color: Colors.white, size: 24),
+                child: Icon(
+                  Icons.skip_previous_rounded,
+                  color: Colors.white,
+                  size: 24,
+                ),
               ),
             ),
             const SizedBox(width: 4),
-            // Pause/dismiss
             GestureDetector(
               onTap: () => setState(() => _playingIndex = null),
               behavior: HitTestBehavior.opaque,
@@ -457,13 +479,17 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                 width: 36,
                 height: 36,
                 decoration: const BoxDecoration(
-                    color: Colors.white, shape: BoxShape.circle),
-                child: const Icon(Icons.pause_rounded,
-                    color: Color(0xFFA7338A), size: 20),
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.pause_rounded,
+                  color: Color(0xFFA7338A),
+                  size: 20,
+                ),
               ),
             ),
             const SizedBox(width: 4),
-            // Next
             GestureDetector(
               onTap: () {
                 if (_playingIndex! < songs.length - 1) {
@@ -473,8 +499,11 @@ class _FavoritesScreenState extends State<FavoritesScreen>
               behavior: HitTestBehavior.opaque,
               child: const Padding(
                 padding: EdgeInsets.all(6),
-                child: Icon(Icons.skip_next_rounded,
-                    color: Colors.white, size: 24),
+                child: Icon(
+                  Icons.skip_next_rounded,
+                  color: Colors.white,
+                  size: 24,
+                ),
               ),
             ),
           ],
@@ -483,7 +512,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     );
   }
 
-  // ── Bottom sheet options ──────────────────────────────────────────────────
+  //Bottom sheet options
   void _showSongOptions(BuildContext context, _FavSong song) {
     showModalBottomSheet(
       context: context,
@@ -516,36 +545,54 @@ class _FavoritesScreenState extends State<FavoritesScreen>
             const SizedBox(height: 4),
             Text(
               song.artist,
-              style: GoogleFonts.poppins(
-                  color: Colors.white54, fontSize: 13),
+              style: GoogleFonts.poppins(color: Colors.white54, fontSize: 13),
             ),
             const SizedBox(height: 20),
-            _optionTile(Icons.play_circle_outline_rounded, 'Play Now',
-                () => Navigator.pop(context)),
-            _optionTile(Icons.playlist_add_rounded, 'Add to Playlist',
-                () => Navigator.pop(context)),
+            _optionTile(
+              Icons.play_circle_outline_rounded,
+              'Play Now',
+              () => Navigator.pop(context),
+            ),
+            _optionTile(
+              Icons.playlist_add_rounded,
+              'Add to Playlist',
+              () => Navigator.pop(context),
+            ),
             _optionTile(
               Icons.favorite_rounded,
               'Remove from Favorites',
-              () => Navigator.pop(context),
+              () {
+                Navigator.pop(context);
+                _removeFromFavorites(song.videoId);
+              },
               color: const Color(0xFFE040FB),
             ),
-            _optionTile(Icons.share_rounded, 'Share',
-                () => Navigator.pop(context)),
+            _optionTile(
+              Icons.share_rounded,
+              'Share',
+              () => Navigator.pop(context),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _optionTile(IconData icon, String label, VoidCallback onTap,
-      {Color color = Colors.white}) {
+  Widget _optionTile(
+    IconData icon,
+    String label,
+    VoidCallback onTap, {
+    Color color = Colors.white,
+  }) {
     return ListTile(
       leading: Icon(icon, color: color, size: 22),
       title: Text(
         label,
         style: GoogleFonts.poppins(
-            color: color, fontSize: 14, fontWeight: FontWeight.w500),
+          color: color,
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
       ),
       onTap: onTap,
       contentPadding: EdgeInsets.zero,

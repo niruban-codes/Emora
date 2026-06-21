@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:frontend/screens/emotion/mood_model.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // 👈 added
-import '../../../services/firestore_service.dart'; // 👈 added
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../../services/firestore_service.dart';
+import 'package:frontend/api_service.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:frontend/models/song_model.dart';
 
 class ResultScreen extends StatefulWidget {
   final MoodModel mood;
@@ -17,7 +21,11 @@ class _ResultScreenState extends State<ResultScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _fadeCtrl;
   late Animation<double> _fadeAnim;
-  int _currentNavIndex = 2; // result is under LIBRARY
+  int _currentNavIndex = 2;
+
+  // NEW: State variables to hold the live songs
+  List<Song> _recommendedSongs = [];
+  bool _isLoadingSongs = true;
 
   Color get _primary => widget.mood.primaryColor;
   Color get _secondary => widget.mood.secondaryColor;
@@ -26,8 +34,7 @@ class _ResultScreenState extends State<ResultScreen>
   @override
   void initState() {
     super.initState();
-    // 2. Trigger the save as soon as the result is displayed
-    _savePlaylistToFirebase();
+    _initializeData();
 
     _fadeCtrl = AnimationController(
       vsync: this,
@@ -36,7 +43,60 @@ class _ResultScreenState extends State<ResultScreen>
     _fadeAnim = CurvedAnimation(parent: _fadeCtrl, curve: Curves.easeOut);
   }
 
-  // 3. Create the save method
+  @override
+  void didUpdateWidget(ResultScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.mood != widget.mood) {
+      setState(() {
+        _isLoadingSongs = true;
+        _recommendedSongs = [];
+      });
+      _initializeData();
+    }
+  }
+
+  Future<void> _initializeData() async {
+    await _fetchRecommendedSongs();
+    _savePlaylistToFirebase();
+    _saveScanToAzureHistory();
+  }
+
+  Future<void> _fetchRecommendedSongs() async {
+    try {
+      final uri = Uri.parse(
+        "https://emora-api-backend-ggccceepbsa2f4dk.eastasia-01.azurewebsites.net/youtube/recommend-music",
+      );
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+
+      final response = await http.post(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'emotion': widget.mood.label.toLowerCase(),
+          'uid': uid,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        if (mounted) {
+          setState(() {
+            _recommendedSongs = data
+                .map((e) => Song.fromJson(e, defaultMood: widget.mood.label))
+                .toList();
+            _isLoadingSongs = false;
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint("Error fetching recommended songs: $e");
+      if (mounted) {
+        setState(() => _isLoadingSongs = false);
+      }
+    }
+  }
+
   Future<void> _savePlaylistToFirebase() async {
     final user = FirebaseAuth.instance.currentUser;
 
@@ -45,10 +105,8 @@ class _ResultScreenState extends State<ResultScreen>
       return;
     }
 
-    // Initialize the service here so it can be used below
     final firestoreService = FirestoreService();
 
-    // Map your mood data into the format for playlist_history
     List<Map<String, dynamic>> playlistData = widget.mood.playlistTitles.map((
       title,
     ) {
@@ -67,6 +125,43 @@ class _ResultScreenState extends State<ResultScreen>
       print("✅ History saved successfully!");
     } catch (e) {
       print("❌ Error saving history: $e");
+    }
+  }
+
+  Future<void> _saveScanToAzureHistory() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final tracks = _recommendedSongs
+        .map(
+          (song) => {
+            'title': song.title,
+            'artist': song.artist,
+            'thumbnail': song.coverUrl,
+            'videoId': song.id,
+          },
+        )
+        .toList();
+
+    if (tracks.isEmpty) {
+      tracks.add({
+        'title': widget.mood.songTitle,
+        'artist': widget.mood.artist,
+      });
+    }
+
+    try {
+      final success = await ApiService().saveMoodHistoryToAzure(
+        uid: user.uid,
+        emotion: widget.mood.label.toLowerCase(),
+        tracks: tracks,
+      );
+
+      if (success) {
+        print("✅ Scan successfully saved to Azure History!");
+      }
+    } catch (e) {
+      print("❌ Error saving scan to Azure: $e");
     }
   }
 
@@ -100,7 +195,6 @@ class _ResultScreenState extends State<ResultScreen>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildFaceScanArea(),
                         const SizedBox(height: 16),
                         _buildMoodLabel(),
                         const SizedBox(height: 12),
@@ -108,7 +202,7 @@ class _ResultScreenState extends State<ResultScreen>
                         const SizedBox(height: 32),
                         _buildSongSection(),
                         const SizedBox(height: 24),
-                        _buildMoodPlaylists(),
+
                         const SizedBox(height: 32),
                         _buildBottomButtons(context),
                         const SizedBox(height: 20),
@@ -124,7 +218,7 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 
-  // ── Top Bar ───────────────────────────────────────────────────────────────
+  //  Top Bar
   Widget _buildTopBar(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -133,14 +227,14 @@ class _ResultScreenState extends State<ResultScreen>
         children: [
           _circleBtn(Icons.arrow_back, onTap: () => context.go('/home')),
           Text(
-            'AI Insights',
+            'Current Mood',
             style: GoogleFonts.poppins(
               color: Colors.white,
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
-          _circleBtn(Icons.more_vert),
+          const SizedBox(width: 38),
         ],
       ),
     );
@@ -149,19 +243,14 @@ class _ResultScreenState extends State<ResultScreen>
   Widget _circleBtn(IconData icon, {VoidCallback? onTap}) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        width: 38,
-        height: 38,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.white.withOpacity(0.1),
-        ),
-        child: Icon(icon, color: Colors.white, size: 20),
+      behavior: HitTestBehavior.opaque,
+      child: Padding(padding: const EdgeInsets.all(8.0),
+      child: Icon(icon, color: Colors.white, size: 22),
       ),
     );
   }
 
-  // ── Face Scan Area ────────────────────────────────────────────────────────
+  //  Face Scan Area
   Widget _buildFaceScanArea() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -326,7 +415,7 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 
-  // ── Mood Label ────────────────────────────────────────────────────────────
+  //  Mood Label
   Widget _buildMoodLabel() {
     return Center(
       child: Column(
@@ -376,7 +465,8 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 
-  // ── Song Section ──────────────────────────────────────────────────────────
+  //  Song Section
+  //  Song Section
   Widget _buildSongSection() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -393,78 +483,125 @@ class _ResultScreenState extends State<ResultScreen>
             ),
           ),
           const SizedBox(height: 14),
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.07),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.white.withOpacity(0.1)),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 52,
-                  height: 52,
+
+          if (_isLoadingSongs)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(20.0),
+                child: CircularProgressIndicator(color: Colors.white54),
+              ),
+            )
+          else if (_recommendedSongs.isEmpty)
+            const Text(
+              "No songs found",
+              style: TextStyle(color: Colors.white54),
+            )
+          else
+            // Take exactly 2 songs from the randomly generated list
+            ..._recommendedSongs.take(2).toList().asMap().entries.map((entry) {
+              final index = entry.key;
+              final song = entry.value;
+
+              return GestureDetector(
+                onTap: () {
+                  // Pass the FULL list of 10 songs to the player, but start at the clicked index
+                  context.push(
+                    '/player',
+                    extra: {'songs': _recommendedSongs, 'index': index},
+                  );
+                },
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        _primary.withOpacity(0.3),
-                        _secondary.withOpacity(0.2),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: _primary.withOpacity(0.3)),
+                    color: Colors.white.withOpacity(0.07),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.white.withOpacity(0.1)),
                   ),
-                  child: Icon(Icons.music_note, color: _labelColor, size: 26),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Row(
                     children: [
-                      Text(
-                        widget.mood.songTitle,
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.network(
+                          song.coverUrl,
+                          width: 52,
+                          height: 52,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => Container(
+                            width: 52,
+                            height: 52,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  _primary.withOpacity(0.3),
+                                  _secondary.withOpacity(0.2),
+                                ],
+                              ),
+                            ),
+                            child: Icon(
+                              Icons.music_note,
+                              color: _labelColor,
+                              size: 26,
+                            ),
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 3),
-                      Text(
-                        '${widget.mood.artist} • ${widget.mood.genre}',
-                        style: GoogleFonts.poppins(
-                          color: Colors.white.withOpacity(0.5),
-                          fontSize: 12,
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              song.title,
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 3),
+                            Text(
+                              song.artist,
+                              style: GoogleFonts.poppins(
+                                color: Colors.white.withOpacity(0.5),
+                                fontSize: 12,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        width: 38,
+                        height: 38,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            colors: [_primary, _secondary],
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.play_arrow,
+                          color: Colors.white,
+                          size: 22,
                         ),
                       ),
                     ],
                   ),
                 ),
-                Container(
-                  width: 38,
-                  height: 38,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(colors: [_primary, _secondary]),
-                  ),
-                  child: const Icon(
-                    Icons.play_arrow,
-                    color: Colors.white,
-                    size: 22,
-                  ),
-                ),
-              ],
-            ),
-          ),
+              );
+            }),
         ],
       ),
     );
   }
 
-  // ── Mood Playlists ────────────────────────────────────────────────────────
+  //  Mood Playlists
   Widget _buildMoodPlaylists() {
     final playlists = widget.mood.playlistTitles;
     return Padding(
@@ -550,7 +687,7 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 
-  // ── Bottom Buttons ────────────────────────────────────────────────────────
+  //  Bottom Buttons
   Widget _buildBottomButtons(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -610,7 +747,7 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 
-  // ── Corner Brackets ───────────────────────────────────────────────────────
+  //  Corner Brackets
   List<Widget> _cornerBrackets(Color color) {
     const size = 20.0;
     const stroke = 2.0;

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart'; //  added
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:frontend/api_service.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -10,6 +12,9 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
+  final ApiService _apiService = ApiService();
+  late final String _currentUid;
+
   static const Color bgColor = Color(0xFF0D0C1D);
   static const Color cardBg = Color(0xFF1D1B3E);
   static const Color pinkAccent = Color(0xFFE598D0);
@@ -17,6 +22,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   static const Color chipActive = Color(0xFFAB47BC);
 
   int _selectedFilterIndex = 0;
+  late Future<List<dynamic>?> _moodHistoryFuture;
   final List<String> _filters = [
     "All",
     "Happy",
@@ -28,6 +34,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    // 2. Safely grab the actual live user ID during the initState lifecycle execution
+    _currentUid = FirebaseAuth.instance.currentUser?.uid ?? 'anonymous_user';
+    
+    // 3. Fire the request with the validated string sequence
+    _moodHistoryFuture = _apiService.getMoodHistoryFromAzure(_currentUid);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: bgColor,
@@ -35,10 +51,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white70),
-          onPressed: () => context.pop(), //  go_router pop
+          icon: const Icon(Icons.arrow_back_rounded, color: Colors.white, size: 22,),
+          onPressed: () => context.go('/home'),
         ),
-        title:  Text(
+        title: Text(
           "History",
           style: GoogleFonts.poppins(
             color: Colors.white,
@@ -54,64 +70,148 @@ class _HistoryScreenState extends State<HistoryScreen> {
           const SizedBox(height: 10),
           _buildFilterBar(),
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              children: [
-                _sectionHeader("Today", showViewAll: true),
-                _buildHistoryCard(
-                  mood: "Neutral",
-                  time: "Today, 2:45 PM",
-                  trackName: "Neon Sunsets & Lo-fi Chill",
-                  subText: "Meditation Session",
-                  moodIcon: Icons.lens_blur_rounded,
-                  iconColor: Color(0xFF78909C),
-                  trackImage: Icons.wb_twilight,
-                ),
-                _buildHistoryCard(
-                  mood: "Fear",
-                  time: "Today, 11:20 AM",
-                  trackName: "Pulse of Night Energy",
-                  subText: "Boosted Your Focus",
-                  moodIcon: Icons.sentiment_very_dissatisfied_outlined,
-                  iconColor: Color(0xFF7E57C2),
-                  trackImage: Icons.graphic_eq,
-                ),
-                _sectionHeader("Yesterday"),
-                _buildHistoryCard(
-                  mood: "Happy",
-                  time: "Yesterday, 6:12 PM",
-                  trackName: "Golden Hour Vibes",
-                  subText: "You Were Feeling Happy",
-                  moodIcon: Icons.sentiment_very_satisfied_rounded,
-                  iconColor: Color(0xFFFFB347),
-                  trackImage: Icons.wb_sunny_outlined,
-                ),
-                _sectionHeader("Earlier"),
-                _buildHistoryCard(
-                  mood: "Sad",
-                  time: "Oct 24, 9:00 AM",
-                  trackName: "Rainy Day Acoustic",
-                  subText: "Recommended Mix",
-                  moodIcon: Icons.sentiment_dissatisfied_rounded,
-                  iconColor: Color(0xFF42A5F5),
-                  trackImage: Icons.park,
-                ),
-                const SizedBox(height: 100),
-              ],
+            child: FutureBuilder<List<dynamic>?>(
+              future: _moodHistoryFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(color: Color(0xFFCE93D8)),
+                  );
+                }
+
+                if (snapshot.hasError ||
+                    snapshot.data == null ||
+                    snapshot.data!.isEmpty) {
+                  return Center(
+                    child: Text(
+                      "No scan logs recorded yet.\nTry scanning your face!",
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                        color: Colors.white.withOpacity(0.4),
+                        fontSize: 14,
+                      ),
+                    ),
+                  );
+                }
+
+                final rawList = snapshot.data!;
+                final filteredList = rawList.where((log) {
+                  if (_selectedFilterIndex == 0) return true;
+                  String selectedMoodName = _filters[_selectedFilterIndex]
+                      .toLowerCase();
+                  String currentLogMood = (log['emotion'] ?? '')
+                      .toString()
+                      .toLowerCase();
+                  return currentLogMood == selectedMoodName;
+                }).toList();
+
+                if (filteredList.isEmpty) {
+                  return Center(
+                    child: Text(
+                      "No history logs found for ${_filters[_selectedFilterIndex]}",
+                      style: GoogleFonts.poppins(
+                        color: Colors.white38,
+                        fontSize: 14,
+                      ),
+                    ),
+                  );
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
+                  itemCount: filteredList.length,
+                  itemBuilder: (context, index) {
+                  
+                  final log = filteredList[index];
+                  final String detectedMood = log['emotion'] ?? 'Neutral';
+                  final String timestamp = log['timestamp'] ?? '';
+                  final List<dynamic> tracks = log['tracks'] ?? [];
+                    
+                  final String trackName = tracks.isNotEmpty
+                        ? (tracks[0]['title'] ??
+                              tracks[0]['name'] ??
+                              'Recommended Track Mix')
+                        : 'Custom Vibe Playlist';
+
+                  final String subText = "Generated ${tracks.length} tracks";
+                  IconData moodIcon = Icons.lens_blur_rounded;
+                  Color iconColor = const Color(0xFF78909C);
+
+    
+
+                    switch (detectedMood.toLowerCase()) {
+                      case 'happy':
+                        moodIcon = Icons.sentiment_very_satisfied_rounded;
+                        iconColor = const Color(0xFFFFB347);
+                        break;
+                      case 'sad':
+                        moodIcon = Icons.sentiment_dissatisfied_rounded;
+                        iconColor = const Color(0xFF42A5F5);
+                        break;
+                      case 'fear':
+                        moodIcon = Icons.sentiment_very_dissatisfied_outlined;
+                        iconColor = const Color(0xFF7E57C2);
+                        break;
+                      case 'angry':
+                      case 'anger':
+                        moodIcon = Icons.local_fire_department_outlined;
+                        iconColor = const Color(0xFFE57373);
+                        break;
+                      case 'surprise':
+                      case 'surprised':
+                        moodIcon = Icons.flare_rounded;
+                        iconColor = const Color(0xFF4DB6AC);
+                        break;
+                    }
+
+                     return _buildHistoryCard(
+                      mood: detectedMood,
+                      time: _formatDateLabel(timestamp), 
+                      trackName: trackName,
+                      subText: subText,
+                      moodIcon: moodIcon,
+                      iconColor: iconColor,
+                      trackImage: Icons.music_note_rounded,
+                    );
+
+    
+                  },
+                );
+              },
             ),
           ),
         ],
       ),
     );
   }
-
+String _formatDateLabel(String rawTimestamp) {
+    if (rawTimestamp.isEmpty) return "Unknown Date";
+    try {
+      // Parses  backend format "YYYY-MM-DD HH:MM:SS"
+      DateTime logDate = DateTime.parse(rawTimestamp.replaceAll(' ', 'T')).toLocal();
+      DateTime now = DateTime.now();
+      
+      if (logDate.year == now.year && logDate.month == now.month && logDate.day == now.day) {
+        return "Today at ${logDate.hour.toString().padLeft(2, '0')}:${logDate.minute.toString().padLeft(2, '0')}";
+      } else if (logDate.year == now.year && logDate.month == now.month && logDate.day == now.day - 1) {
+        return "Yesterday at ${logDate.hour.toString().padLeft(2, '0')}:${logDate.minute.toString().padLeft(2, '0')}";
+      } else {
+        return "${logDate.year}-${logDate.month.toString().padLeft(2, '0')}-${logDate.day.toString().padLeft(2, '0')}";
+      }
+    } catch (e) {
+      return rawTimestamp; 
+    }
+  }
   Widget _buildFilterBar() {
     return SizedBox(
       height: 50,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.only(left: 20),
-        itemCount: _filters.length, //buttons
+        itemCount: _filters.length,
         itemBuilder: (context, index) {
           bool isSelected = _selectedFilterIndex == index;
           return GestureDetector(
@@ -132,7 +232,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     fontWeight: isSelected
                         ? FontWeight.bold
                         : FontWeight.normal,
-                        fontSize: 13,
+                    fontSize: 13,
                   ),
                 ),
               ),
@@ -219,7 +319,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   ],
                 ),
               ),
-              const Icon(Icons.more_vert, color: Colors.white38),
             ],
           ),
           const SizedBox(height: 15),
@@ -277,6 +376,4 @@ class _HistoryScreenState extends State<HistoryScreen> {
       ),
     );
   }
-
-  // ── Bottom Navigation (UPDATED) ────────────────────────────────────────────
 }

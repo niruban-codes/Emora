@@ -14,24 +14,33 @@ class MainWrapper extends StatefulWidget {
 
 class _MainWrapperState extends State<MainWrapper> {
   int _currentIndex = 0;
+  late final List<Widget> _screens;
 
-  // The 5 screens mapped to the icons
-  final List<Widget> _screens = [
-    const DashboardScreen(),        // Panel 1
-    const EmotionAnalyticsScreen(), // Panel 3 (Logs)
-    const UserEngagementScreen(),   // Panel 2 (Users)
-    const MusicAnalyticsScreen(),   // Panel 4 (Music)
-    const AdminControlScreen(),     // Panel 5 (System)
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _screens = [
+      DashboardScreen(onExitAdmin: () => Navigator.pop(context)),
+      EmotionAnalyticsScreen(
+        onBackToDashboard: () => setState(() => _currentIndex = 0),
+      ),
+      UserEngagementScreen(
+        onBackToDashboard: () => setState(() => _currentIndex = 0),
+      ),
+      MusicAnalyticsScreen(
+        onBackToDashboard: () => setState(() => _currentIndex = 0),
+      ),
+      AdminControlScreen(
+        onBackToDashboard: () => setState(() => _currentIndex = 0),
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       // This holds the state of all 5 panels
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
+      body: IndexedStack(index: _currentIndex, children: _screens),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
@@ -40,11 +49,26 @@ class _MainWrapperState extends State<MainWrapper> {
         selectedItemColor: const Color(0xFFD43FB1),
         unselectedItemColor: Colors.white54,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.grid_view_rounded), label: 'DASHBOARD'),
-          BottomNavigationBarItem(icon: Icon(Icons.history_rounded), label: 'LOGS'),
-          BottomNavigationBarItem(icon: Icon(Icons.people_alt_outlined), label: 'USERS'),
-          BottomNavigationBarItem(icon: Icon(Icons.music_note_rounded), label: 'MUSIC'),
-          BottomNavigationBarItem(icon: Icon(Icons.settings_suggest_outlined), label: 'SYSTEM'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.grid_view_rounded),
+            label: 'DASHBOARD',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.history_rounded),
+            label: 'LOGS',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.people_alt_outlined),
+            label: 'USERS',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.music_note_rounded),
+            label: 'MUSIC',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings_suggest_outlined),
+            label: 'SYSTEM',
+          ),
         ],
       ),
     );

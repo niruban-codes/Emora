@@ -1,24 +1,12 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:frontend/screens/emotion/mood_model.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // 👈 added
-import '../../../services/firestore_service.dart'; // 👈 added
-
-/// EmotionDetectionScreen
-///
-/// Presents a camera-viewfinder style UI with an "Upload Photo" fallback.
-/// Since camera & ML are backend concerns, this screen simulates the flow:
-///   1. User sees the viewfinder / upload area.
-///   2. They tap "Capture" or "Upload".
-///   3. A loading / "analysing" overlay plays.
-///   4. Navigation pushes to ResultScreen with a detected MoodModel.
-///
-/// TODO (backend integration):
-///   - Replace [_simulateDetection] with actual camera capture via
-///     `camera` package + image upload to your emotion-detection API.
-///   - Replace [_simulateDetection] result with the API response string.
-///   - Pass the real image bytes to ResultScreen if needed.
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image_picker/image_picker.dart';
+import '../../../services/firestore_service.dart';
+import '../../api_service.dart';
 
 class EmotionDetectionScreen extends StatefulWidget {
   const EmotionDetectionScreen({super.key});
@@ -29,12 +17,15 @@ class EmotionDetectionScreen extends StatefulWidget {
 
 class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
     with TickerProviderStateMixin {
-  // ── State ──────────────────────────────────────────────────────────────────
   bool _isAnalysing = false;
-  bool _imageCaptured = false; // true once user taps capture / selects image
-  String? _capturedLabel; // shown in preview after "capture"
+  bool _imageCaptured = false;
+  String? _capturedLabel;
+  File? _selectedImage;
 
-  // ── Animation controllers ──────────────────────────────────────────────────
+  final ApiService _apiService = ApiService();
+  final ImagePicker _picker = ImagePicker();
+
+  // Animation controllers
   late AnimationController _scanLineCtrl;
   late Animation<double> _scanLineAnim;
 
@@ -44,7 +35,7 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
   late AnimationController _fadeCtrl;
   late Animation<double> _fadeAnim;
 
-  // ── Scanning line colours cycle ────────────────────────────────────────────
+  //Scanning line colours cycle
   final List<Color> _scanColors = const [
     Color(0xFF8B2D8B),
     Color(0xFFA7338A),
@@ -101,56 +92,100 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
     super.dispose();
   }
 
-  // ── Simulated detection ────────────────────────────────────────────────────
-  /// Replace this method with your real camera-capture + API call.
-  Future<void> _simulateDetection() async {
-    setState(() {
-      _isAnalysing = true;
-      _imageCaptured = true;
-    });
-
-    // 1. Simulate network delay
-    await Future.delayed(const Duration(milliseconds: 2800));
-
-    // 2. Logic to pick the mood
-    final moodIndex = DateTime.now().millisecond % allMoods.length;
-    final detectedMood = allMoods[moodIndex];
-    final detectedLabel = detectedMood.label.toLowerCase();
-
-    // 3. Save to Firestore (using the label as "emotion" and a dummy insight)
+  Future<void> _processImageDetection(ImageSource source) async {
     try {
-      await FirestoreService().addEmotion(
-        detectedMood.label,
-        detectedMood.description,
+      final XFile? pickedFile = await _picker.pickImage(
+        source: source,
+        preferredCameraDevice: CameraDevice.front,
+        maxWidth: 800,
       );
-      print(
-        "✅ DB Success: Saved '${detectedMood.label}' to emotion_history",
-      ); // Log success
+
+      if (pickedFile == null) return;
+
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+        _isAnalysing = true;
+        _imageCaptured = true;
+      });
+
+      // Send photo to your Python Flask API
+      final Map<String, dynamic>? result = await _apiService.detectEmotion(
+        _selectedImage!,
+      );
+
+      if (result != null && result.containsKey('emotion')) {
+        final String cleanEmotionWord = result['emotion']
+            .toString()
+            .trim()
+            .toLowerCase();
+
+        debugPrint(
+          "🎯 ISOLATED CLEAN KEYWORD WORD FOR SWITCH: '$cleanEmotionWord'",
+        );
+
+        final uid = FirebaseAuth.instance.currentUser?.uid ?? 'anonymous_user';
+        List<dynamic> realTracks = [];
+        try {
+          //Fetch data from your Azure / YouTube music recommendation endpoint wrapper
+          final responseData = await _apiService.getMoodHistoryFromAzure(uid);
+          if (responseData != null && responseData is List) {
+            realTracks = responseData;
+          }
+        } catch (e) {
+          debugPrint("Failed fetching live recommendations: $e");
+        }
+
+        MoodModel unifiedMoodResult = MoodModel.fromString(cleanEmotionWord);
+
+        if (realTracks.isNotEmpty) {
+          final firstTrack = realTracks.first;
+
+          unifiedMoodResult = unifiedMoodResult.copyWithTracks(
+            customTitle: firstTrack['title'] ?? unifiedMoodResult.songTitle,
+            customArtist: firstTrack['artist'] ?? unifiedMoodResult.artist,
+
+            customGenre: firstTrack['genre'] ?? cleanEmotionWord.toUpperCase(),
+            tracks: realTracks,
+          );
+        }
+
+        if (!mounted) return;
+
+        setState(() {
+          _isAnalysing = false;
+          _capturedLabel = cleanEmotionWord;
+        });
+
+        await Future.delayed(const Duration(milliseconds: 500));
+        if (!mounted) return;
+
+        context.go('/result', extra: unifiedMoodResult);
+      } else {
+        throw Exception("Server returned empty data");
+      }
     } catch (e) {
-      print(
-        "❌ Database Error: $e",
-      ); // Log any errors but continue navigation regardless, since this is non-critical for the user flow.
+      print("❌ Full-Stack Connection Crash: $e");
+      setState(() {
+        _isAnalysing = false;
+        _imageCaptured = false;
+        _selectedImage = null;
+      });
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Server Error: Make sure backend server is running!'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
     }
-
-    if (!mounted) return;
-
-    setState(() {
-      _isAnalysing = false;
-      _capturedLabel = detectedLabel;
-    });
-
-    // Brief pause so user sees "captured" state, then navigate
-    await Future.delayed(const Duration(milliseconds: 400));
-    if (!mounted) return;
-
-    context.go('/result', extra: MoodModel.fromString(detectedLabel));
   }
 
-  // ── Build ──────────────────────────────────────────────────────────────────
+  //Build
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0D1135),
+      backgroundColor: const Color(0xFF0D0C1D),
       body: FadeTransition(
         opacity: _fadeAnim,
         child: SafeArea(
@@ -165,7 +200,7 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
                     children: [
                       _buildSubtitle(),
                       _buildViewfinder(),
-                      _buildStatusChips(),
+                      
                       Column(
                         children: [
                           _buildCaptureButton(),
@@ -186,7 +221,7 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
     );
   }
 
-  // ── Components ─────────────────────────────────────────────────────────────
+  //Components
 
   Widget _buildTopBar() {
     return Padding(
@@ -195,21 +230,15 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
         children: [
           GestureDetector(
             onTap: () => context.pop(),
-            child: Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.1),
-              ),
-              child: const Icon(
-                Icons.arrow_back,
+            child: const Padding(
+              padding: EdgeInsets.all(8.0),
+              child:  Icon(
+                Icons.arrow_back_rounded,
                 color: Colors.white,
-                size: 20,
+                size: 22,
               ),
             ),
           ),
-          // const Spacer(),
           Expanded(
             child: Center(
               child: Text(
@@ -261,21 +290,24 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
             borderRadius: BorderRadius.circular(24),
             child: Stack(
               children: [
-                // Background gradient
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: RadialGradient(
-                      center: Alignment.center,
-                      radius: 1.2,
-                      colors: [
-                        const Color(0xFF1E1A35),
-                        const Color(0xFF0D1135),
-                      ],
+                if (_selectedImage != null)
+                  Positioned.fill(
+                    child: Image.file(_selectedImage!, fit: BoxFit.cover),
+                  )
+                else
+                  Container(
+                    decoration: const BoxDecoration(
+                      gradient: RadialGradient(
+                        center: Alignment.center,
+                        radius: 1.2,
+                        colors: [
+                         Color(0xFF1E1A35),
+                         Color(0xFF0D0C1D)
+                        ],
+                      ),
                     ),
                   ),
-                ),
 
-                // Grid overlay (subtle)
                 CustomPaint(
                   size: const Size(double.infinity, 370),
                   painter: _GridPainter(),
@@ -426,45 +458,14 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
     );
   }
 
-  Widget _buildStatusChips() {
-    final chips = [
-      (Icons.face_retouching_natural_outlined, 'Face Detected'),
-      (Icons.lightbulb_outline, 'Lighting OK'),
-      (Icons.center_focus_strong_outlined, 'In Focus'),
-    ];
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: chips.map((chip) {
-        return Container(
-          margin: const EdgeInsets.symmetric(horizontal: 6),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.06),
-            borderRadius: BorderRadius.circular(100),
-            border: Border.all(color: Colors.white.withOpacity(0.12)),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(chip.$1, color: const Color(0xFF8B2D8B), size: 13),
-              const SizedBox(width: 5),
-              Text(
-                chip.$2,
-                style: GoogleFonts.poppins(color: Colors.white60, fontSize: 10),
-              ),
-            ],
-          ),
-        );
-      }).toList(),
-    );
-  }
-
+  
   Widget _buildCaptureButton() {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: _isAnalysing ? null : _simulateDetection,
+        onPressed: _isAnalysing
+            ? null
+            : () => _processImageDetection(ImageSource.camera),
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF8B2D8B),
           disabledBackgroundColor: const Color(0xFF8B2D8B).withOpacity(0.4),
@@ -502,7 +503,9 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
     return SizedBox(
       width: double.infinity,
       child: OutlinedButton.icon(
-        onPressed: _isAnalysing ? null : _simulateDetection,
+        onPressed: _isAnalysing
+            ? null
+            : () => _processImageDetection(ImageSource.gallery),
         style: OutlinedButton.styleFrom(
           side: BorderSide(color: Colors.white.withOpacity(0.25)),
           padding: const EdgeInsets.symmetric(vertical: 14),
@@ -526,7 +529,7 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
     );
   }
 
-  // Driven entirely by allMoods — no hardcoded labels or colours here.
+  // Driven entirely by allMoods
   Widget _buildMoodLegend() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -564,8 +567,6 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
                     ),
                   ),
                   const SizedBox(width: 4),
-                  //Text(mood.emoji, style: const TextStyle(fontSize: 10)),
-                  //const SizedBox(width: 4),
                   Text(
                     mood.label,
                     style: GoogleFonts.poppins(
@@ -584,7 +585,7 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
     );
   }
 
-  // ── Corner brackets helper ─────────────────────────────────────────────────
+  //Corner brackets helper
   List<Widget> _cornerBrackets(Color color) {
     const size = 22.0;
     const stroke = 2.0;
@@ -617,7 +618,7 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
   }
 }
 
-// ── Custom painter for subtle grid overlay ─────────────────────────────────
+//Custom painter for subtle grid overlay
 class _GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {

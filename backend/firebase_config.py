@@ -12,7 +12,7 @@ import os
 import firebase_admin
 from firebase_admin import credentials, firestore
 from dotenv import load_dotenv
- 
+
 load_dotenv()
 _KEY_PATH = os.path.join(os.path.dirname(__file__), "serviceAccountKey.json")
 
@@ -32,6 +32,4 @@ def _initialize_firebase() -> firestore.Client:
  
     return firestore.client()
 
-# Module-level Firestore client — import this in other files:
-#   from firebase_config import db
 db: firestore.Client = _initialize_firebase()

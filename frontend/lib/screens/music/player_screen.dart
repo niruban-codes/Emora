@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:frontend/models/song_model.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'dart:math';
 
 class PlayerScreen extends StatefulWidget {
   final Song currentSong;
@@ -21,97 +25,204 @@ class PlayerScreen extends StatefulWidget {
 
 class _PlayerScreenState extends State<PlayerScreen>
     with SingleTickerProviderStateMixin {
+  // late int _currentIndex;
+  // // double _sliderValue = 0;
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    return "$twoDigitMinutes:$twoDigitSeconds";
+  }
+
   late int _currentIndex;
-  double _sliderValue = 0;
+  //List<int> _playbackOrder = [];
+  Duration _currentPosition = Duration.zero;
+  Duration _totalDuration = Duration.zero;
+  bool _isUserSeeking = false;
+
   bool _isPlaying = true;
   bool _isShuffle = false;
   bool _isRepeat = false;
 
-  // Animation for album art pop-in
+  // Animation for album art pop in
   late AnimationController _animCtrl;
   late Animation<double> _scaleAnim;
 
   Song get _song => widget.playlist[_currentIndex];
 
+  final String baseUrl =
+      "https://emora-api-backend-ggccceepbsa2f4dk.eastasia-01.azurewebsites.net/favorites";
+  final String currentUid = "test_user_uid";
+
+  Future<void> _toggleFavorite() async {
+    final song = _song;
+    final isFav = song.isFavorite;
+
+    setState(() {
+      song.isFavorite = !isFav;
+    });
+
+    try {
+      if (isFav) {
+        final response = await http.delete(
+          Uri.parse('$baseUrl/$currentUid/remove'),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode({"videoId": song.id}),
+        );
+        if (response.statusCode != 200) throw Exception("Failed to remove");
+      } else {
+        final response = await http.post(
+          Uri.parse('$baseUrl/$currentUid/add'),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode({
+            "videoId": song.id,
+            "title": song.title,
+            "artist": song.artist,
+            "thumbnail": song.coverUrl,
+            "mood": song.mood,
+          }),
+        );
+        if (response.statusCode != 200) throw Exception("Failed to save");
+      }
+    } catch (e) {
+      setState(() {
+        song.isFavorite = isFav;
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error updating favorite: $e')));
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+
     _currentIndex = widget.initialIndex;
+
     _animCtrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 400),
     );
     _scaleAnim = CurvedAnimation(parent: _animCtrl, curve: Curves.easeOutBack);
     _animCtrl.forward();
+
+    _ytController = YoutubePlayerController(
+      initialVideoId: _song.id,
+      flags: const YoutubePlayerFlags(autoPlay: true, mute: false),
+    )..addListener(_onPlayerControllerUpdate);
+  }
+
+  void _onPlayerControllerUpdate() {
+    if (mounted && _ytController.value.isReady && !_isUserSeeking) {
+      setState(() {
+        _currentPosition = _ytController.value.position;
+        _totalDuration = _ytController.value.metaData.duration;
+        _isPlaying = _ytController.value.isPlaying;
+      });
+    }
   }
 
   @override
   void dispose() {
+    _ytController.removeListener(_onPlayerControllerUpdate);
     _animCtrl.dispose();
     super.dispose();
   }
 
   void _playNext() {
-    if (_currentIndex < widget.playlist.length - 1) {
+    if (_isRepeat) {
+      _ytController.seekTo(Duration.zero);
+      _ytController.play();
+      return;
+    }
+
+    if (_isShuffle && widget.playlist.length > 1) {
+      int newIndex;
+      do {
+        newIndex = Random().nextInt(widget.playlist.length);
+      } while (newIndex == _currentIndex);
+
+      setState(() {
+        _currentIndex = newIndex;
+        _currentPosition = Duration.zero;
+        _isPlaying = true;
+      });
+    } else if (_currentIndex < widget.playlist.length - 1) {
       setState(() {
         _currentIndex++;
-        _sliderValue = 0;
+        _currentPosition = Duration.zero;
+        //_isPlaying = true;
       });
-      _animCtrl.forward(from: 0);
+    } else {
+      return;
     }
+
+    _ytController.load(_song.id);
+    //_ytController.play();
+    _animCtrl.forward(from: 0);
   }
 
   void _playPrev() {
     if (_currentIndex > 0) {
       setState(() {
         _currentIndex--;
-        _sliderValue = 0;
+        _currentPosition = Duration.zero;
+        //_isPlaying = true;
       });
+      _ytController.load(_song.id);
+      _ytController.play();
       _animCtrl.forward(from: 0);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF0D0C1D),
-      body: SafeArea(
-        child: Column(
-          children: [
-            // ── Top Bar ──
-            _buildTopBar(context),
-
-            const SizedBox(height: 24),
-
-            // ── Album Art ──
-            _buildAlbumArt(),
-
-            const SizedBox(height: 32),
-
-            // ── Song Info ──
-            _buildSongInfo(),
-
-            const SizedBox(height: 28),
-
-            // ── Progress Slider ──
-            _buildProgressSlider(),
-
-            const SizedBox(height: 24),
-
-            // ── Controls ──
-            _buildControls(),
-
-            const SizedBox(height: 32),
-
-            // ── Playlist Queue Preview ──
-            _buildQueuePreview(),
-          ],
-        ),
+    return YoutubePlayerBuilder(
+      player: YoutubePlayer(
+        controller: _ytController,
+        showVideoProgressIndicator: false,
+        progressIndicatorColor: const Color(0xFFA7338A),
+        onReady: () => setState(() => _isLoading = false),
+        // onEnded: (metaData) {
+        //   Future.delayed(const Duration(milliseconds: 200), () {
+        //     if (mounted) {
+        //     _playNext();
+        //     }
+        //   });
+        // },
       ),
+      builder: (context, player) {
+        return Scaffold(
+          backgroundColor: const Color(0xFF0D0C1D),
+          body: SafeArea(
+            child: Column(
+              children: [
+                _buildTopBar(context),
+
+                const SizedBox(height: 24),
+                _buildAlbumArt(),
+
+                const SizedBox(height: 32),
+                _buildSongInfo(),
+
+                const SizedBox(height: 28),
+                _buildProgressSlider(),
+
+                const SizedBox(height: 24),
+                _buildControls(),
+
+                const SizedBox(height: 32),
+                _buildQueuePreview(),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
-  // ── Top Bar ───────────────────────────────────────────────────────────────
+  //Top Bar
   Widget _buildTopBar(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -120,17 +231,12 @@ class _PlayerScreenState extends State<PlayerScreen>
         children: [
           GestureDetector(
             onTap: () => context.pop(),
-            child: Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.1),
-              ),
-              child: const Icon(
-                Icons.keyboard_arrow_down_rounded,
+            child: const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Icon(
+                Icons.arrow_back_rounded,
                 color: Colors.white,
-                size: 24,
+                size: 22,
               ),
             ),
           ),
@@ -140,31 +246,22 @@ class _PlayerScreenState extends State<PlayerScreen>
                 'NOW PLAYING',
                 style: GoogleFonts.poppins(
                   color: Colors.white54,
-                  fontSize: 10,
+                  fontSize: 16,
                   letterSpacing: 2,
                 ),
               ),
               Text(
                 '${_currentIndex + 1} / ${widget.playlist.length}',
-                style: GoogleFonts.poppins(color: Colors.white38, fontSize: 11),
+                style: GoogleFonts.poppins(color: Colors.white38, fontSize: 13),
               ),
             ],
           ),
-          Container(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white.withOpacity(0.1),
-            ),
-            child: const Icon(Icons.more_vert, color: Colors.white, size: 20),
-          ),
+          const SizedBox(width: 38, height: 38),
         ],
       ),
     );
   }
 
-  // ── Album Art ─────────────────────────────────────────────────────────────
   Widget _buildAlbumArt() {
     return ScaleTransition(
       scale: _scaleAnim,
@@ -203,7 +300,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     );
   }
 
-  // ── Song Info ─────────────────────────────────────────────────────────────
+  //Song Info
   Widget _buildSongInfo() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 28),
@@ -236,7 +333,7 @@ class _PlayerScreenState extends State<PlayerScreen>
           ),
           // Favourite toggle
           GestureDetector(
-            onTap: () => setState(() {}),
+            onTap: _toggleFavorite,
             child: Icon(
               _song.isFavorite ? Icons.favorite : Icons.favorite_border,
               color: _song.isFavorite ? Colors.pinkAccent : Colors.white38,
@@ -248,16 +345,15 @@ class _PlayerScreenState extends State<PlayerScreen>
     );
   }
 
-  // ── Progress Slider ───────────────────────────────────────────────────────
+  //Progress Slider
   Widget _buildProgressSlider() {
-    // Convert slider 0–100 to mm:ss
-    String _fmt(double val) {
-      final total = 225; // dummy total seconds (3:45)
-      final secs = (val / 100 * total).round();
-      final m = secs ~/ 60;
-      final s = secs % 60;
-      return '$m:${s.toString().padLeft(2, '0')}';
-    }
+    final totalMs = _totalDuration.inMilliseconds.toDouble();
+    final currentMs = _currentPosition.inMilliseconds.toDouble();
+
+    double sliderValue = (totalMs > 0 && currentMs <= totalMs)
+        ? currentMs
+        : 0.0;
+    double maxSliderValue = totalMs > 0 ? totalMs : 1.0;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -273,10 +369,21 @@ class _PlayerScreenState extends State<PlayerScreen>
               overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
             ),
             child: Slider(
-              value: _sliderValue,
+              value: sliderValue,
               min: 0,
-              max: 100,
-              onChanged: (val) => setState(() => _sliderValue = val),
+              max: maxSliderValue,
+              onChangeStart: (val) {
+                _isUserSeeking = true;
+              },
+              onChanged: (val) {
+                setState(() {
+                  _currentPosition = Duration(milliseconds: val.toInt());
+                });
+              },
+              onChangeEnd: (val) {
+                _ytController.seekTo(Duration(milliseconds: val.toInt()));
+                _isUserSeeking = false;
+              },
             ),
           ),
           Padding(
@@ -285,14 +392,14 @@ class _PlayerScreenState extends State<PlayerScreen>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  _fmt(_sliderValue),
+                  _formatDuration(_currentPosition),
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.5),
                     fontSize: 12,
                   ),
                 ),
                 Text(
-                  '3:45',
+                  _formatDuration(_totalDuration),
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.5),
                     fontSize: 12,
@@ -306,14 +413,13 @@ class _PlayerScreenState extends State<PlayerScreen>
     );
   }
 
-  // ── Controls ──────────────────────────────────────────────────────────────
+  //Controls
   Widget _buildControls() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Shuffle
           GestureDetector(
             onTap: () => setState(() => _isShuffle = !_isShuffle),
             child: Icon(
@@ -384,9 +490,8 @@ class _PlayerScreenState extends State<PlayerScreen>
     );
   }
 
-  // ── Queue Preview ─────────────────────────────────────────────────────────
+  //Queue Preview
   Widget _buildQueuePreview() {
-    // Show up to 2 upcoming songs
     final upcoming = widget.playlist
         .sublist(_currentIndex + 1)
         .take(2)

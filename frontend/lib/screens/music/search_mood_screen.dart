@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:frontend/models/song_model.dart';
+import 'package:frontend/api_service.dart';
 
 class SearchMoodScreen extends StatefulWidget {
   const SearchMoodScreen({super.key});
@@ -11,8 +13,7 @@ class SearchMoodScreen extends StatefulWidget {
 
 class _SearchMoodScreenState extends State<SearchMoodScreen> {
   final TextEditingController _searchController = TextEditingController();
-
-  // Languages data — strongly typed, no map casts needed
+  bool _isSearching = false;
   final List<_LanguageItem> _languages = const [
     _LanguageItem(label: 'English', symbol: 'Aa'),
     _LanguageItem(label: 'Tamil', symbol: 'த'),
@@ -20,14 +21,12 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
     _LanguageItem(label: 'Korean', symbol: '한'),
   ];
 
-  // Browse by Vibe – featured (large) card
   final Map<String, dynamic> _featuredVibe = {
     'label': 'Party Songs',
     'subtitle': 'Binaural rhythms & synth drones',
     'gradientColors': [Color(0xFF6A0572), Color(0xFFAD1457), Color(0xFF1A0030)],
   };
 
-  // Browse by Vibe – secondary (small) cards
   final List<Map<String, dynamic>> _secondaryVibes = [
     {
       'label': 'Techno Vibes',
@@ -63,6 +62,35 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _handleSearch(String query) async {
+    if (query.trim().isEmpty) return;
+
+    FocusScope.of(context).unfocus();
+    setState(() => _isSearching = true);
+
+    final results = await ApiService().searchYouTube(query);
+
+    if (mounted) setState(() => _isSearching = false);
+
+    if (results != null && results.isNotEmpty && mounted) {
+      final List<Song> parsedSongs = results
+          .map((e) => Song.fromJson(e))
+          .toList();
+
+      context.push(
+        '/genre-playlist',
+        extra: {'genre': 'Search: "$query"', 'songs': parsedSongs},
+      );
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No songs found. Try a different search!'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    }
   }
 
   @override
@@ -108,7 +136,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
     );
   }
 
-  // ── Back Button ────────────────────────────────────────────────────────────
+  //Back Button
   Widget _buildBackButton() {
     return GestureDetector(
       onTap: () => context.go('/home'),
@@ -125,7 +153,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
     );
   }
 
-  // ── Search Bar ─────────────────────────────────────────────────────────────
+  //Search Bar
   Widget _buildSearchBar() {
     return Container(
       height: 52,
@@ -135,6 +163,8 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
       ),
       child: TextField(
         controller: _searchController,
+        textInputAction: TextInputAction.search,
+        onSubmitted: _handleSearch,
         style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
         decoration: InputDecoration(
           hintText: 'Artists, songs, or podcasts',
@@ -142,11 +172,23 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
             color: Colors.white.withOpacity(0.35),
             fontSize: 13,
           ),
-          prefixIcon: Icon(
-            Icons.search_rounded,
-            color: Colors.white.withOpacity(0.35),
-            size: 22,
-          ),
+          prefixIcon: _isSearching
+              ? const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      color: Color(0xFFCE93D8),
+                      strokeWidth: 2,
+                    ),
+                  ),
+                )
+              : Icon(
+                  Icons.search_rounded,
+                  color: Colors.white.withOpacity(0.35),
+                  size: 22,
+                ),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 16),
         ),
@@ -154,7 +196,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
     );
   }
 
-  // ── Section Header ─────────────────────────────────────────────────────────
+  //Section Header
   Widget _buildSectionHeader(
     String title,
     String actionLabel,
@@ -188,7 +230,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
     );
   }
 
-  // ── Language Row (horizontal scroll) ──────────────────────────────────────
+  //Language Row (horizontal scroll)
   Widget _buildLanguageRow() {
     return SizedBox(
       height: 100,
@@ -203,50 +245,63 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
   }
 
   Widget _buildLanguageCard(_LanguageItem lang) {
-    return Container(
-      width: 100,
-      decoration: BoxDecoration(
-        color: const Color(0xFF14122A),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white.withOpacity(0.07), width: 1),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ShaderMask(
-            shaderCallback: (bounds) => const LinearGradient(
-              colors: [Color(0xFFCE93D8), Color(0xFF9C4DCC)],
-            ).createShader(bounds),
-            child: Text(
-              lang.symbol,
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 26,
-                fontWeight: FontWeight.w700,
-                height: 1,
+    return GestureDetector(
+      onTap: () {
+        context.push(
+          '/genre-playlist',
+          extra: {'genre': lang.label, 'songs': <Song>[]},
+        );
+      },
+      child: Container(
+        width: 100,
+        decoration: BoxDecoration(
+          color: const Color(0xFF14122A),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: Colors.white.withOpacity(0.07), width: 1),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ShaderMask(
+              shaderCallback: (bounds) => const LinearGradient(
+                colors: [Color(0xFFCE93D8), Color(0xFF9C4DCC)],
+              ).createShader(bounds),
+              child: Text(
+                lang.symbol,
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 26,
+                  fontWeight: FontWeight.w700,
+                  height: 1,
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            lang.label,
-            style: GoogleFonts.poppins(
-              color: Colors.white.withOpacity(0.85),
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
+            const SizedBox(height: 10),
+            Text(
+              lang.label,
+              style: GoogleFonts.poppins(
+                color: Colors.white.withOpacity(0.85),
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  // ── Featured Vibe Card (large) ─────────────────────────────────────────────
+  //Featured Vibe Card (large)
   Widget _buildFeaturedVibeCard() {
     final colors = _featuredVibe['gradientColors'] as List<Color>;
 
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        context.push(
+          '/genre-playlist',
+          extra: {'genre': _featuredVibe['label'] as String, 'songs': <Song>[]},
+        );
+      },
       child: Container(
         width: double.infinity,
         height: 160,
@@ -260,7 +315,6 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
         ),
         child: Stack(
           children: [
-            // Abstract swirl overlay (top-right)
             Positioned(
               top: -20,
               right: -20,
@@ -271,7 +325,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
               right: 40,
               child: _buildAbstractBlob(80, 80, colors[0].withOpacity(0.4)),
             ),
-            // Fine grid texture feel
+
             Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
@@ -282,7 +336,6 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
                 ),
               ),
             ),
-            // Text bottom-left
             Positioned(
               left: 16,
               bottom: 16,
@@ -318,7 +371,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
     );
   }
 
-  // ── Secondary Vibe Row (two small cards) ───────────────────────────────────
+  //Secondary Vibe Row (two small cards)
   Widget _buildSecondaryVibeRow() {
     return Row(
       children: _secondaryVibes
@@ -340,7 +393,12 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
     final colors = vibe['gradientColors'] as List<Color>;
 
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        context.push(
+          '/genre-playlist',
+          extra: {'genre': vibe['label'] as String, 'songs': <Song>[]},
+        );
+      },
       child: Container(
         height: 130,
         decoration: BoxDecoration(
@@ -353,7 +411,6 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
         ),
         child: Stack(
           children: [
-            // Abstract circles for depth
             Positioned(
               top: -15,
               right: -15,
@@ -364,7 +421,6 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
               left: -10,
               child: _buildAbstractBlob(55, 55, colors[0].withOpacity(0.3)),
             ),
-            // Gradient scrim
             Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
@@ -375,7 +431,6 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
                 ),
               ),
             ),
-            // Label
             Positioned(
               left: 12,
               bottom: 12,
@@ -402,7 +457,6 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
     );
   }
 
-  // Helper: soft decorative blob
   Widget _buildAbstractBlob(double w, double h, Color color) {
     return Container(
       width: w,
@@ -411,7 +465,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
     );
   }
 
-  // ── Genre Chips ────────────────────────────────────────────────────────────
+  //Genre Chips
   Widget _buildGenreChips() {
     return Wrap(
       spacing: 10,
@@ -422,7 +476,12 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
 
   Widget _buildGenreChip(String genre) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        context.push(
+          '/genre-playlist',
+          extra: {'genre': genre, 'songs': <Song>[]},
+        );
+      },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
@@ -443,7 +502,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
   }
 }
 
-// ── Language Item Model ────────────────────────────────────────────────────────
+//Language Item Model
 class _LanguageItem {
   final String label;
   final String symbol;

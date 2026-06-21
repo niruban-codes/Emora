@@ -16,6 +16,7 @@ class MoodModel {
   final String genre;
   final String description;
 
+
   const MoodModel({
     required this.type,
     required this.label,
@@ -25,6 +26,24 @@ class MoodModel {
     required this.genre,
     required this.description,
   });
+
+ //  Add a copyWith helper method to let us safely inject custom data later
+  MoodModel copyWithTracks({
+    String? customTitle,
+    String? customArtist,
+    String? customGenre,
+    List<dynamic>? tracks,
+  }) {
+    return MoodModel(
+      type: type,
+      label: label,
+      emoji: emoji,
+      songTitle: customTitle ?? songTitle,
+      artist: customArtist ?? artist,
+      genre: customGenre ?? genre,
+      description: description,
+    );
+  }
 
   // Converts the MoodModel into a Map for Firestore storage.
   Map<String, dynamic> toMap() {
@@ -40,15 +59,12 @@ class MoodModel {
   }
 
   // Colours 
-  // Computed from type so callers never need to pass colours manually.
-  // Previously mood_data.dart hardcoded Color(0xFF8B2D8B) for every mood —
-  // that's now replaced with distinct per-mood palettes.
-
+  // Previously mood_data.dart hardcoded Color(0xFF8B2D8B) for every mood 
   /// Primary accent — drives buttons, borders, play button, badge bg.
   Color get primaryColor {
     switch (type) {
       case MoodType.happy:
-        return const Color(0xFFAB47BC); // warm amber
+        return const Color(0xFFE5A93C); // warm amber
       case MoodType.sad:
         return const Color(0xFF42A5F5); // cool blue
       case MoodType.neutral:
@@ -58,7 +74,7 @@ class MoodModel {
       case MoodType.angry:
         return const Color(0xFFEF5350); // tense red
       case MoodType.surprise:
-        return const Color(0xFFAB47BC); // muted violet
+        return const Color(0xFF4CB0A6); // GREEN
     }
   }
 
@@ -66,7 +82,7 @@ class MoodModel {
   Color get secondaryColor {
     switch (type) {
       case MoodType.happy:
-        return const Color(0xFFFFF176); // yellow
+        return const Color(0xFFF57F17); // yellow
       case MoodType.sad:
         return const Color(0xFF7E57C2); // purple-blue
       case MoodType.neutral:
@@ -74,9 +90,9 @@ class MoodModel {
       case MoodType.fear:
         return const Color(0xFF4A148C); // yellow-green
       case MoodType.angry:
-        return const Color(0xFFFF7043); // deep orange
+        return const Color(0xFF4A1514); // deep orange
       case MoodType.surprise:
-        return const Color(0xFF00BCD4); // lavender
+        return const Color(0xFF1B5E20); // green
     }
   }
 
@@ -94,7 +110,7 @@ class MoodModel {
       case MoodType.angry:
         return const Color(0xFFFF8A80);
       case MoodType.surprise:
-        return const Color(0xFFE040FB);
+        return const Color(0xB3A7FFEB);
     }
   }
 
@@ -120,7 +136,8 @@ class MoodModel {
   // Called with the raw string returned by your emotion-detection API.
   // e.g.  MoodModel.fromString('happy')  or  MoodModel.fromString('ENERGETIC')
   factory MoodModel.fromString(String raw) {
-    switch (raw.trim().toLowerCase()) {
+    final String key = raw.trim().toLowerCase().replaceAll('surprised', 'surprise');
+    switch (key) {
       case 'happy':
         return const MoodModel(
           type: MoodType.happy,
@@ -141,17 +158,17 @@ class MoodModel {
           genre: 'Soul',
           description: 'Feeling low. These songs understand.',
         );
-      case 'peaceful':
+      case 'neutral':
         return const MoodModel(
           type: MoodType.neutral,
-          label: 'PEACEFUL',
+          label: 'NEUTRAL',
           emoji: '☁️',
           songTitle: 'Weightless',
           artist: 'Marconi Union',
           genre: 'Ambient',
           description: 'Calm and centred. Lean into the tranquility.',
         );
-      case 'energetic':
+      case 'fear':
         return const MoodModel(
           type: MoodType.fear,
           label: 'FEAR',
@@ -161,7 +178,7 @@ class MoodModel {
           genre: 'Electronic',
           description: "You're buzzing. Time to turn it up.",
         );
-      case 'anxious':
+      case 'angry':
         return const MoodModel(
           type: MoodType.angry,
           label: 'ANGRY',
@@ -182,9 +199,9 @@ class MoodModel {
           genre: 'Indie Folk',
           description: 'A bittersweet haze surrounds you. Embrace it.',
         );
+      }  
     }
   }
-}
 
 
 // Use [allMoods] anywhere you need to iterate over every mood:

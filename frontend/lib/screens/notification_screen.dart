@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:frontend/services/firestore_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NotificationScreen extends StatelessWidget {
   const NotificationScreen({super.key});
@@ -7,7 +9,7 @@ class NotificationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0D0C1D), // Dark purple background
+      backgroundColor: const Color(0xFF0D0C1D),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -15,44 +17,75 @@ class NotificationScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text("Notifications", style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
+        title: Text(
+          "Notifications",
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: const [
-          NotificationTile(
-            title: "Mood Sync Successful!",
-            subtitle: "Your morning mood scan was successful! Check your new Peaceful playlist.",
-            time: "2m ago",
-            icon: Icons.auto_awesome,
-            isNew: true,
-          ),
-          NotificationTile(
-            title: "Playlist Update",
-            subtitle: "3 new tracks added to your 'Energetic Afternoon' collection.",
-            time: "1h ago",
-            icon: Icons.queue_music,
-            isNew: true,
-          ),
-          NotificationTile(
-            title: "System Alert",
-            subtitle: "Weekly mood analytics report is now ready for review.",
-            time: "5h ago",
-            icon: Icons.analytics_outlined,
-          ),
-          NotificationTile(
-            title: "AI Model Update",
-            subtitle: "We've enhanced your facial expression detection for better mood accuracy.",
-            time: "Yesterday",
-            icon: Icons.settings_suggest_outlined,
-          ),
-          NotificationTile(
-            title: "Security Check",
-            subtitle: "Your account data is safely encrypted and backed up to the cloud.",
-            time: "2 days ago",
-            icon: Icons.verified_user_outlined,
-          ),
-        ],
+      body: StreamBuilder<List<Map<String, dynamic>>>(
+        stream: FirestoreService().getNotificationsStream(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            print("🚨 FIREBASE ERROR: ${snapshot.error}");
+            return Center(
+              child: Text(
+                "Error: ${snapshot.error}",
+                style: const TextStyle(color: Colors.redAccent),
+              ),
+            );
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(color: Colors.purpleAccent),
+            );
+          }
+
+          final notifications = snapshot.data ?? [];
+
+          if (notifications.isEmpty) {
+            return Center(
+              child: Text(
+                "No new notifications",
+                style: GoogleFonts.poppins(color: Colors.white54, fontSize: 16),
+              ),
+            );
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: notifications.length,
+            itemBuilder: (context, index) {
+              final note = notifications[index];
+
+              final timestamp = note['timestamp'] as Timestamp?;
+              final timeString = timestamp != null
+                  ? _formatTimeAgo(timestamp.toDate())
+                  : "Just now";
+
+              final bool isNew = note['isNew'] ?? false;
+              final String docId = note['id'] ?? '';
+
+              return GestureDetector(
+                onTap: () {
+                  if (isNew && docId.isNotEmpty) {
+                    FirestoreService().markNotificationAsRead(docId);
+                  }
+                },
+                child: NotificationTile(
+                  title: note['title'] ?? 'Notification',
+                  subtitle: note['subtitle'] ?? '',
+                  time: timeString,
+                  icon: _getIcon(note['iconType']),
+                  isNew: isNew,
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }
@@ -80,7 +113,9 @@ class NotificationTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.05),
         borderRadius: BorderRadius.circular(24),
-        border: isNew ? Border.all(color: Colors.purpleAccent.withOpacity(0.5), width: 1) : null,
+        border: isNew
+            ? Border.all(color: Colors.purpleAccent.withOpacity(0.5), width: 1)
+            : null,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -101,20 +136,43 @@ class NotificationTile extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(title, style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16)),
+                    Text(
+                      title,
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 16,
+                      ),
+                    ),
                     Row(
                       children: [
-                        Text(time, style: GoogleFonts.poppins(color: Colors.white.withOpacity(0.5), fontSize: 14)),
+                        Text(
+                          time,
+                          style: GoogleFonts.poppins(
+                            color: Colors.white.withOpacity(0.5),
+                            fontSize: 14,
+                          ),
+                        ),
                         if (isNew) ...[
                           const SizedBox(width: 4),
-                          const CircleAvatar(radius: 4, backgroundColor: Colors.purpleAccent),
-                        ]
+                          const CircleAvatar(
+                            radius: 4,
+                            backgroundColor: Colors.purpleAccent,
+                          ),
+                        ],
                       ],
                     ),
                   ],
                 ),
                 const SizedBox(height: 8),
-                Text(subtitle, style: GoogleFonts.poppins(color: Colors.white.withOpacity(0.7), fontSize: 13, height: 1.4)),
+                Text(
+                  subtitle,
+                  style: GoogleFonts.poppins(
+                    color: Colors.white.withOpacity(0.7),
+                    fontSize: 13,
+                    height: 1.4,
+                  ),
+                ),
               ],
             ),
           ),
@@ -122,4 +180,30 @@ class NotificationTile extends StatelessWidget {
       ),
     );
   }
+}
+
+IconData _getIcon(String? type) {
+  switch (type) {
+    case 'music':
+      return Icons.queue_music;
+    case 'alert':
+      return Icons.error_outline;
+    case 'analytics':
+      return Icons.analytics_outlined;
+    case 'system':
+      return Icons.settings_suggest_outlined;
+    case 'success':
+      return Icons.auto_awesome;
+    default:
+      return Icons.notifications_active_outlined;
+  }
+}
+
+String _formatTimeAgo(DateTime date) {
+  final difference = DateTime.now().difference(date);
+  if (difference.inMinutes < 1) return 'Just now';
+  if (difference.inMinutes < 60) return '${difference.inMinutes}m ago';
+  if (difference.inHours < 24) return '${difference.inHours}h ago';
+  if (difference.inDays == 1) return 'Yesterday';
+  return '${difference.inDays} days ago';
 }

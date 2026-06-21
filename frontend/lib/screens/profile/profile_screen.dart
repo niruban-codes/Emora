@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // 👈 added
-import '../../../services/firestore_service.dart'; // 👈 added
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import '../../../services/firestore_service.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ProfileSettingsScreen extends StatefulWidget {
   const ProfileSettingsScreen({super.key});
@@ -13,22 +15,28 @@ class ProfileSettingsScreen extends StatefulWidget {
   static const Color logoutRedBg = Color(0xFF3B1E2B);
   static const Color logoutTextRed = Color(0xFFEF5350);
   static const Color activeHighlight = Color(0xFFA7338A);
+  static const Color dashboardButtonColor = Color(0xFF9C27B0);
+  static const Color dashboardGradientEnd = Color(0xFF673AB7);
 
   @override
   State<ProfileSettingsScreen> createState() => _ProfileSettingsScreenState();
 }
 
-//  Added the State class
 class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   String userName = "Loading...";
   String userEmail = "";
-  // Define your hardcoded admin emails
-  final List<String> _adminEmails = [
-    'niru2324@gmail.com', // Replace with your actual admin email
-    'admin@emora.com',
-  ];
+  String? profilePicUrl;
 
-  // Check if the current logged-in user is an admin
+  // hardcoded admin emails
+  final List<String> _adminEmails = [
+    'niru2324@gmail.com',
+    'sparkswills40@gmail.com',
+    'admin@emora.com',
+    'geethmapiyaratne285@gmail.com',
+    'nirubannallirajah@gmail.com',
+    'hafsanafli2003@gmail.com',
+    'dinithia962@gmail.com',
+  ];
   bool get _isAdmin {
     final user = FirebaseAuth.instance.currentUser;
     return user != null &&
@@ -50,6 +58,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         setState(() {
           userName = data['name'] ?? "No Name";
           userEmail = data['email'] ?? user.email ?? "";
+          profilePicUrl = data['profilePicUrl'];
         });
       }
     }
@@ -63,24 +72,28 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => context.pop(),
+          icon: const Icon(
+            Icons.arrow_back_rounded,
+            color: Colors.white,
+            size: 22,
+          ),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/home');
+            }
+          },
         ),
-        title: const Text(
-          'Settings',
-          style: TextStyle(
+        title: Text(
+          'Profile Settings',
+          style: GoogleFonts.poppins(
             fontWeight: FontWeight.bold,
-            fontSize: 18,
+            fontSize: 20,
             color: Colors.white,
           ),
         ),
         centerTitle: true,
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: Icon(Icons.more_vert, color: Colors.white),
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -100,24 +113,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
             ),
 
             const SizedBox(height: 25),
-            _buildSectionLabel('MUSIC INTEGRATION'),
-            _buildIntegrationCard(
-              'Spotify',
-              'Connected as @sarahj_music',
-              'Disconnect',
-              Icons.grid_view_rounded,
-              true,
-            ),
-            const SizedBox(height: 12),
-            _buildIntegrationCard(
-              'Connect YouTube Music',
-              '',
-              '+',
-              Icons.play_circle_fill,
-              false,
-            ),
-
-            const SizedBox(height: 25),
             _buildSectionLabel('APP PREFERENCES'),
             _buildSwitchTile(
               Icons.notifications_none,
@@ -129,7 +124,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
             if (_isAdmin) _buildAdminCard(context),
 
             const SizedBox(height: 30),
-            _buildLogoutButton(context), // 👈 now signs out from Firebase
+            _buildLogoutButton(context),
 
             const SizedBox(height: 40),
           ],
@@ -153,32 +148,64 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                   width: 3,
                 ),
               ),
-              child: const CircleAvatar(
-                radius: 55,
-                backgroundImage: NetworkImage(
-                  'https://i.imgur.com/8Km9t9S.png',
-                ),
-              ),
-            ),
-            const CircleAvatar(
-              radius: 16,
-              backgroundColor: ProfileSettingsScreen.accentPurple,
-              child: Icon(Icons.edit, size: 16, color: Colors.white),
+              child: profilePicUrl != null && profilePicUrl!.isNotEmpty
+                  ? (profilePicUrl!.startsWith('assets/')
+                        ? CircleAvatar(
+                            radius: 55,
+                            backgroundColor: ProfileSettingsScreen.cardColor,
+                            backgroundImage: AssetImage(profilePicUrl!),
+                            onBackgroundImageError: (_, __) {
+                              debugPrint(
+                                "Failed to load local asset avatar path.",
+                              );
+                            },
+                          )
+                        : CircleAvatar(
+                            radius: 55,
+                            backgroundColor: ProfileSettingsScreen.cardColor,
+                            child: CachedNetworkImage(
+                              imageUrl: profilePicUrl!,
+                              imageBuilder: (context, imageProvider) =>
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      image: DecorationImage(
+                                        image: imageProvider,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                              placeholder: (context, url) =>
+                                  const CircularProgressIndicator(
+                                    color: ProfileSettingsScreen.accentPurple,
+                                  ),
+                              errorWidget: (context, url, error) => const Icon(
+                                Icons.person,
+                                size: 50,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ))
+                  : const CircleAvatar(
+                      radius: 55,
+                      backgroundColor: ProfileSettingsScreen.cardColor,
+                      backgroundImage: AssetImage('assets/avatars/Girl 07.png'),
+                    ),
             ),
           ],
         ),
         const SizedBox(height: 15),
         Text(
-          userName, // 👈 Uses the variable from Firestore
-          style: const TextStyle(
-            fontSize: 22,
+          userName,
+          style: GoogleFonts.poppins(
+            fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
         ),
         Text(
-          userEmail, // 👈 Uses the variable from Firestore
-          style: const TextStyle(
+          userEmail,
+          style: GoogleFonts.poppins(
             color: ProfileSettingsScreen.textSecondary,
             fontSize: 14,
           ),
@@ -191,14 +218,14 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     return Align(
       alignment: Alignment.centerLeft,
       child: Padding(
-        padding: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.only(bottom: 12, top: 12),
         child: Text(
           label,
-          style: const TextStyle(
-            color: ProfileSettingsScreen.textSecondary,
-            fontSize: 11,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1.1,
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontSize: 13,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1.3,
           ),
         ),
       ),
@@ -211,19 +238,20 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       leading: _iconBox(icon),
       title: Text(
         title,
-        style: const TextStyle(color: Colors.white, fontSize: 15),
+        style: GoogleFonts.poppins(
+          color: Colors.white,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          letterSpacing: 0.5,
+        ),
       ),
       trailing: const Icon(
         Icons.chevron_right,
         color: ProfileSettingsScreen.textSecondary,
       ),
       onTap: () async {
-        // 👈 Added async
         if (title == 'Edit Profile') {
-          // 1. Wait for the user to return from Account Settings
           await context.push('/account-settings');
-
-          // 2. Refresh data from Firestore automatically
           _fetchUserData();
         } else if (title == 'Insights') {
           context.push('/insights');
@@ -244,7 +272,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: ProfileSettingsScreen.cardColor, // 👈 1. Added Prefix
+        color: ProfileSettingsScreen.cardColor,
         borderRadius: BorderRadius.circular(15),
         border: connected ? null : Border.all(color: Colors.white10, width: 1),
       ),
@@ -266,8 +294,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                 if (sub.isNotEmpty)
                   Text(
                     sub,
-                    // 👈 2. Added Prefix & removed 'const'
-                    style: const TextStyle(
+                    style: GoogleFonts.poppins(
                       color: ProfileSettingsScreen.textSecondary,
                       fontSize: 12,
                     ),
@@ -277,8 +304,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
           ),
           Text(
             action,
-            // 👈 3. Added Prefix & removed 'const'
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               color: connected
                   ? ProfileSettingsScreen.textSecondary
                   : Colors.white,
@@ -296,7 +322,12 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       leading: _iconBox(icon),
       title: Text(
         title,
-        style: const TextStyle(color: Colors.white, fontSize: 15),
+        style: GoogleFonts.poppins(
+          color: Colors.white,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          letterSpacing: 0.5,
+        ),
       ),
       trailing: Switch(
         value: value,
@@ -306,7 +337,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     );
   }
 
-  // ── Admin Dashboard Card ──────────────────────────────────────────────────
+  // Admin Dashboard Card
   Widget _buildAdminCard(BuildContext context) {
     return GestureDetector(
       onTap: () => context.push('/admin-dashboard'),
@@ -317,14 +348,14 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
           borderRadius: BorderRadius.circular(25),
           gradient: const LinearGradient(
             colors: [
-              Color(0xFFE53935),
-              Color(0xFFB71C1C),
-            ], // Admin Red Gradient
+              ProfileSettingsScreen.dashboardButtonColor,
+              ProfileSettingsScreen.dashboardGradientEnd,
+            ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
         ),
-        child: const Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Column(
@@ -332,16 +363,19 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
               children: [
                 Text(
                   'Admin Dashboard',
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 SizedBox(height: 4),
                 Text(
                   'Manage users, music, and platform analytics.',
-                  style: TextStyle(color: Colors.white70, fontSize: 12),
+                  style: GoogleFonts.poppins(
+                    color: Colors.white70,
+                    fontSize: 11,
+                  ),
                 ),
               ],
             ),
@@ -352,7 +386,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     );
   }
 
-  // ── Logout Button with Firebase Sign Out ──────────────────────────────────
+  //  Logout Button with Firebase Sign Out
   Widget _buildLogoutButton(BuildContext context) {
     return Container(
       width: double.infinity,
@@ -363,7 +397,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       ),
       child: TextButton.icon(
         onPressed: () async {
-          // 1. Show confirmation dialog
           final confirm = await showDialog<bool>(
             context: context,
             builder: (context) => AlertDialog(
@@ -376,6 +409,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
+                  fontSize: 16,
                 ),
               ),
               content: const Text(
@@ -404,10 +438,8 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
             ),
           );
 
-          // 2. If confirmed sign out from Firebase and navigate to login
           if (confirm == true) {
-            await FirebaseAuth.instance
-                .signOut(); // 👈 actual Firebase sign out
+            await FirebaseAuth.instance.signOut();
             if (context.mounted) context.go('/login');
           }
         },
@@ -418,7 +450,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         ),
         label: Text(
           'Log Out',
-          style: TextStyle(
+          style: GoogleFonts.poppins(
             color: ProfileSettingsScreen.logoutTextRed,
             fontWeight: FontWeight.bold,
             fontSize: 16,
