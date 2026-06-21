@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'dart:math';
 
 class PlayerScreen extends StatefulWidget {
   final Song currentSong;
@@ -24,8 +25,21 @@ class PlayerScreen extends StatefulWidget {
 
 class _PlayerScreenState extends State<PlayerScreen>
     with SingleTickerProviderStateMixin {
+  // late int _currentIndex;
+  // // double _sliderValue = 0;
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    return "$twoDigitMinutes:$twoDigitSeconds";
+  }
+  
   late int _currentIndex;
-  double _sliderValue = 0;
+  //List<int> _playbackOrder = [];
+  Duration _currentPosition = Duration.zero;
+  Duration _totalDuration = Duration.zero;
+  bool _isUserSeeking = false;
+
   bool _isPlaying = true;
   bool _isShuffle = false;
   bool _isRepeat = false;
@@ -86,44 +100,82 @@ class _PlayerScreenState extends State<PlayerScreen>
   @override
   void initState() {
     super.initState();
+    
     _currentIndex = widget.initialIndex;
+
     _animCtrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 400),
     );
     _scaleAnim = CurvedAnimation(parent: _animCtrl, curve: Curves.easeOutBack);
     _animCtrl.forward();
+
     _ytController = YoutubePlayerController(
       initialVideoId: _song.id,
       flags: const YoutubePlayerFlags(autoPlay: true, mute: false),
-    );
+    )..addListener(_onPlayerControllerUpdate);
   }
+
+void _onPlayerControllerUpdate() {
+  if (mounted && _ytController.value.isReady && !_isUserSeeking) {
+    setState(() {
+      _currentPosition = _ytController.value.position;
+      _totalDuration = _ytController.value.metaData.duration;
+      _isPlaying = _ytController.value.isPlaying;
+    });
+  }
+}
 
   @override
   void dispose() {
+    _ytController.removeListener(_onPlayerControllerUpdate);
     _animCtrl.dispose();
     _ytController.dispose();
     super.dispose();
   }
 
   void _playNext() {
-    if (_currentIndex < widget.playlist.length - 1) {
+    if (_isRepeat) {
+      _ytController.seekTo(Duration.zero);
+      _ytController.play();
+      return;
+    }
+
+    if (_isShuffle && widget.playlist.length > 1) {
+      int newIndex;
+      do {
+        newIndex = Random().nextInt(widget.playlist.length);
+      } while (newIndex == _currentIndex);
+      
+      setState(() {
+        _currentIndex = newIndex;
+        _currentPosition = Duration.zero;
+        _isPlaying = true;
+      });
+    } else if (_currentIndex < widget.playlist.length - 1) {
       setState(() {
         _currentIndex++;
-        _sliderValue = 0;
+        _currentPosition = Duration.zero;
+        //_isPlaying = true;
       });
-      _ytController.load(_song.id);
-      _animCtrl.forward(from: 0);
+    } else {
+      return;
     }
+
+    _ytController.load(_song.id);
+    //_ytController.play();
+    _animCtrl.forward(from: 0);
   }
 
   void _playPrev() {
     if (_currentIndex > 0) {
       setState(() {
         _currentIndex--;
-        _sliderValue = 0;
+        _currentPosition = Duration.zero;
+        //_isPlaying = true;
       });
       _ytController.load(_song.id);
+      _ytController.play();
       _animCtrl.forward(from: 0);
     }
   }
@@ -133,9 +185,16 @@ class _PlayerScreenState extends State<PlayerScreen>
     return YoutubePlayerBuilder(
       player: YoutubePlayer(
         controller: _ytController,
-        showVideoProgressIndicator: true,
+        showVideoProgressIndicator: false,
         progressIndicatorColor: const Color(0xFFA7338A),
         onReady: () => setState(() => _isLoading = false),
+        // onEnded: (metaData) {
+        //   Future.delayed(const Duration(milliseconds: 200), () {
+        //     if (mounted) {
+        //     _playNext();
+        //     } 
+        //   });
+        // },
       ),
       builder: (context, player) {
         return Scaffold(
@@ -272,14 +331,12 @@ class _PlayerScreenState extends State<PlayerScreen>
 
   //Progress Slider
   Widget _buildProgressSlider() {
-    String fmt(double val) {
-      final total = 225;
-      final secs = (val / 100 * total).round();
-      final m = secs ~/ 60;
-      final s = secs % 60;
-      return '$m:${s.toString().padLeft(2, '0')}';
-    }
+    final totalMs = _totalDuration.inMilliseconds.toDouble();
+    final currentMs = _currentPosition.inMilliseconds.toDouble();
 
+    double sliderValue = (totalMs > 0 && currentMs <= totalMs) ? currentMs : 0.0;
+    double maxSliderValue = totalMs > 0 ? totalMs : 1.0;
+    
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -294,10 +351,21 @@ class _PlayerScreenState extends State<PlayerScreen>
               overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
             ),
             child: Slider(
-              value: _sliderValue,
+              value: sliderValue,
               min: 0,
-              max: 100,
-              onChanged: (val) => setState(() => _sliderValue = val),
+              max: maxSliderValue,
+              onChangeStart: (val) {
+                _isUserSeeking = true;
+              },
+              onChanged: (val) {
+                setState(() {
+                  _currentPosition = Duration(milliseconds: val.toInt());
+                });
+              },
+              onChangeEnd: (val) {
+                _ytController.seekTo(Duration(milliseconds: val.toInt()));
+                _isUserSeeking = false;
+              },
             ),
           ),
           Padding(
@@ -306,18 +374,12 @@ class _PlayerScreenState extends State<PlayerScreen>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  fmt(_sliderValue),
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.5),
-                    fontSize: 12,
-                  ),
+                  _formatDuration(_currentPosition),
+                  style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
                 ),
                 Text(
-                  '3:45',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.5),
-                    fontSize: 12,
-                  ),
+                  _formatDuration(_totalDuration),
+                  style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
                 ),
               ],
             ),
