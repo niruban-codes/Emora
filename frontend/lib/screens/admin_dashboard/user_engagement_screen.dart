@@ -8,7 +8,7 @@ class UserEngagementScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0D0C1D),
+      backgroundColor: const Color(0xFF131429),
       appBar: AppBar(
         backgroundColor: const Color(0xFF0D0C1D),
         elevation: 0,
@@ -26,7 +26,7 @@ class UserEngagementScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             if (onBackToDashboard != null) {
-              onBackToDashboard!(); 
+              onBackToDashboard!();
             } else {
               Navigator.pop(context);
             }
@@ -38,25 +38,45 @@ class UserEngagementScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. ALL 4 QUICK STAT CARDS 
+            // 1. ALL 4 QUICK STAT CARDS
             const Text(
               "Overview",
               style: TextStyle(fontSize: 16, color: Colors.white70),
             ),
             const SizedBox(height: 12),
-          
+
             GridView.count(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               crossAxisCount: 2,
               mainAxisSpacing: 12,
               crossAxisSpacing: 12,
-              childAspectRatio: 1.6, 
+              childAspectRatio: 1.6,
               children: [
-                _buildStatCard("Active Users", "5,320", "Online now", const Color(0xFF6C5CE7)),
-                _buildStatCard("New Users", "780", "+15% this week", const Color(0xFFD43FB1)),
-                _buildStatCard("Returning Users", "4,200", "82% retention", Colors.blueAccent),
-                _buildStatCard("Avg. Session", "18m 43s", "-2m from yesterday", Colors.orangeAccent),
+                _buildStatCard(
+                  "Active Users",
+                  "5,320",
+                  "Online now",
+                  const Color(0xFF6C5CE7),
+                ),
+                _buildStatCard(
+                  "New Users",
+                  "780",
+                  "+15% this week",
+                  const Color(0xFFD43FB1),
+                ),
+                _buildStatCard(
+                  "Returning Users",
+                  "4,200",
+                  "82% retention",
+                  Colors.blueAccent,
+                ),
+                _buildStatCard(
+                  "Avg. Session",
+                  "18m 43s",
+                  "-2m from yesterday",
+                  Colors.orangeAccent,
+                ),
               ],
             ),
             const SizedBox(height: 25),
@@ -146,7 +166,6 @@ class UserEngagementScreen extends StatelessWidget {
       ),
     );
   }
-
 
   Widget _buildDALineChart() {
     return LineChart(

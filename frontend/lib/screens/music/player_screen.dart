@@ -33,7 +33,7 @@ class _PlayerScreenState extends State<PlayerScreen>
     String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
     return "$twoDigitMinutes:$twoDigitSeconds";
   }
-  
+
   late int _currentIndex;
   //List<int> _playbackOrder = [];
   Duration _currentPosition = Duration.zero;
@@ -48,13 +48,10 @@ class _PlayerScreenState extends State<PlayerScreen>
   late AnimationController _animCtrl;
   late Animation<double> _scaleAnim;
 
-  late YoutubePlayerController _ytController;
-  bool _isLoading = true;
-  bool _hasError = false;
-  final Set<String> _favorites = {};
   Song get _song => widget.playlist[_currentIndex];
 
-  final String baseUrl = "https://emora-api-backend-ggccceepbsa2f4dk.eastasia-01.azurewebsites.net/favorites";
+  final String baseUrl =
+      "https://emora-api-backend-ggccceepbsa2f4dk.eastasia-01.azurewebsites.net/favorites";
   final String currentUid = "test_user_uid";
 
   Future<void> _toggleFavorite() async {
@@ -82,7 +79,7 @@ class _PlayerScreenState extends State<PlayerScreen>
             "title": song.title,
             "artist": song.artist,
             "thumbnail": song.coverUrl,
-            "mood": song.mood, 
+            "mood": song.mood,
           }),
         );
         if (response.statusCode != 200) throw Exception("Failed to save");
@@ -91,16 +88,16 @@ class _PlayerScreenState extends State<PlayerScreen>
       setState(() {
         song.isFavorite = isFav;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error updating favorite: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error updating favorite: $e')));
     }
   }
 
   @override
   void initState() {
     super.initState();
-    
+
     _currentIndex = widget.initialIndex;
 
     _animCtrl = AnimationController(
@@ -116,21 +113,20 @@ class _PlayerScreenState extends State<PlayerScreen>
     )..addListener(_onPlayerControllerUpdate);
   }
 
-void _onPlayerControllerUpdate() {
-  if (mounted && _ytController.value.isReady && !_isUserSeeking) {
-    setState(() {
-      _currentPosition = _ytController.value.position;
-      _totalDuration = _ytController.value.metaData.duration;
-      _isPlaying = _ytController.value.isPlaying;
-    });
+  void _onPlayerControllerUpdate() {
+    if (mounted && _ytController.value.isReady && !_isUserSeeking) {
+      setState(() {
+        _currentPosition = _ytController.value.position;
+        _totalDuration = _ytController.value.metaData.duration;
+        _isPlaying = _ytController.value.isPlaying;
+      });
+    }
   }
-}
 
   @override
   void dispose() {
     _ytController.removeListener(_onPlayerControllerUpdate);
     _animCtrl.dispose();
-    _ytController.dispose();
     super.dispose();
   }
 
@@ -146,7 +142,7 @@ void _onPlayerControllerUpdate() {
       do {
         newIndex = Random().nextInt(widget.playlist.length);
       } while (newIndex == _currentIndex);
-      
+
       setState(() {
         _currentIndex = newIndex;
         _currentPosition = Duration.zero;
@@ -192,7 +188,7 @@ void _onPlayerControllerUpdate() {
         //   Future.delayed(const Duration(milliseconds: 200), () {
         //     if (mounted) {
         //     _playNext();
-        //     } 
+        //     }
         //   });
         // },
       ),
@@ -260,25 +256,45 @@ void _onPlayerControllerUpdate() {
               ),
             ],
           ),
-          const SizedBox(
-            width: 38,
-            height: 38,
-          )
+          const SizedBox(width: 38, height: 38),
         ],
       ),
     );
   }
 
   Widget _buildAlbumArt() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: YoutubePlayer(
-          controller: _ytController,
-          showVideoProgressIndicator: true,
-          progressIndicatorColor: const Color(0xFFA7338A),
-          onReady: () => setState(() => _isLoading = false),
+    return ScaleTransition(
+      scale: _scaleAnim,
+      child: Hero(
+        tag: 'album_art_${_song.id}',
+        child: Container(
+          height: 280,
+          width: 280,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.5),
+                blurRadius: 30,
+                offset: const Offset(0, 16),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: Image.network(
+              _song.coverUrl,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
+                color: const Color(0xFF1E1E3A),
+                child: const Icon(
+                  Icons.music_note,
+                  color: Colors.white24,
+                  size: 80,
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -334,9 +350,11 @@ void _onPlayerControllerUpdate() {
     final totalMs = _totalDuration.inMilliseconds.toDouble();
     final currentMs = _currentPosition.inMilliseconds.toDouble();
 
-    double sliderValue = (totalMs > 0 && currentMs <= totalMs) ? currentMs : 0.0;
+    double sliderValue = (totalMs > 0 && currentMs <= totalMs)
+        ? currentMs
+        : 0.0;
     double maxSliderValue = totalMs > 0 ? totalMs : 1.0;
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -375,11 +393,17 @@ void _onPlayerControllerUpdate() {
               children: [
                 Text(
                   _formatDuration(_currentPosition),
-                  style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.5),
+                    fontSize: 12,
+                  ),
                 ),
                 Text(
                   _formatDuration(_totalDuration),
-                  style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.5),
+                    fontSize: 12,
+                  ),
                 ),
               ],
             ),
@@ -417,10 +441,7 @@ void _onPlayerControllerUpdate() {
 
           // Play / Pause
           GestureDetector(
-            onTap: () {
-              _isPlaying ? _ytController.pause() : _ytController.play();
-              setState(() => _isPlaying = !_isPlaying);
-            },
+            onTap: () => setState(() => _isPlaying = !_isPlaying),
             child: Container(
               width: 68,
               height: 68,

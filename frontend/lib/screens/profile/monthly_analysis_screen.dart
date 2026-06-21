@@ -12,7 +12,6 @@ class MonthlyAnalysisScreen extends StatefulWidget {
   State<MonthlyAnalysisScreen> createState() => _MonthlyAnalysisScreenState();
 }
 
-
 class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
   final ApiService _apiService = ApiService();
   late Future<Map<String, dynamic>?> _analyticsFuture;
@@ -33,11 +32,21 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
   static const Color neutralColor = Color(0xFF78909C);
   static const Color sadColor = Color(0xFF42A5F5);
   static const Color energeticColor = Color(0xFFEF5350);
-  
+
   final List<String> _months = [
-  "January", "February", "March", "April", "May", "June", 
-  "July", "August", "September", "October", "November", "December"
-];
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -64,15 +73,25 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
         future: _analyticsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(pinkAccent)));
+            return const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(pinkAccent),
+              ),
+            );
           }
           if (snapshot.hasError || !snapshot.hasData || snapshot.data == null) {
-            return Center(child: Text("Unable to load data metrics", style: TextStyle(color: Colors.white54)));
+            return Center(
+              child: Text(
+                "Unable to load data metrics",
+                style: TextStyle(color: Colors.white54),
+              ),
+            );
           }
 
           final data = snapshot.data!;
           print("DEBUG ENDPOINT PAYLOAD: $data");
-          final distribution = data['mood_distribution'] as Map<dynamic, dynamic>? ?? {};
+          final distribution =
+              data['mood_distribution'] as Map<dynamic, dynamic>? ?? {};
           final happyTracks = data['happy_tracks_count'] ?? 0;
           final sadTracks = data['sad_tracks_count'] ?? 0;
 
@@ -83,7 +102,11 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
               children: [
                 Text(
                   "Monthly Emotional Profile",
-                  style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 25),
                 _buildCalendarCard(),
@@ -92,10 +115,18 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
                 const SizedBox(height: 35),
                 Text(
                   "Emotion Accuracy per Category",
-                  style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 20),
-                _buildAccuracyCard(distribution, happyTracks, sadTracks), // Change this line to pass variables!
+                _buildAccuracyCard(
+                  distribution,
+                  happyTracks,
+                  sadTracks,
+                ), // Change this line to pass variables!
                 const SizedBox(height: 20),
                 _buildConsistencyCard(),
                 const SizedBox(height: 40),
@@ -106,6 +137,7 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
       ),
     );
   }
+
   Widget _buildCalendarCard() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -258,9 +290,17 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
     );
   }
 
-  Widget _buildAccuracyCard(Map<dynamic, dynamic> percentages, int happyCount, int sadCount) {
-    double happyVal = happyCount > 0 ? (happyCount / (happyCount + sadCount + 1)) : 0.0;
-    double sadVal = sadCount > 0 ? (sadCount / (happyCount + sadCount + 1)) : 0.0;
+  Widget _buildAccuracyCard(
+    Map<dynamic, dynamic> percentages,
+    int happyCount,
+    int sadCount,
+  ) {
+    double happyVal = happyCount > 0
+        ? (happyCount / (happyCount + sadCount + 1))
+        : 0.0;
+    double sadVal = sadCount > 0
+        ? (sadCount / (happyCount + sadCount + 1))
+        : 0.0;
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -277,7 +317,12 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
             ],
           ),
           const SizedBox(height: 35),
-          _trackRow("Happy Tracks", happyVal, happyCount.toString(), happyColor),
+          _trackRow(
+            "Happy Tracks",
+            happyVal,
+            happyCount.toString(),
+            happyColor,
+          ),
           const SizedBox(height: 20),
           _trackRow("Sad Tracks", sadVal, sadCount.toString(), sadColor),
         ],
@@ -428,10 +473,14 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
 String _getDaySuffix(int day) {
   if (day >= 11 && day <= 13) return 'th';
   switch (day % 10) {
-    case 1: return 'st';
-    case 2: return 'nd';
-    case 3: return 'rd';
-    default: return 'th';
+    case 1:
+      return 'st';
+    case 2:
+      return 'nd';
+    case 3:
+      return 'rd';
+    default:
+      return 'th';
   }
 }
 
@@ -468,12 +517,24 @@ class _ChartLegend extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _LItem(const Color(0xFFFFB347), "Happy: ${percentages['Happy'] ?? '0%'}"),
-        _LItem(const Color(0xFF78909C), "Neutral: ${percentages['Neutral'] ?? '0%'}"),
+        _LItem(
+          const Color(0xFFFFB347),
+          "Happy: ${percentages['Happy'] ?? '0%'}",
+        ),
+        _LItem(
+          const Color(0xFF78909C),
+          "Neutral: ${percentages['Neutral'] ?? '0%'}",
+        ),
         _LItem(const Color(0xFF42A5F5), "Sad: ${percentages['Sad'] ?? '0%'}"),
-        _LItem(const Color(0xFF4DB6AC), "Surprise: ${percentages['Surprise'] ?? '0%'}"),
+        _LItem(
+          const Color(0xFF4DB6AC),
+          "Surprise: ${percentages['Surprise'] ?? '0%'}",
+        ),
         _LItem(const Color(0xFF7E57C2), "Fear: ${percentages['Fear'] ?? '0%'}"),
-        _LItem(const Color(0xFFEF5350), "Angry: ${percentages['Angry'] ?? '0%'}"),
+        _LItem(
+          const Color(0xFFEF5350),
+          "Angry: ${percentages['Angry'] ?? '0%'}",
+        ),
       ],
     );
   }

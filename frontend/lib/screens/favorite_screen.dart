@@ -48,12 +48,18 @@ class _FavSong {
 
   Color get moodColor {
     switch (mood.toLowerCase()) {
-      case 'happy': return const Color(0xFFFFB74D);
-      case 'sad': return const Color(0xFF64B5F6);
-      case 'fear': return const Color(0xFF9575CD);
-      case 'angry': return const Color(0xFFE57373);
-      case 'surprise': return const Color(0xFF4DB6AC);
-      default: return const Color(0xFF90A4AE);
+      case 'happy':
+        return const Color(0xFFFFB74D);
+      case 'sad':
+        return const Color(0xFF64B5F6);
+      case 'fear':
+        return const Color(0xFF9575CD);
+      case 'angry':
+        return const Color(0xFFE57373);
+      case 'surprise':
+        return const Color(0xFF4DB6AC);
+      default:
+        return const Color(0xFF90A4AE);
     }
   }
 
@@ -64,8 +70,7 @@ class _FavSong {
 const _kMoods = ['All', 'Happy', 'Sad', 'Neutral', 'Fear', 'Angry', 'Surprise'];
 
 class FavoritesScreen extends StatefulWidget {
-  final String initialMood;
-  const FavoritesScreen({super.key, this.initialMood = 'All'});
+  const FavoritesScreen({super.key});
 
   @override
   State<FavoritesScreen> createState() => _FavoritesScreenState();
@@ -76,7 +81,8 @@ class _FavoritesScreenState extends State<FavoritesScreen>
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
 
-  final String baseUrl = "https://emora-api-backend-ggccceepbsa2f4dk.eastasia-01.azurewebsites.net/favorites";
+  final String baseUrl =
+      "https://emora-api-backend-ggccceepbsa2f4dk.eastasia-01.azurewebsites.net/favorites";
   final String currentUid = "test_user_uid";
 
   List<_FavSong> _allSongs = [];
@@ -84,13 +90,13 @@ class _FavoritesScreenState extends State<FavoritesScreen>
   String _selectedMood = 'All';
   int? _playingIndex;
 
-
   List<_FavSong> get _filtered => _selectedMood == 'All'
       ? _allSongs
       : _allSongs.where((s) {
-          return s.mood.trim().toLowerCase() == _selectedMood.trim().toLowerCase();
+          return s.mood.trim().toLowerCase() ==
+              _selectedMood.trim().toLowerCase();
         }).toList();
-        
+
   Song _toSong(_FavSong s) => Song(
     id: s.videoId,
     title: s.title,
@@ -108,7 +114,6 @@ class _FavoritesScreenState extends State<FavoritesScreen>
   @override
   void initState() {
     super.initState();
-    _selectedMood = widget.initialMood;
     _animController = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
@@ -125,7 +130,9 @@ class _FavoritesScreenState extends State<FavoritesScreen>
       if (response.statusCode == 200) {
         final List dynamicList = json.decode(response.body);
         setState(() {
-          _allSongs = dynamicList.map((json) => _FavSong.fromJson(json)).toList();
+          _allSongs = dynamicList
+              .map((json) => _FavSong.fromJson(json))
+              .toList();
           _isLoading = false;
         });
       } else {
@@ -133,9 +140,9 @@ class _FavoritesScreenState extends State<FavoritesScreen>
       }
     } catch (e) {
       setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load favorites: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to load favorites: $e')));
     }
   }
 
@@ -150,9 +157,9 @@ class _FavoritesScreenState extends State<FavoritesScreen>
         _fetchFavorites(); // Instantly refreshes the list layout
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to remove: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to remove: $e')));
     }
   }
 
@@ -179,8 +186,12 @@ class _FavoritesScreenState extends State<FavoritesScreen>
               const SizedBox(height: 8),
               Expanded(
                 child: _isLoading
-                  ? const Center(child: CircularProgressIndicator(color: Color(0xFFA7338A)))
-                  : _buildSongList(songs),
+                    ? const Center(
+                        child: CircularProgressIndicator(
+                          color: Color(0xFFA7338A),
+                        ),
+                      )
+                    : _buildSongList(songs),
               ),
               if (_playingIndex != null) _buildMiniPlayer(songs),
             ],
@@ -190,7 +201,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     );
   }
 
-  // App bar
+  // ── App bar ──────────────────────────────────────────────────────────────
   Widget _buildAppBar(List<_FavSong> songs) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -198,12 +209,12 @@ class _FavoritesScreenState extends State<FavoritesScreen>
         children: [
           GestureDetector(
             onTap: () => context.pop(),
-              child: const Icon(
-                Icons.arrow_back_rounded,
-                color: Colors.white70,
-                size: 22,
-              ),
+            child: const Icon(
+              Icons.arrow_back_rounded,
+              color: Colors.white70,
+              size: 22,
             ),
+          ),
           Expanded(
             child: Center(
               child: Text(
@@ -239,7 +250,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     );
   }
 
-  //Mood filter chips
+  // ── Mood filter chips ─────────────────────────────────────────────────────
   Widget _buildMoodFilter() {
     return SizedBox(
       height: 36,
@@ -280,7 +291,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     );
   }
 
-  // song list
+  // ── Song list ─────────────────────────────────────────────────────────────
   Widget _buildSongList(List<_FavSong> songs) {
     if (songs.isEmpty) {
       return Center(
@@ -418,6 +429,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                 errorBuilder: (_, __, ___) =>
                     const Icon(Icons.music_note_rounded, color: Colors.white),
               ),
+              child: Icon(song.icon, color: Colors.white, size: 22),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -549,8 +561,9 @@ class _FavoritesScreenState extends State<FavoritesScreen>
             _optionTile(
               Icons.favorite_rounded,
               'Remove from Favorites',
-              () { Navigator.pop(context);
-              _removeFromFavorites(song.videoId); 
+              () {
+                Navigator.pop(context);
+                _removeFromFavorites(song.videoId);
               },
               color: const Color(0xFFE040FB),
             ),
