@@ -15,7 +15,6 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
   final TextEditingController _searchController = TextEditingController();
   bool _isSearching = false;
   final List<_LanguageItem> _languages = const [
-    _LanguageItem(label: 'English', symbol: 'Aa'),
     _LanguageItem(label: 'Tamil', symbol: 'த'),
     _LanguageItem(label: 'Sinhala', symbol: 'ස'),
     _LanguageItem(label: 'Korean', symbol: '한'),
@@ -53,9 +52,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
     'Rap',
     'Jazz',
     'Classical',
-    'R&B',
-    'Metal',
-    'Pop',
+    'Motivational',
   ];
 
   @override
@@ -347,7 +344,7 @@ class _SearchMoodScreenState extends State<SearchMoodScreen> {
                   Text(
                     _featuredVibe['label'] as String,
                     style: GoogleFonts.poppins(
-                      color: Color(0xFFFF6EC7),
+                      color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 0.2,

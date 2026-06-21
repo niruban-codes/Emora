@@ -25,6 +25,9 @@ import 'package:frontend/screens/music/library_screen.dart';
 import 'package:frontend/screens/main_layout.dart';
 import 'package:frontend/screens/admin_dashboard/dashboard_screen.dart';
 import 'package:frontend/screens/favorite_screen.dart';
+import 'package:frontend/screens/admin_dashboard/main_wrapper.dart';
+import 'package:frontend/screens/music/genre_playlist_screen.dart';
+import 'package:frontend/screens/admin_dashboard/main_wrapper.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'root',
@@ -83,12 +86,15 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/admin-dashboard',
       parentNavigatorKey: _rootNavigatorKey,
-      builder: (context, state) => const DashboardScreen(),
+      builder: (context, state) => const MainWrapper(),
     ),
     GoRoute(
       path: '/favorites',
       parentNavigatorKey: _rootNavigatorKey,
-      builder: (context, state) => const FavoritesScreen(),
+      builder: (context, state) {
+        final mood = state.extra as String? ?? 'All';
+        return FavoritesScreen(initialMood: mood);
+      },
     ),
     // Player
     GoRoute(

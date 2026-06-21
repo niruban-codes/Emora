@@ -8,14 +8,14 @@ import 'package:google_fonts/google_fonts.dart';
 class ProfileSettingsScreen extends StatefulWidget {
   const ProfileSettingsScreen({super.key});
 
-  static const Color bgColor = Color(0xFF15173D);
+  static const Color bgColor = Color(0xFF0D0C1D);
   static const Color accentPurple = Color(0xFF9C27B0);
   static const Color cardColor = Color(0xFF1E1A35);
   static const Color textSecondary = Colors.white38;
   static const Color logoutRedBg = Color(0xFF3B1E2B);
   static const Color logoutTextRed = Color(0xFFEF5350);
   static const Color activeHighlight = Color(0xFFA7338A);
-  static const Color dashboardButtonColor = Color(0xFF9C27B0);
+  static const Color dashboardButtonColor = Color(0xFF9C27B0); 
   static const Color dashboardGradientEnd = Color(0xFF673AB7);
 
   @override
@@ -72,11 +72,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_rounded,
-            color: Colors.white,
-            size: 22,
-          ),
+          icon: const Icon(Icons.arrow_back_rounded, color: Colors.white, size: 22,),
           onPressed: () {
             if (context.canPop()) {
               context.pop();
@@ -85,7 +81,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
             }
           },
         ),
-        title: Text(
+        title:  Text(
           'Profile Settings',
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.bold,
@@ -294,7 +290,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                 if (sub.isNotEmpty)
                   Text(
                     sub,
-                    style: GoogleFonts.poppins(
+                    style:GoogleFonts.poppins(
                       color: ProfileSettingsScreen.textSecondary,
                       fontSize: 12,
                     ),
@@ -322,7 +318,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       leading: _iconBox(icon),
       title: Text(
         title,
-        style: GoogleFonts.poppins(
+        style:GoogleFonts.poppins(
           color: Colors.white,
           fontSize: 16,
           fontWeight: FontWeight.w500,
@@ -350,12 +346,12 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
             colors: [
               ProfileSettingsScreen.dashboardButtonColor,
               ProfileSettingsScreen.dashboardGradientEnd,
-            ],
+            ], 
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
         ),
-        child: Row(
+        child:  Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Column(
@@ -372,10 +368,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                 SizedBox(height: 4),
                 Text(
                   'Manage users, music, and platform analytics.',
-                  style: GoogleFonts.poppins(
-                    color: Colors.white70,
-                    fontSize: 11,
-                  ),
+                  style: GoogleFonts.poppins(color: Colors.white70, fontSize: 11),
                 ),
               ],
             ),

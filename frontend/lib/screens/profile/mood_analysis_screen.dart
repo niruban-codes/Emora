@@ -29,18 +29,8 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen> {
   static const Color greenAccent = Color(0xFF12D790);
 
   final List<String> _months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+    "January", "February", "March", "April", "May", "June", 
+    "July", "August", "September", "October", "November", "December"
   ];
 
   @override
@@ -86,8 +76,7 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen> {
 
           final data = snapshot.data!;
           final dailyAvg = data['daily_average'] ?? "0.0";
-          final distribution =
-              data['mood_distribution'] as Map<dynamic, dynamic>? ?? {};
+          final distribution = data['mood_distribution'] as Map<dynamic, dynamic>? ?? {};
           final peakMood = data['primary_peak'] ?? "Peaceful";
 
           return SingleChildScrollView(
@@ -286,42 +275,12 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen> {
       spacing: 10,
       runSpacing: 10,
       children: [
-        _moodChip(
-          "Happy",
-          percentages['Happy'] ?? "0%",
-          const Color(0xFFFFB347),
-          Icons.sentiment_very_satisfied_rounded,
-        ),
-        _moodChip(
-          "Sad",
-          percentages['Sad'] ?? "0%",
-          const Color(0xFF42A5F5),
-          Icons.sentiment_dissatisfied_rounded,
-        ),
-        _moodChip(
-          "Neutral",
-          percentages['Neutral'] ?? "0%",
-          const Color(0xFF78909C),
-          Icons.lens_blur_rounded,
-        ),
-        _moodChip(
-          "Fear",
-          percentages['Fear'] ?? "0%",
-          const Color(0xFF7E57C2),
-          Icons.sentiment_very_dissatisfied_outlined,
-        ),
-        _moodChip(
-          "Angry",
-          percentages['Angry'] ?? "0%",
-          const Color(0xFFEF5350),
-          Icons.local_fire_department_outlined,
-        ),
-        _moodChip(
-          "Surprise",
-          percentages['Surprise'] ?? "0%",
-          const Color(0xFF4DB6AC),
-          Icons.flare_rounded,
-        ),
+        _moodChip("Happy", percentages['Happy'] ?? "0%", const Color(0xFFFFB347), Icons.sentiment_very_satisfied_rounded),
+        _moodChip("Sad", percentages['Sad'] ?? "0%", const Color(0xFF42A5F5), Icons.sentiment_dissatisfied_rounded),
+        _moodChip("Neutral", percentages['Neutral'] ?? "0%", const Color(0xFF78909C), Icons.lens_blur_rounded),
+        _moodChip("Fear", percentages['Fear'] ?? "0%", const Color(0xFF7E57C2), Icons.sentiment_very_dissatisfied_outlined),
+        _moodChip("Angry", percentages['Angry'] ?? "0%", const Color(0xFFEF5350), Icons.local_fire_department_outlined),
+        _moodChip("Surprise", percentages['Surprise'] ?? "0%", const Color(0xFF4DB6AC), Icons.flare_rounded),
       ],
     );
   }

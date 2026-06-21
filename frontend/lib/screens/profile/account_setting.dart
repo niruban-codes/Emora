@@ -23,9 +23,7 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
   //Controllers to handle text input
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _currentPasswordController = TextEditingController(
-    text: '************',
-  );
+  final _currentPasswordController = TextEditingController();
   final _newPasswordController = TextEditingController();
 
   bool _isLoading = true;
@@ -158,6 +156,33 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
     }
   }
 
+  Future<void> _handleForgotPassword() async {
+    final email = _emailController.text.trim();
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please wait for your email to load first.'),
+        ),
+      );
+      return;
+    }
+
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Reset link sent! Check your inbox.')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+      }
+    }
+  }
+
   @override
   void dispose() {
     _usernameController.dispose();
@@ -182,7 +207,7 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
           'Edit Profile',
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.bold,
-            fontSize: 18,
+            fontSize: 20,
             color: Colors.white,
           ),
         ),
@@ -242,8 +267,8 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                 const SizedBox(height: 15),
                 Text(
                   _usernameController.text,
-                  style: const TextStyle(
-                    fontSize: 26,
+                  style: GoogleFonts.poppins(
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
@@ -255,7 +280,7 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                       : 'Member since 2026',
                   style: GoogleFonts.poppins(
                     color: accentPurple,
-                    fontSize: 14,
+                    fontSize: 13,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -318,7 +343,13 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                                 'Reset to default avatar!',
                               ),
                         icon: const Icon(Icons.delete_outline, size: 18),
-                        label: const Text('Remove'),
+                        label: Text(
+                          'Remove',
+                          style: GoogleFonts.poppins(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.white,
                           backgroundColor: buttonRed.withOpacity(0.15),
@@ -366,7 +397,20 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                   hintText: 'Min. 8 characters',
                   obscureText: true,
                 ),
-
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: _handleForgotPassword,
+                    child: Text(
+                      'Forgot Password?',
+                      style: GoogleFonts.poppins(
+                        color: activeHighlight,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 40),
                 SizedBox(
                   width: double.infinity,
@@ -420,9 +464,9 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                       }
                     },
                     icon: const Icon(Icons.save_outlined),
-                    label: const Text(
+                    label: Text(
                       'Save Changes',
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -522,9 +566,9 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
         const SizedBox(width: 8),
         Text(
           label,
-          style: const TextStyle(
+          style: GoogleFonts.poppins(
             color: accentPurple,
-            fontSize: 12,
+            fontSize: 16,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.1,
           ),
@@ -545,9 +589,9 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: GoogleFonts.poppins(
             color: textSecondary,
-            fontSize: 11,
+            fontSize: 13,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.1,
           ),
@@ -556,10 +600,13 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
         TextField(
           controller: controller,
           obscureText: obscureText,
-          style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 15),
+          style: GoogleFonts.poppins(
+            color: Colors.white.withOpacity(0.7),
+            fontSize: 13,
+          ),
           decoration: InputDecoration(
             hintText: hintText,
-            hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
+            hintStyle: GoogleFonts.poppins(color: Colors.grey, fontSize: 13),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 20,
               vertical: 18,
