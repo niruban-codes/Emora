@@ -201,10 +201,10 @@ def get_mood_analytics(uid: str):
             }), 200
 
         # 2. Setup counters for Mood Distribution mapping
-        counts = {"Happy": 0, "Sad": 0, "Neutral": 0, "Fear": 0, "Angry": 0, "Surprised": 0}
+        counts = {"Happy": 0, "Sad": 0, "Neutral": 0, "Fear": 0, "Angry": 0, "Surprise": 0}
         
         # Setup weights for the 10-point Weighted Vibe Index average calculation
-        weights = {"Happy": 10, "Surprised": 8, "Neutral": 6, "Sad": 4, "Fear": 3, "Angry": 1}
+        weights = {"Happy": 10, "Surprise": 8, "Neutral": 6, "Sad": 4, "Fear": 3, "Angry": 1}
         
         total_weight_score = 0
         happy_tracks_total = 0
@@ -240,6 +240,39 @@ def get_mood_analytics(uid: str):
         # Identify which mood was recorded the most
         primary_peak = max(counts, key=counts.get) if any(counts.values()) else "Neutral"
 
+        # We grab up to the last 10 entries so it forms a smooth running timeline graph
+        recent_records = history[-10:] if len(history) >= 10 else history
+
+        history_points = []
+        for record in recent_records:
+            mood = record.get("emotion", "Neutral")
+            # Pull numerical weight value mapping 
+            weight_value = weights.get(mood, 6)
+            history_points.append(float(weight_value))
+
+        # Handle empty fallback list just in case
+        if not history_points:
+            history_points = [5.0, 5.0]
+
+        if len(history_points) > 1:
+            # Compare latest entry against the average previous historical states
+            latest_score = history_points[-1]
+            previous_baseline_avg = sum(history_points[:-1]) / (len(history_points) - 1)
+            
+            if previous_baseline_avg > 0:
+                variance = ((latest_score - previous_baseline_avg) / previous_baseline_avg) * 100
+                variance_round = round(variance)
+                
+                # Format it as a clean string prefix token for the Flutter parser container
+                if variance_round >= 0:
+                    trend_metric = f"↗ {variance_round}%"
+                else:
+                    trend_metric = f"↘ {abs(variance_round)}%"
+            else:
+                trend_metric = "→ 0%"
+        else:
+            trend_metric = "→ 0%"
+
         # 5. Pack everything neatly into JSON for Flutter
         analytics_payload = {
             "daily_average": str(daily_avg),
@@ -247,7 +280,9 @@ def get_mood_analytics(uid: str):
             "happy_tracks_count": happy_tracks_total,
             "sad_tracks_count": sad_tracks_total,
             "primary_peak": primary_peak,
-            "total_scans": total_scans
+            "total_scans": total_scans,
+            "history_points": history_points,
+            "weekly_trend_arrow": trend_metric
         }
 
         return jsonify(analytics_payload), 200
