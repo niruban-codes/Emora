@@ -114,6 +114,7 @@ final appRouter = GoRouter(
           currentSong: songs[safeIndex],
           playlist: songs,
           initialIndex: safeIndex,
+          initialFavoritedVideoIds: const {},
         );
       },
     ),
