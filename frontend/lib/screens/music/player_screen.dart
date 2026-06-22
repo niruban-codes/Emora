@@ -12,11 +12,16 @@ class PlayerScreen extends StatefulWidget {
   final List<Song> playlist;
   final int initialIndex;
 
+  final Set<String> initialFavoritedVideoIds;
+  final Function(String videoId, bool isFavorite)? onFavoriteChanged;
+
   const PlayerScreen({
     super.key,
     required this.currentSong,
     required this.playlist,
     this.initialIndex = 0,
+    required this.initialFavoritedVideoIds, 
+    this.onFavoriteChanged,
   });
 
   @override
@@ -317,10 +322,17 @@ void _onPlayerControllerUpdate() {
           ),
           // Favourite toggle
           GestureDetector(
-            onTap: _toggleFavorite,
-            child: Icon(
-              _song.isFavorite ? Icons.favorite : Icons.favorite_border,
-              color: _song.isFavorite ? Colors.pinkAccent : Colors.white38,
+            onTap: () async {
+    final bool currentStatus = widget.initialFavoritedVideoIds.contains(_song.id);
+    
+    if (widget.onFavoriteChanged != null) {
+      widget.onFavoriteChanged!(_song.id, !currentStatus);
+    }
+    await _toggleFavorite();
+  },
+  child: Icon(
+    widget.initialFavoritedVideoIds.contains(_song.id) ? Icons.favorite : Icons.favorite_border,
+    color: widget.initialFavoritedVideoIds.contains(_song.id) ? Colors.pinkAccent : Colors.white38,
               size: 26,
             ),
           ),
