@@ -12,9 +12,9 @@ Most music recommendation systems focus on listening history and genre preferenc
 
 ##  Features
 
--  **Photo-Based Emotion Detection** — Upload a photo from your gallery to detect emotions (Happy, Sad, Angry, Neutral) using AI
 -  **Live Camera Detection** — Use your device's camera for real-time emotion detection without needing to upload an image
--  **Smart Music Recommendations** — Automatically generates playlists matched to your detected mood via Spotify / YouTube API
+-  **Photo-Based Emotion Detection** — Upload a photo from your gallery to detect emotions (Happy, Sad, Angry, Neutral,Surprise, Fear) using AI
+-  **Smart Music Recommendations** — Automatically generates playlists matched to your detected mood via YouTube API
 -  **Music Player** — Play, pause, skip tracks with volume control and track info display
 -  **Playlist & Favorites Management** — Save, create, and manage emotion-based playlists
 -  **Mood History & Analytics** — Track your emotional trends and listening patterns over time
@@ -31,9 +31,10 @@ Most music recommendation systems focus on listening history and genre preferenc
 | Backend API        | Python / Flask                       |
 | Emotion Detection  | DeepFace / OpenCV                    |
 | Database & Auth    | Firebase (Firestore + Firebase Auth) |
-| Music API          | Spotify Web API / YouTube API        |
+| Music API          | YouTube Data API v3                  |
 | UI Design          | Figma                                |
 | Version Control    | Git & GitHub                         |
+| Deployment         | Microsoft Azure                      |
 
 ---
 
@@ -55,9 +56,8 @@ The system is composed of six core modules:
 ### Prerequisites
 
 - Flutter SDK installed
-- Python 3.8+
+- Python 3.11
 - Firebase project configured
-- Spotify Developer account (for API credentials)
 - Android device or emulator (Android 10+, 4GB RAM minimum)
 
 
@@ -90,13 +90,13 @@ emora/
 
 ##  Team — Group 01 (IS)
 
-| Index No  | Name               | 
-|-----------|--------------------|
-| 22FIS0455 | N. Niruban         | 
-| 22FIS0447 | D.G.S. Piyaratne   | 
-| 22FIS0452 | H.H.D.A. Fernando  | 
-| 22FIS0450 | U.L.P. Wathsiluni  |
-| 22FIS0449 | M.N.H.F. Hafsa     | 
+| Index No  | Name              | Backend Responsibility                | Frontend Responsibility                  |
+|-----------|-------------------|---------------------------------------|------------------------------------------|
+| 22FIS0447 | D.G.S. Piyaratne  | Emotion Detection & Admin Panel       | Authentication & Home screens            |
+| 22FIS0449 | M.N.H.F. Hafsa    | Flutter Integration                   | Mood analytics & Account settings        |
+| 22FIS0450 | U.L.P. Wathsiluni | Firestore Integration                 | Admin panel screens                      |
+| 22FIS0452 | H.H.D.A. Fernando | YouTube API Integration               | Emotion detection & Mood result screens  |
+| 22FIS0455 | N. Niruban        | Firebase Authentication & Admin Panel | Splash screens & Music player screens    |
 
 **Internal Supervisor:** Mr. H. M. K. T. Gunawardane — Sabaragamuwa University of Sri Lanka  
 **Mentor:** W. M. P. K. Wijethunga — Arimac Lanka PVT LTD
@@ -105,20 +105,35 @@ emora/
 
 ##  Roadmap
 
-###  Phase I (Current)
-- [x] Photo upload-based emotion detection
-- [x] Live camera-based real-time emotion detection
-- [x] Spotify / YouTube API integration
-- [x] Android app (Flutter)
-- [x] User authentication and profile management
-- [x] Rule-based emotion-to-music mapping
-- [x] Mood history and basic analytics
+### Phase 1 — User Authentication ✅ Done
+- [x] User registration and login via Firebase Auth
+- [x] Session management and profile handling
 
-###  Phase II (Planned)
-- [ ] iOS and web versions
-- [ ] Advanced personalization using long-term behavior analysis
-- [ ] Custom fine-tuned deep learning models
-- [ ] Offline music playback
+### Phase 2 — Firestore Database ✅ Done
+- [x] Firestore collections and data structure set up
+- [x] User data, mood history, and playlist storage
+
+### Phase 3 — Emotion Detection ✅ Done
+- [x] Flask backend set up and deployed
+- [x] Photo upload-based emotion detection via DeepFace
+- [x] Live camera-based real-time emotion detection
+- [x] `/detect-emotion` endpoint with error handling
+
+### Phase 4 — Music Recommendation ✅ Done
+- [x] YouTube Data API v3 integrated
+- [x] Emotion-to-music query mapping
+- [x] `/recommend-music` endpoint for all emotion categories
+- [x] Explore / vibe-genre endpoint
+
+### Phase 5 — Admin Panel ⏳ In Progress
+- [ ] Admin dashboard with user and content management
+- [ ] Six admin endpoints built and tested
+
+### Phase 6 — Flutter Integration ⏳ In Progress
+- [x] Full Flutter frontend connected to Flask backend
+- [x] End-to-end flow from emotion detection to music playback
+- [x] Favourites, history, and playlist screens integrated
+- [ ] Final testing and deployment
 
 ---
 
@@ -126,7 +141,7 @@ emora/
 
 - [DeepFace Library](https://github.com/serengil/deepface)
 - [OpenCV Documentation](https://opencv.org/)
-- [Spotify Web API](https://developer.spotify.com/)
+- [YouTube Data API v3](https://developers.google.com/youtube/v3/getting-started)
 - [Flask Documentation](https://flask.palletsprojects.com/)
 - [Flutter Documentation](https://docs.flutter.dev/)
 - [Google ML Kit](https://pub.dev/packages/google_ml_kit)
