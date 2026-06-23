@@ -35,10 +35,10 @@
 | ------ | ---------- | --------------------------------------------- | ------------- | --------------------------- | ------------------  | -------------- |
 | 1      | Week 1–2   | Planning & Wireframing                        | Pre-Dev       | All Members                 | —                   | ✅ Done        |
 | 2      | Week 3–4   | UI Design, Prototyping & Flutter Dev Start    | Pre-Dev       | All Members                 | —                   | ✅ Done        |
-| 3      | Week 5–6   | Frontend Development & Phase 1                | Phase 1       | All Members / Niruban       | Hafsa               | ✅ Done        |
-| 4      | Week 7–8   | Phase 2 & Phase 3                             | Phase 2 & 3   | Wathsiluni / Geethma        | Dinithi / Niruban   | ✅ Done        |
-| 5      | Week 9–10  | Phase 4 — YouTube API & Flutter Integration   | Phase 4 & 5   | Dinithi / Hafsa             | Geethma / Wathsiluni| ✅ Done        |
-| 6      | Week 11–12 | Phase 5 — Admin Panel & Full Integration      | Phase 5 & 6   | Geethma / Niruban           | Dinithi             | ⏳ In Progress |
+| 3      | Week 5–6   | Frontend Development & Firebase Authentication| Phase 1       | All Members / Niruban       | Hafsa               | ✅ Done        |
+| 4      | Week 7–8   | Firestore Integration & Emotion Detection     | Phase 2 & 3   | Wathsiluni / Geethma        | Dinithi / Niruban   | ✅ Done        |
+| 5      | Week 9–10  | YouTube API Integration & Admin Panel         | Phase 4 & 5   | Dinithi /Geethma / Niruban  | Geethma / Dinithi   | ⏳ In Progress |
+| 6      | Week 11–12 |  Flutter Integration                          | Phase  6      | Hafsa                       | Wathsiluni          | ✅ Done        |
 | 7      | Week 13–14 | Buffer, Demo Prep & UAT                       | All           | All Members                 | All Members         | ⏳ Upcoming    |
 | 8      | Week 15    | Journal & Submission                          | All           | All Members                 | —                   | ⏳ Upcoming    |
 
@@ -128,13 +128,11 @@
 - Flask backend deployed
 - Final integration checks completed
 
-> ⚠️ Admin panel ownership and testing assignment to be confirmed.
-
 ---
 
 ### Sprint 7 · Weeks 13–14 · Buffer, Demo Prep & UAT
 
-**Owner(s):** All Members | **Status:** ⏳ Upcoming
+**Owner(s):** All Members | **Status:** ⏳ In Progress
 
 - Remaining bugs fixed
 - Failed test cases re-tested
@@ -147,12 +145,12 @@
 
 ### Sprint 8 · Week 15 · Journal & Submission
 
-**Owner(s):** All Members | **Status:** ⏳ Upcoming
+**Owner(s):** All Members | **Status:** ⏳ In Progress
 
 - Project journal completed
 - All documentation finalised and submitted
 
-> ⚠️ Sprint 8 is a single-week wrap-up sprint. All development must be complete before this sprint begins.
+> Sprint 8 is a single-week wrap-up sprint. All development must be complete before this sprint begins.
 
 ---
 
