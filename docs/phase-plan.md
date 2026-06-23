@@ -1,155 +1,233 @@
-# Emora — Team Task & Testing Assignment
-### IS4110 Capstone · Group 01 · Sabaragamuwa University of Sri Lanka
+# Emora — Project Phase Plan
 
-## Assignment Overview
-Each team member builds one phase, while another member writes and executes test cases.
-
-## Team Responsibilities
-| Phase | Module | Builder | Tester | Tester’s Responsibility |
-| :--- | :--- | :--- | :--- | :--- |
-| Phase 1 | Firebase Auth | Niruban | Hafsa | Write & execute test cases |
-| Phase 2 | Firestore DB | Wathsiluni | Dinithi | Write & execute test cases |
-| Phase 3 | Flask + DeepFace | Geethma | Niruban | Write & execute test cases |
-| Phase 4 | YouTube API | Dinithi | Geethma | Write & execute test cases |
-| Phase 5 | Flutter Integration | Hafsa | Wathsiluni | Write & execute test cases |
-| Phase 6 | Admin Panel | — | — | Full system validation |
+### IS4110 Capstone Project
+### Group 01 – Sabaragamuwa University of Sri Lanka
 
 ---
 
-## Phase 1 — Firebase Authentication
-**Builder:** Niruban  
-**Tester:** Hafsa
+## Project Overview
 
-### Build Tasks
-* Create Firebase project
-* Enable Email/Password and Google sign-in
-* Add Flutter app and configure Firebase
-* Add dependencies: `firebase_core`, `firebase_auth`
-* Initialize Firebase in `main.dart`
-* Implement user registration and login
-* Handle errors (wrong password, user not found)
-
-### Test Cases
-* **TC01:** Register with valid email → user created
-* **TC02:** Register with existing email → error shown
-* **TC03:** Login with correct credentials → navigate to home
-* **TC04:** Login with wrong password → error
-* **TC05:** Login with unregistered email → error
-* **TC06:** Google sign-in → user created
-* **TC07:** Logout → return to login
-* **TC08:** Test on emulator and real device
+**Emora** is an AI-powered emotion-based music recommendation mobile application developed using Flutter, Firebase, Flask, DeepFace, and the YouTube Data API. The project is divided into six development phases to ensure systematic implementation, testing, and integration of all components.
 
 ---
 
-## Phase 2 — Firestore Database
-**Builder:** Wathsiluni  
-**Tester:** Dinithi
+## Phase 1 – User Authentication System
 
-### Build Tasks
-* Enable Cloud Firestore
-* Design collections: `users`, `emotion_history`, `playlists`
-* Set security rules (user-specific access)
-* Create user document on registration
-* Fetch user profile on login
-* Display profile data in UI
-* Implement helper functions for database operations
+**Responsible Member:** Niruban
 
-### Test Cases
-* **TC09:** User document created on register
-* **TC10:** Profile loads correctly
-* **TC11:** Profile updates correctly
-* **TC12:** Unauthorized access is denied
-* **TC13:** Required collections exist
-* **TC14:** Offline read works (cached data)
+### Objective
 
----
+Develop a secure user authentication system for account creation, login, and session management.
 
-## Phase 3 — Flask + DeepFace
-**Builder:** Geethma  
-**Tester:** Niruban
+### Activities
 
-### Build Tasks
-* Create `backend/` folder with `app.py`
-* Set up Python virtual environment
-* Install dependencies: `pip install flask deepface opencv-python`
-* Implement endpoints: `GET /ping`, `POST /detect-emotion`
-* Perform emotion detection using DeepFace
-* Return JSON responses
-* Handle errors (no face, invalid file)
-* Generate `requirements.txt`
+- Create Firebase project
+- Configure Flutter-Firebase integration
+- Enable Email/Password Authentication
+- Enable Google Sign-In Authentication
+- Implement user registration
+- Implement user login
+- Implement logout functionality
+- Handle authentication errors
 
-### Test Cases
-* **TC15:** `/ping` returns status OK
-* **TC16–TC18:** Correct emotion detection (happy, sad, angry)
-* **TC19:** No face → handled error
-* **TC20:** Invalid file → 400 error
-* **TC21:** No file → 400 error
-* **TC22:** Test all supported emotions
+### Deliverables
+
+- Firebase project configuration
+- Registration screen
+- Login screen
+- Google sign-in functionality
+- Authentication service implementation
+
+### Expected Outcome
+
+Users can securely create accounts, log in, and access the application.
 
 ---
 
-## Phase 4 — YouTube API
-**Builder:** Dinithi  
-**Tester:** Geethma
+## Phase 2 – Database Management System
 
-### Build Tasks
-* Obtain YouTube Data API v3 key
-* Store API key in `.env`
-* Implement `POST /recommend-music`
-* Map emotions to search queries
-* Fetch top 10 videos
-* Handle API errors and quota limits
+**Responsible Member:** Wathsiluni
 
-### Test Cases
-* **TC23:** Returns list of 10 videos
-* **TC24:** Each result contains title, thumbnail, and videoId
-* **TC25:** Works for all emotion labels
-* **TC26:** Invalid emotion → handled error
-* **TC27:** Missing field → 400 error
-* **TC28:** Results are relevant music content
-* **TC29:** API quota handled properly
+### Objective
 
----
+Develop the cloud database structure required to store user information, emotion history, and playlist data.
 
-## Phase 5 — Flutter Integration
-**Builder:** Hafsa  
-**Tester:** Wathsiluni
+### Activities
 
-### Build Tasks
-* Add `dio` for HTTP requests
-* Create API service class
-* Implement camera/upload functionality
-* Integrate emotion detection and music recommendation APIs
-* Display video list with thumbnail and title
-* Store emotion history in Firestore
-* Add loading indicators
-* Handle network errors gracefully
+- Configure Cloud Firestore
+- Design database collections
+- Create security rules
+- Implement CRUD operations
+- Store user profile information
+- Retrieve user data
 
-### Test Cases
-* **TC30:** Emotion detected from image
-* **TC31:** Music recommendations displayed
-* **TC32:** Video playback works
-* **TC33:** Emotion history stored correctly
-* **TC34:** No internet → handled gracefully
-* **TC35:** Test on Android device
-* **TC36:** Test on iOS device
-* **TC37:** Full flow runs multiple times without errors
+### Deliverables
+
+- Firestore database structure
+- Database service functions
+- Security rules implementation
+- User profile management module
+
+### Expected Outcome
+
+Application data is securely stored and retrieved through Firestore.
 
 ---
 
-## Phase 6 — Admin Panel
-### Build Tasks
-* Create admin dashboard in Flutter
-* Implement Flask endpoints: `/admin/users`, `/admin/stats`, `/admin/logs`
-* Create `admin_logs` collection
-* Restrict admin access
-* Display system data in dashboard
+## Phase 3 – Emotion Detection Backend
 
-### Test Cases
-* **TC38:** Retrieve list of users
-* **TC39:** Retrieve system statistics
-* **TC40:** Unauthorized access denied (401)
-* **TC41:** Admin logs updated correctly
-* **TC42:** Dashboard displays accurate data
-* **TC43:** Non-admin users restricted
-* **TC44:** Test on real device
+**Responsible Member:** Geethma
+
+### Objective
+
+Develop an AI-powered backend service capable of detecting user emotions from uploaded images.
+
+### Activities
+
+- Set up Flask backend environment
+- Configure Python virtual environment
+- Install and configure DeepFace dependencies
+- Implement image upload and processing functionality
+- Integrate DeepFace emotion recognition model
+- Develop emotion detection API endpoints
+- Generate structured JSON responses
+- Implement exception and error handling
+- Optimize emotion detection performance
+- Prepare backend deployment configuration
+
+### Deliverables
+
+- Flask backend application
+- DeepFace emotion recognition module
+- Emotion detection API
+- Image processing functionality
+- API documentation
+- Backend deployment configuration
+
+### Expected Outcome
+
+The system successfully identifies emotions from facial images.
+
+---
+
+## Phase 4 – Music Recommendation Service
+
+**Responsible Member:** Dinithi
+
+### Objective
+
+Develop a recommendation engine that suggests music according to detected emotions.
+
+### Activities
+
+- Configure YouTube Data API
+- Store API credentials securely
+- Create recommendation endpoint
+- Map emotions to music genres
+- Retrieve relevant YouTube videos
+- Handle API exceptions
+
+### Deliverables
+
+- Recommendation API
+- Emotion-to-music mapping module
+- YouTube integration service
+
+### Expected Outcome
+
+Users receive suitable music recommendations based on detected emotions.
+
+---
+
+## Phase 5 – Frontend Integration
+
+**Responsible Member:** Hafsa
+
+### Objective
+
+Integrate all backend services with the Flutter mobile application.
+
+### Activities
+
+- Create API service layer
+- Integrate Emotion Detection API
+- Integrate Music Recommendation API
+- Implement image upload functionality
+- Display recommendation results
+- Store emotion history
+- Handle network errors
+
+### Deliverables
+
+- Fully integrated Flutter application
+- API communication services
+- Recommendation interface
+- Emotion history module
+
+### Expected Outcome
+
+Users can upload images, detect emotions, and receive music recommendations through a seamless interface.
+
+---
+
+## Phase 6 – Administration & Analytics Module
+
+**Responsible Member:** Team Collaboration
+
+### Objective
+
+Develop an administrative dashboard to monitor application usage and system activity.
+
+### Activities
+
+- Create admin dashboard
+- Develop administrative APIs
+- Generate system statistics
+- Implement access control
+- Create monitoring features
+- Implement activity logging
+
+### Deliverables
+
+- Admin dashboard
+- User management module
+- Analytics reports
+- System monitoring tools
+
+### Expected Outcome
+
+Administrators can effectively monitor users, application performance, and system activities.
+
+---
+
+## Project Timeline
+
+| Phase | Description | Responsible Member |
+|---------|-------------|-------------------|
+| Phase 1 | User Authentication System | Niruban |
+| Phase 2 | Database Management System | Wathsiluni |
+| Phase 3 | Emotion Detection Backend | Geethma |
+| Phase 4 | Music Recommendation Service | Dinithi |
+| Phase 5 | Frontend Integration | Hafsa |
+| Phase 6 | Administration & Analytics Module | Team Collaboration |
+
+---
+
+## Final Project Deliverables
+
+- Flutter Mobile Application
+- Firebase Authentication System
+- Cloud Firestore Database
+- Flask Backend API
+- DeepFace Emotion Detection Module
+- YouTube Music Recommendation Engine
+- Admin Dashboard
+- Testing Documentation
+- User Documentation
+- Final Project Report
+
+---
+
+## Conclusion
+
+The Emora project follows a structured phase-based development approach that ensures all major components are developed, integrated, and validated systematically. Each phase contributes to the successful completion of the final system while promoting clear responsibility allocation among team members.
