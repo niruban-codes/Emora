@@ -90,13 +90,13 @@ emora/
 
 ##  Team — Group 01 (IS)
 
-| Index No  | Name              | Backend Responsibility                | Frontend Responsibility                  |
-|-----------|-------------------|---------------------------------------|------------------------------------------|
-| 22FIS0447 | D.G.S. Piyaratne  | Emotion Detection & Admin Panel       | Authentication & Home screens            |
-| 22FIS0449 | M.N.H.F. Hafsa    | Flutter Integration                   | Mood analytics & Account settings        |
-| 22FIS0450 | U.L.P. Wathsiluni | Firestore Integration                 | Admin panel screens                      |
-| 22FIS0452 | H.H.D.A. Fernando | YouTube API Integration               | Emotion detection & Mood result screens  |
-| 22FIS0455 | N. Niruban        | Firebase Authentication & Admin Panel | Splash screens & Music player screens    |
+| Index No | Name | Backend Responsibility | Frontend Responsibility | Testing Responsibility |
+|-----------|-------------------|---------------------------------------|------------------------------------------|-------------------------|
+| 22FIS0447 | D.G.S. Piyaratne | Emotion Detection & Admin Panel | Authentication & Home Screens | Phase 4 |
+| 22FIS0449 | M.N.H.F. Hafsa | Flutter Integration | Mood Analytics & Account Settings | Phase 1 |
+| 22FIS0450 | U.L.P. Wathsiluni | Firestore Integration | Admin Panel Screens | Phase 5 |
+| 22FIS0452 | H.H.D.A. Fernando | YouTube API Integration | Emotion Detection & Mood Result Screens | Phase 2 & Phase 6 |
+| 22FIS0455 | N. Niruban | Firebase Authentication & Admin Panel | Splash Screens & Music Player Screens | Phase 3 |
 
 **Internal Supervisor:** Mr. H. M. K. T. Gunawardane — Sabaragamuwa University of Sri Lanka  
 **Mentor:** W. M. P. K. Wijethunga — Arimac Lanka PVT LTD
