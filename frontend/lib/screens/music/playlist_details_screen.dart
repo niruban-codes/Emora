@@ -6,6 +6,7 @@ import 'package:frontend/models/song_model.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:frontend/screens/music/player_screen.dart';
 
 class PlaylistDetailsScreen extends StatefulWidget {
   final MoodModel mood;
@@ -20,12 +21,87 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
   List<Song> _songs = [];
   bool _isLoading = true;
 
+  Set<String> _favoritedVideoIds = {};
+
   MoodModel get _mood => widget.mood;
 
   @override
   void initState() {
     super.initState();
-    _fetchMoodPlaylist();
+    _initializeScreen();
+  }
+  
+  Future<void> _initializeScreen() async {
+    await _fetchMoodPlaylist();
+    await _fetchCurrentFavorites();
+  }
+
+  Future<void> _fetchCurrentFavorites() async {
+    final String uid = "test_user_uid";
+
+    if (uid == null) return;
+    try {
+      final uri = Uri.parse("https://emora-api-backend-ggccceepbsa2f4dk.eastasia-01.azurewebsites.net/favorites/$uid");
+      final response = await http.get(uri);
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        setState(() {
+          _favoritedVideoIds = data.map((json) => json['videoId'].toString()).toSet();
+        });
+      }
+    } catch (e) {
+      debugPrint("Error loading favorites filter: $e");
+    }
+  }
+
+  Future<void> _toggleFavoriteStatus(Song song) async {
+    
+    final String uid = "test_user_uid"; 
+    
+    final isFav = _favoritedVideoIds.contains(song.id);
+    
+    setState(() {
+      if (isFav) {
+        _favoritedVideoIds.remove(song.id);
+      } else {
+        _favoritedVideoIds.add(song.id);
+      }
+    });
+
+    try {
+      if (isFav) {
+       
+        final uri = Uri.parse("https://emora-api-backend-ggccceepbsa2f4dk.eastasia-01.azurewebsites.net/favorites/$uid/remove");
+        await http.delete(
+          uri,
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode({"videoId": song.id}),
+        );
+      } else {
+        
+        final uri = Uri.parse("https://emora-api-backend-ggccceepbsa2f4dk.eastasia-01.azurewebsites.net/favorites/$uid/add");
+        await http.post(
+          uri,
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode({
+            "videoId": song.id,
+            "title": song.title,
+            "artist": song.artist,
+            "thumbnail": song.coverUrl,
+            "mood": song.mood,
+          }),
+        );
+      }
+    } catch (e) {
+      
+      setState(() {
+        if (isFav) {
+          _favoritedVideoIds.add(song.id);
+        } else {
+          _favoritedVideoIds.remove(song.id);
+        }
+      });
+    }
   }
 
   Future<void> _fetchMoodPlaylist() async {
@@ -65,8 +141,32 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
     }
   }
 
-  void _openPlayer(int index) {
-    context.push('/player', extra: {'songs': _songs, 'index': index});
+void _openPlayer(int index) {
+    if (_songs.isEmpty) return;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PlayerScreen(
+          currentSong: _songs[index],
+          playlist: _songs,
+          initialIndex: index,
+          initialFavoritedVideoIds: _favoritedVideoIds, 
+          onFavoriteChanged: (videoId, isFavorite) {    
+            setState(() {
+              if (isFavorite) {
+                _favoritedVideoIds.add(videoId);
+              } else {
+                _favoritedVideoIds.remove(videoId);
+              }
+            });
+          },
+        ),
+      ),
+    ).then((_) {
+      
+      _fetchCurrentFavorites();
+    });
   }
 
   @override
@@ -422,6 +522,59 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
                 color: Colors.white.withOpacity(0.5),
                 fontSize: 13,
               ),
+            ),
+          const SizedBox(width: 8),
+            PopupMenuButton<String>(
+              icon: Icon(
+                Icons.more_vert_rounded,
+                color: Colors.white.withOpacity(0.38),
+                size: 20,
+              ),
+              color: const Color(0xFF1E1A35),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              onSelected: (value) {
+                if (value == 'play') {
+                  setState(() => _playingIndex = index);
+                  _openPlayer(index);
+                } else if (value == 'favorite') {
+                  _toggleFavoriteStatus(song);
+                }
+              },
+              itemBuilder: (context) {
+                final bool isFav = _favoritedVideoIds.contains(song.id);
+                return [
+                  PopupMenuItem(
+                    value: 'play',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.play_circle_outline_rounded, color: Colors.white, size: 20),
+                        const SizedBox(width: 10),
+                        Text('Play Now', style: GoogleFonts.poppins(color: Colors.white, fontSize: 14)),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'favorite',
+                    child: Row(
+                      children: [
+                        Icon(
+                          isFav ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                          color: isFav ? const Color(0xFFE040FB) : Colors.white,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          isFav ? 'Remove from Favorites' : 'Add to Favorites',
+                          style: GoogleFonts.poppins(
+                            color: isFav ? const Color(0xFFE040FB) : Colors.white,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ];
+              },
             ),
           ],
         ),
