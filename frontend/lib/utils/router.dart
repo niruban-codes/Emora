@@ -27,7 +27,6 @@ import 'package:frontend/screens/admin_dashboard/dashboard_screen.dart';
 import 'package:frontend/screens/favorite_screen.dart';
 import 'package:frontend/screens/admin_dashboard/main_wrapper.dart';
 import 'package:frontend/screens/music/genre_playlist_screen.dart';
-import 'package:frontend/screens/admin_dashboard/main_wrapper.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'root',
@@ -114,6 +113,7 @@ final appRouter = GoRouter(
           currentSong: songs[safeIndex],
           playlist: songs,
           initialIndex: safeIndex,
+          initialFavoritedVideoIds: const {},
         );
       },
     ),

@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -78,13 +79,19 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen> {
           final dailyAvg = data['daily_average'] ?? "0.0";
           final distribution = data['mood_distribution'] as Map<dynamic, dynamic>? ?? {};
           final peakMood = data['primary_peak'] ?? "Peaceful";
+          final trendArrow = data['weekly_trend_arrow'] ?? "↗ 12%";
+         
+          final List<double> pointsData = (data['history_points'] as List?)
+                  ?.map((item) => double.tryParse(item.toString()) ?? 5.0)
+                  .toList() ?? 
+              [6.5, 8.0, 5.5, 7.0, 9.0, 6.0, 8.5];
 
           return SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildDailyAverageCard(dailyAvg),
+                _buildDailyAverageCard(dailyAvg, pointsData, trendArrow),
                 const SizedBox(height: 20),
                 Row(
                   children: [
@@ -121,7 +128,7 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen> {
                 const SizedBox(height: 15),
                 _buildMoodDistributionGrid(distribution),
                 const SizedBox(height: 30),
-                _buildWeeklyTrendCard(),
+                _buildWeeklyTrendCard(pointsData, trendArrow),
                 const SizedBox(height: 30),
                 _buildCalendarGrid(),
                 const SizedBox(height: 25),
@@ -135,7 +142,8 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen> {
     );
   }
 
-  Widget _buildDailyAverageCard(String average) {
+  Widget _buildDailyAverageCard(String average, List<double> pointsData, String trend) {
+    bool isNegative = trend.contains('-');
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -155,13 +163,13 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: greenAccent.withOpacity(0.1),
+                  color: isNegative ? Colors.red.withOpacity(0.1) : greenAccent.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  "↗ 12%",
+                  trend,
                   style: GoogleFonts.poppins(
-                    color: greenAccent,
+                    color: isNegative ? Colors.redAccent : greenAccent,
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
                   ),
@@ -196,27 +204,14 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen> {
           SizedBox(
             height: 80,
             width: double.infinity,
-            child: CustomPaint(painter: WavePainter(pinkAccent)),
+            child: CustomPaint(painter: WavePainter(pinkAccent, pointsData)),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                "DAY 1",
-                style: GoogleFonts.poppins(color: Colors.white24, fontSize: 11),
-              ),
-              Text(
-                "DAY 10",
-                style: GoogleFonts.poppins(color: Colors.white24, fontSize: 11),
-              ),
-              Text(
-                "DAY 20",
-                style: GoogleFonts.poppins(color: Colors.white24, fontSize: 11),
-              ),
-              Text(
-                "DAY 30",
-                style: GoogleFonts.poppins(color: Colors.white24, fontSize: 11),
-              ),
+              Text("Earlier", style: GoogleFonts.poppins(color: Colors.white24, fontSize: 11)),
+              Text("Recent Logs Timeline", style: GoogleFonts.poppins(color: Colors.white24, fontSize: 11)),
+              Text("Latest", style: GoogleFonts.poppins(color: Colors.white24, fontSize: 11)),
             ],
           ),
         ],
@@ -224,13 +219,7 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen> {
     );
   }
 
-  Widget _buildStateCard(
-    String label,
-    String value,
-    String sub,
-    IconData icon,
-    Color color,
-  ) {
+  Widget _buildStateCard(String label, String value, String sub, IconData icon, Color color,) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -261,33 +250,59 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen> {
             ),
           ),
           const SizedBox(height: 4),
-          Text(
-            sub,
-            style: GoogleFonts.poppins(color: Colors.white38, fontSize: 11),
-          ),
+          Text(sub, style: GoogleFonts.poppins(color: Colors.white38, fontSize: 11),),
         ],
       ),
     );
   }
 
   Widget _buildMoodDistributionGrid(Map<dynamic, dynamic> percentages) {
-    return Wrap(
-      spacing: 10,
-      runSpacing: 10,
+    final Map<String, Color> moodColors = {
+      "Happy": const Color(0xFFFFB347),
+      "Sad": const Color(0xFF42A5F5),
+      "Neutral": const Color(0xFF78909C),
+      "Fear": const Color(0xFF7E57C2),
+      "Angry": const Color(0xFFEF5350),
+      "Surprise": const Color(0xFF4DB6AC),
+    };
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        _moodChip("Happy", percentages['Happy'] ?? "0%", const Color(0xFFFFB347), Icons.sentiment_very_satisfied_rounded),
-        _moodChip("Sad", percentages['Sad'] ?? "0%", const Color(0xFF42A5F5), Icons.sentiment_dissatisfied_rounded),
-        _moodChip("Neutral", percentages['Neutral'] ?? "0%", const Color(0xFF78909C), Icons.lens_blur_rounded),
-        _moodChip("Fear", percentages['Fear'] ?? "0%", const Color(0xFF7E57C2), Icons.sentiment_very_dissatisfied_outlined),
-        _moodChip("Angry", percentages['Angry'] ?? "0%", const Color(0xFFEF5350), Icons.local_fire_department_outlined),
-        _moodChip("Surprise", percentages['Surprise'] ?? "0%", const Color(0xFF4DB6AC), Icons.flare_rounded),
-      ],
-    );
-  }
+        SizedBox(
+          width: 100,
+          height: 100,
+          child: CustomPaint(
+            painter: DonutChartPainter(
+              percentages: percentages,
+              moodColors: moodColors,
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+
+        Expanded(
+          child: Wrap(
+          spacing: 6,      
+          runSpacing: 6,   
+          alignment: WrapAlignment.start,
+          children: [
+            _moodChip("Happy", percentages['Happy'] ?? "0%", moodColors["Happy"]!, Icons.sentiment_very_satisfied_rounded),
+            _moodChip("Sad", percentages['Sad'] ?? "0%", moodColors["Sad"]!, Icons.sentiment_dissatisfied_rounded),
+            _moodChip("Neutral", percentages['Neutral'] ?? "0%", moodColors["Neutral"]!, Icons.lens_blur_rounded),
+            _moodChip("Fear", percentages['Fear'] ?? "0%", moodColors["Fear"]!, Icons.sentiment_very_dissatisfied_outlined),
+            _moodChip("Angry", percentages['Angry'] ?? "0%", moodColors["Angry"]!, Icons.local_fire_department_outlined),
+            _moodChip("Surprise", percentages['Surprise'] ?? percentages['Surprise'] ?? "0%", moodColors["Surprise"]!, Icons.flare_rounded),
+          ],
+        )
+      ),
+    ],
+  );
+}
 
   Widget _moodChip(String label, String percent, Color color, IconData icon) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(30),
@@ -296,13 +311,13 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: color),
-          const SizedBox(width: 8),
+          Icon(icon, size: 14, color: color),
+          const SizedBox(width: 6),
           Text(
             label,
-            style: GoogleFonts.poppins(color: Colors.white, fontSize: 13),
+            style: GoogleFonts.poppins(color: Colors.white, fontSize: 11),
           ),
-          const SizedBox(width: 6),
+          const SizedBox(width: 4),
           Text(
             percent,
             style: GoogleFonts.poppins(color: Colors.white38, fontSize: 11),
@@ -312,7 +327,9 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen> {
     );
   }
 
-  Widget _buildWeeklyTrendCard() {
+  Widget _buildWeeklyTrendCard(List<double> trendPoints, String trendText) {
+    bool isNegative = trendText.contains('↘');
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -330,9 +347,9 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen> {
                 style: GoogleFonts.poppins(color: Colors.white54, fontSize: 16),
               ),
               Text(
-                "+12% Positive",
+                trendText,
                 style: GoogleFonts.poppins(
-                  color: greenAccent,
+                  color: isNegative ? Colors.redAccent : greenAccent,
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
                 ),
@@ -340,7 +357,7 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen> {
             ],
           ),
           Text(
-            "Stable & Growing",
+            isNegative ? "Dropping Baseline" : "Stable & Growing",
             style: GoogleFonts.poppins(
               color: pinkAccent,
               fontSize: 13,
@@ -351,11 +368,11 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen> {
           SizedBox(
             height: 100,
             width: double.infinity,
-            child: CustomPaint(painter: WavePainter(purpleAccent)),
+            child: CustomPaint(painter: WavePainter(purpleAccent,trendPoints)),
           ),
           const SizedBox(height: 10),
           Text(
-            "You stayed calm for most of the day",
+            isNegative ? "Keep an eye on your baseline logs" : "You stayed calm for most of the day",
             style: GoogleFonts.poppins(color: Colors.white70, fontSize: 13),
           ),
         ],
@@ -437,12 +454,7 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen> {
     );
   }
 
-  Widget _buildCalendarRow(
-    List<String> days,
-    List<Color?> colors, {
-    String? selectedDay,
-    bool isFirst = false,
-  }) {
+  Widget _buildCalendarRow(List<String> days, List<Color?> colors, { String? selectedDay, bool isFirst = false,}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: List.generate(7, (index) {
@@ -550,31 +562,101 @@ class _DateCircle extends StatelessWidget {
 
 class WavePainter extends CustomPainter {
   final Color color;
-  WavePainter(this.color);
+  final List<double> dataPoints;
+
+  WavePainter(this.color, this.dataPoints);
+
   @override
   void paint(Canvas canvas, Size size) {
+    if (dataPoints.isEmpty) return;
+
     var paint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 3;
+      ..strokeWidth = 3
+      ..strokeCap = StrokeCap.round;
+
     var path = Path();
-    path.moveTo(0, size.height * 0.7);
-    path.quadraticBezierTo(
-      size.width * 0.2,
-      size.height * 0.2,
-      size.width * 0.4,
-      size.height * 0.5,
-    );
-    path.quadraticBezierTo(
-      size.width * 0.6,
-      size.height * 0.8,
-      size.width * 0.8,
-      size.height * 0.3,
-    );
-    path.lineTo(size.width, size.height * 0.4);
+
+    double stepX = size.width / (dataPoints.length > 1 ? dataPoints.length - 1 : 1);
+
+    double getY(double val) {
+      double normalized = val.clamp(0.0, 10.0) / 10.0;
+      return size.height * (1.0 - normalized);
+    }
+
+    path.moveTo(0, getY(dataPoints[0]));
+
+    for (int i = 0; i < dataPoints.length - 1; i++) {
+      double x1 = i * stepX;
+      double y1 = getY(dataPoints[i]);
+      double x2 = (i + 1) * stepX;
+      double y2 = getY(dataPoints[i + 1]);
+
+      double controlX1 = x1 + (stepX / 2);
+      double controlY1 = y1;
+      double controlX2 = x1 + (stepX / 2);
+      double controlY2 = y2;
+
+      path.cubicTo(controlX1, controlY1, controlX2, controlY2, x2, y2);
+    }
+
     canvas.drawPath(path, paint);
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant WavePainter oldDelegate) {
+    return oldDelegate.dataPoints != dataPoints || oldDelegate.color != color;
+  }
+}
+
+class DonutChartPainter extends CustomPainter {
+  final Map<dynamic, dynamic> percentages;
+  final Map<String, Color> moodColors;
+
+  DonutChartPainter({required this.percentages, required this.moodColors});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = math.min(size.width / 2, size.height / 2);
+    final strokeWidth = radius * 0.3;
+
+    final basePaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth
+      ..strokeCap = StrokeCap.round;
+
+    double startAngle = -math.pi / 2;
+    bool hasData = percentages.values.any((v) => (double.tryParse(v.toString().replaceAll('%', '')) ?? 0) > 0);
+
+    if (!hasData) {
+      canvas.drawCircle(center, radius - strokeWidth / 2, basePaint..color = Colors.white10);
+      return;
+    }
+
+    percentages.forEach((mood, percentStr) {
+      final cleanStr = percentStr.toString().replaceAll('%', '');
+      final percentValue = double.tryParse(cleanStr) ?? 0.0;
+      if (percentValue <= 0) return;
+
+      final sweepAngle = (percentValue / 100) * 2 * math.pi;
+      final slicePaint = basePaint..color = moodColors[mood.toString()] ?? Colors.grey;
+
+      canvas.drawArc(
+        Rect.fromCircle(center: center, radius: radius - strokeWidth / 2),
+        startAngle,
+        sweepAngle,
+        false,
+        slicePaint,
+      );
+
+      startAngle += sweepAngle;
+    });
+  }
+
+  @override
+  bool shouldRepaint(covariant DonutChartPainter oldDelegate) {
+    return oldDelegate.percentages != percentages || oldDelegate.moodColors != moodColors;
+  }
 }
