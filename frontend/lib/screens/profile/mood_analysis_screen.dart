@@ -29,10 +29,6 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen> {
   static const Color purpleAccent = Color(0xFF8E248D);
   static const Color greenAccent = Color(0xFF12D790);
 
-  final List<String> _months = [
-    "January", "February", "March", "April", "May", "June", 
-    "July", "August", "September", "October", "November", "December"
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -80,11 +76,20 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen> {
           final distribution = data['mood_distribution'] as Map<dynamic, dynamic>? ?? {};
           final peakMood = data['primary_peak'] ?? "Peaceful";
           final trendArrow = data['weekly_trend_arrow'] ?? "↗ 12%";
-         
-          final List<double> pointsData = (data['history_points'] as List?)
-                  ?.map((item) => double.tryParse(item.toString()) ?? 5.0)
-                  .toList() ?? 
-              [6.5, 8.0, 5.5, 7.0, 9.0, 6.0, 8.5];
+          final trendSummary = data['weekly_summary'] ?? 
+    (trendArrow.contains('-') || trendArrow.contains('↘')
+        ? "Keep an eye on your baseline logs"
+        : "You stayed calm for most of the day");
+
+          final rawPoints = (data['history_points'] as List?)
+    ?.map((item) => double.tryParse(item.toString()) ?? 5.0)
+    .toList() ?? [];
+
+final List<double> pointsData = rawPoints.length > 1
+    ? rawPoints
+    : (rawPoints.length == 1
+        ? [rawPoints[0], rawPoints[0], rawPoints[0], rawPoints[0], rawPoints[0], rawPoints[0], rawPoints[0]]
+        : [6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0]);
 
           return SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -128,9 +133,7 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen> {
                 const SizedBox(height: 15),
                 _buildMoodDistributionGrid(distribution),
                 const SizedBox(height: 30),
-                _buildWeeklyTrendCard(pointsData, trendArrow),
-                const SizedBox(height: 30),
-                _buildCalendarGrid(),
+                _buildWeeklyTrendCard(pointsData, trendArrow, trendSummary),
                 const SizedBox(height: 25),
                 _buildViewMonthlyButton(context),
                 const SizedBox(height: 30),
@@ -327,149 +330,59 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen> {
     );
   }
 
-  Widget _buildWeeklyTrendCard(List<double> trendPoints, String trendText) {
-    bool isNegative = trendText.contains('↘');
+  Widget _buildWeeklyTrendCard(List<double> trendPoints, String trendText, String summaryText) {
+  bool isNegative = trendText.contains('↘') || trendText.contains('-');
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: cardBg.withOpacity(0.8),
-        borderRadius: BorderRadius.circular(28),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Weekly Trend",
-                style: GoogleFonts.poppins(color: Colors.white54, fontSize: 16),
-              ),
-              Text(
-                trendText,
-                style: GoogleFonts.poppins(
-                  color: isNegative ? Colors.redAccent : greenAccent,
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          Text(
-            isNegative ? "Dropping Baseline" : "Stable & Growing",
-            style: GoogleFonts.poppins(
-              color: pinkAccent,
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
+  return Container(
+    padding: const EdgeInsets.all(20),
+    decoration: BoxDecoration(
+      color: cardBg.withOpacity(0.8),
+      borderRadius: BorderRadius.circular(28),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Weekly Trend",
+              style: GoogleFonts.poppins(color: Colors.white54, fontSize: 16),
             ),
-          ),
-          const SizedBox(height: 20),
-          SizedBox(
-            height: 100,
-            width: double.infinity,
-            child: CustomPaint(painter: WavePainter(purpleAccent,trendPoints)),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            isNegative ? "Keep an eye on your baseline logs" : "You stayed calm for most of the day",
-            style: GoogleFonts.poppins(color: Colors.white70, fontSize: 13),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCalendarGrid() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: cardBg.withOpacity(0.8),
-        borderRadius: BorderRadius.circular(28),
-      ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "${_months[DateTime.now().month - 1]} ${DateTime.now().year}",
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+            Text(
+              trendText,
+              style: GoogleFonts.poppins(
+                color: isNegative ? Colors.redAccent : greenAccent,
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
               ),
-              Row(
-                children: [
-                  Icon(Icons.chevron_left, color: pinkAccent.withOpacity(0.5)),
-                  Icon(Icons.chevron_right, color: pinkAccent.withOpacity(0.5)),
-                ],
-              ),
-            ],
+            ),
+          ],
+        ),
+        Text(
+          isNegative ? "Dropping Baseline" : "Stable & Growing",
+          style: GoogleFonts.poppins(
+            color: pinkAccent,
+            fontSize: 13,
+            fontWeight: FontWeight.bold,
           ),
-          const SizedBox(height: 15),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _DayHeader("S"),
-              _DayHeader("M"),
-              _DayHeader("T"),
-              _DayHeader("W"),
-              _DayHeader("T"),
-              _DayHeader("F"),
-              _DayHeader("S"),
-            ],
-          ),
-          const SizedBox(height: 15),
-          _buildCalendarRow(
-            ["28", "29", "30", "1", "2", "3", "4"],
-            [
-              null,
-              null,
-              null,
-              purpleAccent,
-              purpleAccent,
-              pinkAccent,
-              Colors.orange,
-            ],
-            isFirst: true,
-          ),
-          const SizedBox(height: 12),
-          _buildCalendarRow(
-            ["5", "6", "7", "8", "9", "10", "11"],
-            [
-              pinkAccent,
-              Colors.blue,
-              pinkAccent,
-              purpleAccent,
-              null,
-              null,
-              null,
-            ],
-            selectedDay: "8",
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCalendarRow(List<String> days, List<Color?> colors, { String? selectedDay, bool isFirst = false,}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: List.generate(7, (index) {
-        bool isMuted = isFirst && index < 3;
-        bool isDashed = !isFirst && index > 3;
-        return _DateCircle(
-          days[index],
-          colors[index],
-          isSelected: days[index] == selectedDay,
-          isMuted: isMuted,
-          isDashed: isDashed,
-        );
-      }),
-    );
-  }
+        ),
+        const SizedBox(height: 20),
+        SizedBox(
+          height: 100,
+          width: double.infinity,
+          child: CustomPaint(painter: WavePainter(purpleAccent, trendPoints)),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          summaryText,
+          style: GoogleFonts.poppins(color: Colors.white70, fontSize: 13),
+        ),
+      ],
+    ),
+  );
+}
+  
 
   Widget _buildViewMonthlyButton(BuildContext context) {
     return GestureDetector(
@@ -496,69 +409,6 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen> {
   }
 }
 
-class _DayHeader extends StatelessWidget {
-  final String label;
-  const _DayHeader(this.label);
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 32,
-      child: Center(
-        child: Text(
-          label,
-          style: GoogleFonts.poppins(
-            color: Colors.white24,
-            fontSize: 13,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _DateCircle extends StatelessWidget {
-  final String text;
-  final Color? color;
-  final bool isSelected;
-  final bool isMuted;
-  final bool isDashed;
-
-  const _DateCircle(
-    this.text,
-    this.color, {
-    this.isSelected = false,
-    this.isMuted = false,
-    this.isDashed = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 35,
-      height: 35,
-      decoration: BoxDecoration(
-        color: color?.withOpacity(isSelected ? 1.0 : 0.6),
-        shape: BoxShape.circle,
-        border: isSelected
-            ? Border.all(color: Colors.white, width: 2)
-            : isDashed
-            ? Border.all(color: Colors.white10)
-            : null,
-      ),
-      child: Center(
-        child: Text(
-          text,
-          style: GoogleFonts.poppins(
-            color: isMuted ? Colors.white12 : Colors.white,
-            fontSize: 13,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 class WavePainter extends CustomPainter {
   final Color color;

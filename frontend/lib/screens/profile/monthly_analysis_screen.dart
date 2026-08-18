@@ -8,6 +8,7 @@ import '../../api_service.dart';
 class MonthlyAnalysisScreen extends StatefulWidget {
   const MonthlyAnalysisScreen({super.key});
 
+
   @override
   State<MonthlyAnalysisScreen> createState() => _MonthlyAnalysisScreenState();
 }
@@ -16,6 +17,7 @@ class MonthlyAnalysisScreen extends StatefulWidget {
 class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
   final ApiService _apiService = ApiService();
   late Future<Map<String, dynamic>?> _analyticsFuture;
+  DateTime _currentMonth = DateTime.now();
 
   @override
   void initState() {
@@ -75,6 +77,9 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
           final distribution = data['mood_distribution'] as Map<dynamic, dynamic>? ?? {};
           final happyTracks = data['happy_tracks_count'] ?? 0;
           final sadTracks = data['sad_tracks_count'] ?? 0;
+          final Map<String, dynamic> dailyMoods = (data['daily_moods'] as Map<String, dynamic>?) ?? {};
+          bool hasData = distribution.values.any((v) => (double.tryParse(v.toString().replaceAll('%', '')) ?? 0) > 0);
+          final consistencyScore = data['accuracy_percentage'] ?? (hasData ? "98%" : "Calculating...");
 
           return SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -86,9 +91,7 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
                   style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 25),
-                _buildCalendarCard(),
-                const SizedBox(height: 25),
-                _buildComparisonCard(),
+                _buildCalendarCard(dailyMoods),
                 const SizedBox(height: 35),
                 Text(
                   "Emotion Accuracy per Category",
@@ -97,7 +100,7 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
                 const SizedBox(height: 20),
                 _buildAccuracyCard(distribution, happyTracks, sadTracks), // Change this line to pass variables!
                 const SizedBox(height: 20),
-                _buildConsistencyCard(),
+                _buildConsistencyCard(consistencyScore),
                 const SizedBox(height: 40),
               ],
             ),
@@ -106,214 +109,195 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
       ),
     );
   }
-  Widget _buildCalendarCard() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: cardBg.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(32),
-      ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Icon(Icons.chevron_left, color: Colors.white30),
-              Text(
-                "${_months[DateTime.now().month - 1]} ${DateTime.now().year}",
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+  
+  Color? _getMoodColor(String? mood) {
+  if (mood == null) return null;
+  switch (mood.toLowerCase()) {
+    case 'happy':
+      return happyColor;
+    case 'sad':
+      return sadColor;
+    case 'neutral':
+    case 'peaceful':
+      return neutralColor;
+    case 'angry':
+      return energeticColor;
+    case 'surprise':
+      return const Color(0xFF4DB6AC);
+    case 'fear':
+      return const Color(0xFF7E57C2);
+    default:
+      return pinkAccent;
+  }
+}
+  
+  Widget _buildCalendarCard(Map<String, dynamic> dailyMoods) {
+  return Container(
+    padding: const EdgeInsets.all(20),
+    decoration: BoxDecoration(
+      color: cardBg.withOpacity(0.5),
+      borderRadius: BorderRadius.circular(32),
+    ),
+    child: Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.chevron_left, color: Colors.white70),
+              onPressed: () {
+                setState(() {
+                  _currentMonth = DateTime(_currentMonth.year, _currentMonth.month - 1);
+                });
+              },
+            ),
+            Text(
+              "${_months[_currentMonth.month - 1]} ${_currentMonth.year}",
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
               ),
-              Icon(Icons.chevron_right, color: Colors.white30),
-            ],
-          ),
-          const SizedBox(height: 25),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: ["S", "M", "T", "W", "T", "F", "S"]
-                .map(
-                  (d) => SizedBox(
-                    width: 35,
-                    child: Center(
-                      child: Text(
-                        d,
-                        style: GoogleFonts.poppins(
-                          color: Color(0xFF5C5992),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
-                        ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.chevron_right, color: Colors.white70),
+              onPressed: () {
+                setState(() {
+                  _currentMonth = DateTime(_currentMonth.year, _currentMonth.month + 1);
+                });
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 15),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: ["S", "M", "T", "W", "T", "F", "S"]
+              .map(
+                (d) => SizedBox(
+                  width: 35,
+                  child: Center(
+                    child: Text(
+                      d,
+                      style: GoogleFonts.poppins(
+                        color: const Color(0xFF5C5992),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
                       ),
                     ),
                   ),
-                )
-                .toList(),
-          ),
-          const SizedBox(height: 15),
-          _buildCalendarGrid(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCalendarGrid() {
-    return Column(
-      children: [
-        _calRow(
-          ["", "", "", "1", "2", "3", "4"],
-          [
-            null,
-            null,
-            null,
-            pinkAccent,
-            const Color(0xFF7B1FA2),
-            const Color(0xFF7B1FA2),
-            pinkAccent,
-          ],
+                ),
+              )
+              .toList(),
         ),
         const SizedBox(height: 15),
-        _calRow(
-          ["5", "6", "7", "8", "9", "10", "11"],
-          [
-            pinkAccent,
-            const Color(0xFF1E88E5),
-            const Color(0xFF7B1FA2),
-            const Color(0xFF7B1FA2),
-            pinkAccent,
-            const Color(0xFF7B1FA2),
-            pinkAccent,
-          ],
-          highlight: "5",
-        ),
-        const SizedBox(height: 15),
-        _calRow(
-          ["12", "13", "14", "15", "16", "17", ""],
-          [
-            const Color(0xFF7B1FA2),
-            const Color(0xFF7B1FA2),
-            pinkAccent,
-            const Color(0xFF7B1FA2),
-            const Color(0xFF7B1FA2),
-            pinkAccent,
-            null,
-          ],
-        ),
+        _buildDynamicCalendarGrid(dailyMoods),
       ],
-    );
+    ),
+  );
+}
+
+Widget _buildDynamicCalendarGrid(Map<String, dynamic> dailyMoods) {
+  final daysInMonth = DateTime(_currentMonth.year, _currentMonth.month + 1, 0).day;
+  final firstWeekdayOffset = DateTime(_currentMonth.year, _currentMonth.month, 1).weekday % 7;
+  
+  final now = DateTime.now();
+  final isCurrentMonth = _currentMonth.year == now.year && _currentMonth.month == now.month;
+
+  List<Widget> dayWidgets = [];
+
+  for (int i = 0; i < firstWeekdayOffset; i++) {
+    dayWidgets.add(const SizedBox(width: 35, height: 42));
   }
 
-  Widget _calRow(List<String> days, List<Color?> dots, {String? highlight}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: List.generate(
-        7,
-        (i) => SizedBox(
-          width: 35,
-          child: Column(
-            children: [
-              if (days[i] == highlight)
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: const BoxDecoration(
-                    color: purpleAccent,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Text(
-                    days[i],
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                )
-              else
-                Text(
-                  days[i],
-                  style: GoogleFonts.poppins(
-                    color: days[i].isEmpty
-                        ? Colors.transparent
-                        : Colors.white60,
-                    fontSize: 13,
-                  ),
-                ),
-              const SizedBox(height: 4),
-              if (dots[i] != null)
-                Container(
-                  width: 4,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: dots[i],
-                    shape: BoxShape.circle,
-                  ),
-                )
-              else
-                const SizedBox(height: 4),
-            ],
+  for (int day = 1; day <= daysInMonth; day++) {
+    final isToday = isCurrentMonth && day == now.day;
+    final dateKey = "${_currentMonth.year}-${_currentMonth.month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')}";
+    final moodForDay = dailyMoods[dateKey] ?? dailyMoods[day.toString()];
+    final dotColor = _getMoodColor(moodForDay?.toString());
+dayWidgets.add(
+  SizedBox(
+    width: 35,
+    height: 42,
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(5),
+          decoration: isToday
+              ? const BoxDecoration(color: purpleAccent, shape: BoxShape.circle)
+              : null,
+          child: Text(
+            "$day",
+            style: GoogleFonts.poppins(
+              color: isToday ? Colors.white : Colors.white60,
+              fontSize: 13,
+              fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
+            ),
           ),
+        ),
+        const SizedBox(height: 3),
+        if (dotColor != null)
+          Container(
+            width: 4,
+            height: 4,
+            decoration: BoxDecoration(
+              color: dotColor,
+              shape: BoxShape.circle,
+            ),
+          )
+        else
+          const SizedBox(height: 4),
+      ],
+    ),
+  ),
+);
+  }
+
+  List<Widget> rows = [];
+  for (int i = 0; i < dayWidgets.length; i += 7) {
+    int end = (i + 7 < dayWidgets.length) ? i + 7 : dayWidgets.length;
+    rows.add(
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            ...dayWidgets.sublist(i, end),
+            if (end - i < 7)
+              ...List.generate(7 - (end - i), (_) => const SizedBox(width: 35, height: 42)),
+          ],
         ),
       ),
     );
   }
 
+  return Column(children: rows);
+}
+  
   Widget _buildAccuracyCard(Map<dynamic, dynamic> percentages, int happyCount, int sadCount) {
-    double happyVal = happyCount > 0 ? (happyCount / (happyCount + sadCount + 1)) : 0.0;
-    double sadVal = sadCount > 0 ? (sadCount / (happyCount + sadCount + 1)) : 0.0;
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: cardBg.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(32),
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              _buildDonutChart(),
-              const SizedBox(width: 30),
-              Expanded(child: _ChartLegend(percentages: percentages)),
-            ],
-          ),
-          const SizedBox(height: 35),
-          _trackRow("Happy Tracks", happyVal, happyCount.toString(), happyColor),
-          const SizedBox(height: 20),
-          _trackRow("Sad Tracks", sadVal, sadCount.toString(), sadColor),
-        ],
-      ),
-    );
-  }
+  double happyVal = happyCount > 0 ? (happyCount / (happyCount + sadCount + 1)) : 0.0;
+  double sadVal = sadCount > 0 ? (sadCount / (happyCount + sadCount + 1)) : 0.0;
+  return Container(
+    padding: const EdgeInsets.all(24),
+    decoration: BoxDecoration(
+      color: cardBg.withOpacity(0.5),
+      borderRadius: BorderRadius.circular(32),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _ChartLegend(percentages: percentages),
+        const SizedBox(height: 25),
+        _trackRow("Happy Tracks", happyVal, happyCount.toString(), happyColor),
+        const SizedBox(height: 20),
+        _trackRow("Sad Tracks", sadVal, sadCount.toString(), sadColor),
+      ],
+    ),
+  );
+}
 
-  Widget _buildDonutChart() {
-    return SizedBox(
-      height: 110,
-      width: 110,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          CustomPaint(size: const Size(110, 110), painter: DonutPainter()),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "94.2%",
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                "Avg",
-                style: GoogleFonts.poppins(color: Colors.white54, fontSize: 12),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+  
 
   Widget _trackRow(String label, double val, String count, Color color) {
     return Column(
@@ -349,44 +333,9 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
     );
   }
 
-  Widget _buildComparisonCard() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: const Color(0xFF232145),
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: Row(
-        children: [
-          const CircleAvatar(
-            backgroundColor: purpleAccent,
-            child: Icon(Icons.trending_up, color: Colors.white, size: 20),
-          ),
-          const SizedBox(width: 15),
-          Expanded(
-            child: Text.rich(
-              TextSpan(
-                style: GoogleFonts.poppins(color: Colors.white70, fontSize: 13),
-                children: [
-                  TextSpan(text: "You were "),
-                  TextSpan(
-                    text: "15% more Peaceful ",
-                    style: GoogleFonts.poppins(
-                      color: Color(0xFFE598D0),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  TextSpan(text: "this month compared to last."),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  
 
-  Widget _buildConsistencyCard() {
+  Widget _buildConsistencyCard(String accuracy) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -410,7 +359,7 @@ class _MonthlyAnalysisScreenState extends State<MonthlyAnalysisScreen> {
               ),
               SizedBox(height: 2),
               Text(
-                "${_months[DateTime.now().month - 1]} ${DateTime.now().day}${_getDaySuffix(DateTime.now().day)}: 98% Accuracy",
+                "${_months[DateTime.now().month - 1]} ${DateTime.now().day}${_getDaySuffix(DateTime.now().day)}: $accuracy Accuracy",
                 style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontSize: 16,
@@ -435,30 +384,6 @@ String _getDaySuffix(int day) {
   }
 }
 
-class DonutPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    double sw = 12.0;
-    Rect rect =
-        Offset(sw / 2, sw / 2) & Size(size.width - sw, size.height - sw);
-    Paint p = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = sw
-      ..strokeCap = StrokeCap.round;
-
-    p.color = Colors.white.withOpacity(0.05);
-    canvas.drawArc(rect, 0, 2 * math.pi, false, p);
-
-    p.color = const Color(0xFFFFB347).withOpacity(0.9);
-    canvas.drawArc(rect, -math.pi / 2, 1.7 * math.pi, false, p);
-
-    p.color = const Color(0xFF1E88E5).withOpacity(0.9);
-    canvas.drawArc(rect, 0.8 * math.pi, 0.5 * math.pi, false, p);
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter old) => false;
-}
 
 class _ChartLegend extends StatelessWidget {
   final Map<dynamic, dynamic> percentages;
@@ -468,13 +393,19 @@ class _ChartLegend extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _LItem(const Color(0xFFFFB347), "Happy: ${percentages['Happy'] ?? '0%'}"),
-        _LItem(const Color(0xFF78909C), "Neutral: ${percentages['Neutral'] ?? '0%'}"),
-        _LItem(const Color(0xFF42A5F5), "Sad: ${percentages['Sad'] ?? '0%'}"),
-        _LItem(const Color(0xFF4DB6AC), "Surprise: ${percentages['Surprise'] ?? '0%'}"),
-        _LItem(const Color(0xFF7E57C2), "Fear: ${percentages['Fear'] ?? '0%'}"),
-        _LItem(const Color(0xFFEF5350), "Angry: ${percentages['Angry'] ?? '0%'}"),
-      ],
+  Row(children: [
+    Expanded(child: _LItem(const Color(0xFFFFB347), "Happy: ${percentages['Happy'] ?? '0%'}")),
+    Expanded(child: _LItem(const Color(0xFF78909C), "Neutral: ${percentages['Neutral'] ?? '0%'}")),
+  ]),
+  Row(children: [
+    Expanded(child: _LItem(const Color(0xFF42A5F5), "Sad: ${percentages['Sad'] ?? '0%'}")),
+    Expanded(child: _LItem(const Color(0xFF4DB6AC), "Surprise: ${percentages['Surprise'] ?? '0%'}")),
+  ]),
+  Row(children: [
+    Expanded(child: _LItem(const Color(0xFF7E57C2), "Fear: ${percentages['Fear'] ?? '0%'}")),
+    Expanded(child: _LItem(const Color(0xFFEF5350), "Angry: ${percentages['Angry'] ?? '0%'}")),
+  ]),
+],
     );
   }
 }
