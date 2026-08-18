@@ -95,7 +95,7 @@ emora/
 | 22FIS0447 | D.G.S. Piyaratne | Emotion Detection & Admin Panel | Authentication & Home Screens | Phase 4 |
 | 22FIS0449 | M.N.H.F. Hafsa | Flutter Integration | Mood Analytics & Account Settings | Phase 1 |
 | 22FIS0450 | U.L.P. Wathsiluni | Firestore Integration | Admin Panel Screens | Phase 5 |
-| 22FIS0452 | H.H.D.A. Fernando | YouTube API Integration | Emotion Detection & Mood Result Screens | Phase 2 & Phase 6 |
+| 22FIS0452 | H.H.D.A. Fernando | YouTube API Integration | Emotion Detection & Mood Result Screens | Phase 2 & 6 |
 | 22FIS0455 | N. Niruban | Firebase Authentication & Admin Panel | Splash Screens & Music Player Screens | Phase 3 |
 
 **Internal Supervisor:** Mr. H. M. K. T. Gunawardane — Sabaragamuwa University of Sri Lanka  
@@ -125,15 +125,15 @@ emora/
 - [x] `/recommend-music` endpoint for all emotion categories
 - [x] Explore / vibe-genre endpoint
 
-### Phase 5 — Admin Panel ⏳ In Progress
-- [ ] Admin dashboard with user and content management
-- [ ] Six admin endpoints built and tested
+### Phase 5 — Admin Panel ✅ Done
+- [x] Admin dashboard with user and content management
+- [x] Six admin endpoints built and tested
 
-### Phase 6 — Flutter Integration ⏳ In Progress
+### Phase 6 — Flutter Integration ✅ Done
 - [x] Full Flutter frontend connected to Flask backend
 - [x] End-to-end flow from emotion detection to music playback
 - [x] Favourites, history, and playlist screens integrated
-- [ ] Final testing and deployment
+- [x] Final testing and deployment
 
 ---
 
