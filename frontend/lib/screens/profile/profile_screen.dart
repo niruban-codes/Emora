@@ -101,19 +101,10 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
 
             _buildSectionLabel('ACCOUNT SETTINGS'),
             _buildSimpleTile(context, Icons.person_outline, 'Edit Profile'),
-            _buildSimpleTile(context, Icons.trending_up, 'Insights'),
             _buildSimpleTile(
               context,
               Icons.sentiment_satisfied_alt_outlined,
               'Mood Analytics',
-            ),
-
-            const SizedBox(height: 25),
-            _buildSectionLabel('APP PREFERENCES'),
-            _buildSwitchTile(
-              Icons.notifications_none,
-              'Push Notifications',
-              true,
             ),
 
             const SizedBox(height: 30),
@@ -249,8 +240,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         if (title == 'Edit Profile') {
           await context.push('/account-settings');
           _fetchUserData();
-        } else if (title == 'Insights') {
-          context.push('/insights');
         } else if (title == 'Mood Analytics') {
           context.push('/mood-analytics');
         }
