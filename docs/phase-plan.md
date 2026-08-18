@@ -209,7 +209,7 @@ Administrators can effectively monitor users, application performance, and syste
 | Phase 3 | Emotion Detection Backend | Geethma |
 | Phase 4 | Music Recommendation Service | Dinithi |
 | Phase 5 | Frontend Integration | Hafsa |
-| Phase 6 | Administration & Analytics Module | Team Collaboration |
+| Phase 6 | Administration & Analytics Module | Geethma, Niruban |
 
 ---
 
