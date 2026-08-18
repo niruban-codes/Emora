@@ -125,15 +125,15 @@ emora/
 - [x] `/recommend-music` endpoint for all emotion categories
 - [x] Explore / vibe-genre endpoint
 
-### Phase 5 — Admin Panel ✅ Done
-- [x] Admin dashboard with user and content management
-- [x] Six admin endpoints built and tested
-
-### Phase 6 — Flutter Integration ✅ Done
+### Phase 5 — Flutter Integration ✅ Done
 - [x] Full Flutter frontend connected to Flask backend
 - [x] End-to-end flow from emotion detection to music playback
 - [x] Favourites, history, and playlist screens integrated
 - [x] Final testing and deployment
+
+### Phase 6 — Admin Panel ✅ Done
+- [x] Admin dashboard with user and content management
+- [x] Six admin endpoints built and tested
 
 ---
 
