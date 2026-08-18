@@ -14,18 +14,18 @@
 | Phase 2   | Wathsiluni       | Firestore — Build           |
 | Phase 3   | Geethma          | Flask + DeepFace — Build    |
 | Phase 4   | Dinithi          | YouTube API — Build         |
-| Phase 5   | Geethma , Niruban| Admin Panel                 |
-| Phase 6   | Hafsa            | Flutter Integration — Build |
+| Phase 5   | Hafsa            | Flutter Integration — Build |
+| Phase 6   | Geethma , Niruban| Admin Panel                 |
 
 **Testing Policy:** No member tests their own phase.
 
-| Builder    | Tests   |
-| ---------- | ------- |
-| Niruban    | Phase 3 |
-| Wathsiluni | Phase 5 |
-| Geethma    | Phase 4 |
-| Dinithi    | Phase 2 |
-| Hafsa      | Phase 1 |
+| Builder    | Tests    |
+| ---------- | -------  |
+| Niruban    | Phase 3  |
+| Wathsiluni | Phase 5  |
+| Geethma    | Phase 4  |
+| Dinithi    | Phase 2,6|
+| Hafsa      | Phase 1  |
 
 ---
 
@@ -37,10 +37,10 @@
 | 2      | Week 3–4   | UI Design, Prototyping & Flutter Dev Start    | Pre-Dev       | All Members                 | —                   | ✅ Done        |
 | 3      | Week 5–6   | Frontend Development & Firebase Authentication| Phase 1       | All Members / Niruban       | Hafsa               | ✅ Done        |
 | 4      | Week 7–8   | Firestore Integration & Emotion Detection     | Phase 2 & 3   | Wathsiluni / Geethma        | Dinithi / Niruban   | ✅ Done        |
-| 5      | Week 9–10  | YouTube API Integration & Admin Panel         | Phase 4 & 5   | Dinithi /Geethma / Niruban  | Geethma / Dinithi   | ⏳ In Progress |
-| 6      | Week 11–12 |  Flutter Integration                          | Phase  6      | Hafsa                       | Wathsiluni          | ✅ Done        |
-| 7      | Week 13–14 | Buffer, Demo Prep & UAT                       | All           | All Members                 | All Members         | ⏳ Upcoming    |
-| 8      | Week 15    | Journal & Submission                          | All           | All Members                 | —                   | ⏳ Upcoming    |
+| 5      | Week 9–10  | YouTube API Integration & Flutter Integration | Phase 4 & 5   | Dinithi /Hafsa              | Geethma / Wathsiluni| ✅ Done        |
+| 6      | Week 11–12 | Admin Panel                                   | Phase  6      | Geethma , Niruban           | Dinithi             | ✅ Done        |
+| 7      | Week 13–14 | Buffer, Demo Prep & UAT                       | All           | All Members                 | All Members         | ✅ Done        |
+| 8      | Week 15    | Journal & Submission                          | All           | All Members                 | —                   | ✅ Done        |
 
 > ⚠️ Sprint 8 is a single-week wrap-up sprint. All development and testing must be completed by end of Sprint 7.
 
@@ -120,7 +120,7 @@
 
 ### Sprint 6 · Weeks 11–12 · Admin Panel & Full Integration
 
-**Builder(s):** Geethma, Niruban (Admin Panel), All Members (Integration) | **Tester:** Dinithi | **Status:** ⏳ In Progress
+**Builder(s):** Geethma, Niruban (Admin Panel), All Members (Integration) | **Tester:** Dinithi | **Status:** ✅ Done
 - Admin panel built and tested
 - Phase 6 signed off
 - Flutter fully connected to backend end-to-end
@@ -132,7 +132,7 @@
 
 ### Sprint 7 · Weeks 13–14 · Buffer, Demo Prep & UAT
 
-**Owner(s):** All Members | **Status:** ⏳ In Progress
+**Owner(s):** All Members | **Status:** ✅ Done
 
 - Remaining bugs fixed
 - Failed test cases re-tested
@@ -145,7 +145,7 @@
 
 ### Sprint 8 · Week 15 · Journal & Submission
 
-**Owner(s):** All Members | **Status:** ⏳ In Progress
+**Owner(s):** All Members | **Status:** ✅ Done
 
 - Project journal completed
 - All documentation finalised and submitted
