@@ -106,6 +106,44 @@ class _LoginScreenState extends State<LoginScreen>
     }
   }
 
+  // Forgot Password
+  Future<void> _handleForgotPassword() async {
+    final email = _emailController.text.trim();
+
+    if (email.isEmpty) {
+      _showError('Please enter your email address to reset your password.');
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Reset link sent! Check your inbox.',
+              style: GoogleFonts.poppins(color: Colors.white),
+            ),
+            backgroundColor: const Color(0xFF4CAF50),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            margin: const EdgeInsets.all(16),
+          ),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      _showError(e.message ?? 'Failed to send password reset email.');
+    } catch (e) {
+      _showError('Something went wrong. Please try again.');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
   //Show Error Snackbar
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -366,9 +404,16 @@ class _LoginScreenState extends State<LoginScreen>
             ),
           ],
         ),
-        Text(
-          'Forgot Password?',
-          style: GoogleFonts.poppins(color: Colors.white54, fontSize: 12),
+        GestureDetector(
+          onTap: _isGoogleLoading || _isLoading ? null : _handleForgotPassword,
+          child: Text(
+            'Forgot Password?',
+            style: GoogleFonts.poppins(
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ),
       ],
     );
