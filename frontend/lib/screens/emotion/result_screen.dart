@@ -58,8 +58,9 @@ class _ResultScreenState extends State<ResultScreen>
 
   Future<void> _initializeData() async {
     await _fetchRecommendedSongs();
-    _savePlaylistToFirebase();
-    _saveScanToAzureHistory();
+
+    await _savePlaylistToFirebase();
+    await _saveScanHistory();
   }
 
   Future<void> _fetchRecommendedSongs() async {
@@ -107,9 +108,7 @@ class _ResultScreenState extends State<ResultScreen>
 
     final firestoreService = FirestoreService();
 
-    List<Map<String, dynamic>> playlistData = widget.mood.playlistTitles.map((
-      title,
-    ) {
+    List<Map<String, dynamic>> playlistData = widget.mood.playlistTitles.map((title,) {
       return {
         'playlistName': title,
         'mainSong': widget.mood.songTitle,
@@ -122,15 +121,33 @@ class _ResultScreenState extends State<ResultScreen>
         emotion: widget.mood.label,
         songs: playlistData,
       );
-      print("✅ History saved successfully!");
+      debugPrint("✅ History saved successfully!");
     } catch (e) {
-      print("❌ Error saving history: $e");
+      debugPrint("❌ Error saving history: $e");
     }
   }
 
-  Future<void> _saveScanToAzureHistory() async {
+  Future<void> _saveScanHistory() async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
+    if (user == null) {
+      debugPrint("⚠️ No user logged in. Skipping scan history save.");
+      return;
+    }
+
+
+    try {
+      final firestoreService = FirestoreService();
+      await firestoreService.addEmotion(
+        widget.mood.label.toLowerCase().trim(),
+        widget.mood.description.isNotEmpty
+            ? widget.mood.description
+            : "AI detected mood: ${widget.mood.label}",
+      );
+      debugPrint("✅ Direct Firestore Emotion History saved!");
+    } catch (e) {
+      debugPrint("❌ Direct Firestore Emotion save error: $e");
+    }
+
 
     final tracks = _recommendedSongs
         .map(
@@ -147,6 +164,8 @@ class _ResultScreenState extends State<ResultScreen>
       tracks.add({
         'title': widget.mood.songTitle,
         'artist': widget.mood.artist,
+        'thumbnail': '',
+        'videoId': '',
       });
     }
 
