@@ -55,27 +55,25 @@ def get_stats():
         return err
 
     try:
-        users_ref = db.collection("users").stream()
-        total_users = sum(1 for _ in users_ref)
+        users_stream = db.collection("users").stream()
+        total_users = sum(1 for _ in users_stream)
 
         emotion_counter = Counter()
         total_detections = 0
 
         # emotion_history/{uid}/detections/{id}
-        for user_doc in db.collection("emotion_history").stream():
-            detections = db.collection("emotion_history") \
-                            .document(user_doc.id) \
-                            .collection("detections") \
-                            .stream()
-            for det in detections:
-                data = det.to_dict() or {}
-                emotion = data.get("emotion")
-                if emotion:
-                    emotion_counter[emotion] += 1
-                    total_detections += 1
+        for doc in db.collection("emotion_history").stream():
+            data = doc.to_dict() or {}
+            emotion = data.get("emotion")
+            if emotion and isinstance(emotion, str):
+                clean_emotion = emotion.strip().lower()
+                emotion_counter[clean_emotion] += 1
+                total_detections += 1
 
         most_common_emotion = (
-            emotion_counter.most_common(1)[0][0] if emotion_counter else None
+            emotion_counter.most_common(1)[0][0].capitalize()
+            if emotion_counter
+            else "None"
         )
 
         return jsonify({
@@ -100,10 +98,10 @@ def get_users():
             data = doc.to_dict() or {}
             users.append({
                 "uid": doc.id,
-                "name": data.get("name"),
-                "email": data.get("email"),
-                "photo": data.get("photo"),
-                "createdAt": data.get("createdAt")
+                "name": data.get("name") or data.get("displayName") or "Anonymous",
+                "email": data.get("email") or "No Email",
+                "photo": data.get("photo")or data.get("photoUrl") or "",
+                "createdAt": str(data.get("createdAt") or "")
             })
         return jsonify(users), 200
 
@@ -121,20 +119,23 @@ def get_emotion_stats():
         emotion_counter = Counter()
         total = 0
 
-        for user_doc in db.collection("emotion_history").stream():
-            detections = db.collection("emotion_history") \
-                            .document(user_doc.id) \
-                            .collection("detections") \
-                            .stream()
-            for det in detections:
-                data = det.to_dict() or {}
-                emotion = data.get("emotion")
-                if emotion:
-                    emotion_counter[emotion] += 1
-                    total += 1
+        for doc in db.collection("emotion_history").stream():
+            data = doc.to_dict() or {}
+            emotion = data.get("emotion")
+            if emotion and isinstance(emotion, str):
+                clean_emotion = emotion.strip().lower()
+                emotion_counter[clean_emotion] += 1
+                total += 1
 
         if total == 0:
-            return jsonify({}), 200
+            return jsonify({
+                "happy": 0.0,
+                "sad": 0.0,
+                "neutral": 0.0,
+                "surprise": 0.0,
+                "fear": 0.0,
+                "angry": 0.0
+            }), 200
 
         percentages = {
             emotion: round((count / total) * 100, 1)
@@ -153,41 +154,62 @@ def get_music_stats():
         return err
 
     try:
-        song_favorite_counts = Counter()   # videoId - number of users who favorited it
-        song_titles = {}                   # videoId - title
+        song_counts = Counter()
+        song_titles = {}
         emotion_counter = Counter()
 
-        # favorites/{uid}/tracks/{id} — no playCount field exists, so "most played" is derived from how many users favorited each track.
-        for user_doc in db.collection("favorites").stream():
-            tracks = db.collection("favorites") \
-                       .document(user_doc.id) \
-                       .collection("tracks") \
-                       .stream()
-            for track in tracks:
-                data = track.to_dict() or {}
-                video_id = data.get("videoId")
-                if not video_id:
-                    continue
-                song_favorite_counts[video_id] += 1
-                song_titles[video_id] = data.get("title", "Unknown")
+        for doc in db.collection("emotion_history").stream():
+            data = doc.to_dict() or {}
+            emotion = data.get("emotion")
+            if emotion and isinstance(emotion, str):
+                emotion_counter[emotion.strip().lower()] += 1
 
-# popular emotions from detections, reused from emotion_history
-        for user_doc in db.collection("emotion_history").stream():
-            detections = db.collection("emotion_history") \
-                            .document(user_doc.id) \
-                            .collection("detections") \
-                            .stream()
-            for det in detections:
-                data = det.to_dict() or {}
-                emotion = data.get("emotion")
-                if emotion:
-                    emotion_counter[emotion] += 1
+            tracks = data.get("tracks", [])
+            if isinstance(tracks, list):
+                for track in tracks:
+                    if isinstance(track, dict):
+                        title = track.get("title")
+                        vid = track.get("videoId") or title
+                        if title and vid:
+                            song_counts[vid] += 1
+                            song_titles[vid] = title
+        for doc in db.collection("playlist_history").stream():
+            data = doc.to_dict() or {}
+            songs = data.get("songs", [])
+            if isinstance(songs, list):
+                for song in songs:
+                    if isinstance(song, dict):
+                        title = song.get("mainSong") or song.get("title")
+                        if title:
+                            song_counts[title] += 1
+                            song_titles[title] = title
+
+        # 3. Aggregate from favorites if populated
+        for user_doc in db.collection("favorites").stream():
+            tracks_stream = (
+                db.collection("favorites")
+                .document(user_doc.id)
+                .collection("tracks")
+                .stream()
+            )
+            for track_doc in tracks_stream:
+                data = track_doc.to_dict() or {}
+                vid = data.get("videoId") or data.get("title")
+                title = data.get("title", "Unknown")
+                if vid:
+                    song_counts[vid] += 1
+                    song_titles[vid] = title
 
         most_played = [
-            {"videoId": vid, "title": song_titles.get(vid, "Unknown"), "playCount": count}
-            for vid, count in song_favorite_counts.most_common(10)
+            {
+                "videoId": vid,
+                "title": song_titles.get(vid, vid),
+                "playCount": count
+            }
+            for vid, count in song_counts.most_common(10)
         ]
-        popular_emotions = [e for e, _ in emotion_counter.most_common(5)]
+
+        popular_emotions = [e.capitalize() for e, _ in emotion_counter.most_common(5)]
 
         return jsonify({
             "most_played": most_played,
@@ -213,9 +235,9 @@ def get_logs():
             data = doc.to_dict() or {}
             logs.append({
                 "id": doc.id,
-                "action": data.get("action"),
-                "adminEmail": data.get("adminEmail"),
-                "timestamp": data.get("timestamp")
+                "action": data.get("action", "Admin Action"),
+                "adminEmail": data.get("adminEmail", "admin@emora.com"),
+                "timestamp": str(data.get("timestamp") or "")
             })
         return jsonify(logs), 200
 
