@@ -1,12 +1,12 @@
 flask
 flask-cors
-deepface
+deepface==0.0.92
 firebase-admin
 python-dotenv
 requests
 gunicorn
-opencv-python-headless
-numpy
+opencv-python-headless==4.8.1.78
+numpy<2.0.0
 pillow
 tensorflow
 tf-keras

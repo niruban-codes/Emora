@@ -10,12 +10,15 @@ Endpoints:
   DELETE /history/<uid>/<id>    — delete one detection
 
 Firestore path:
-  emotion_history/{uid}/detections/{detectionId}
+  emotion_history/{docId}
 
 Each document fields:
+  userId     : str
   emotion    : str
+  insight     : str
   confidence : float
-  timestamp  : Firestore SERVER_TIMESTAMP (stored as DatetimeWithNanoseconds)
+  isDummy     : bool
+  timestamp  : Firestore SERVER_TIMESTAMP
   tracks     : list of dicts  [{ videoId, title, artist, thumbnail }]
 """
 
@@ -28,9 +31,7 @@ from firebase_config import db
 #  Blueprint setup
 history_bp = Blueprint("history", __name__, url_prefix="/history")
 
-def _detections_ref(uid: str):
-    """Shortcut: returns the 'detections' subcollection reference for a uid."""
-    return db.collection("emotion_history").document(uid).collection("detections")
+ROOT_COLLECTION = "emotion_history"
 
 
 def _format_doc(doc) -> dict:
@@ -59,12 +60,13 @@ def _format_doc(doc) -> dict:
 @history_bp.route("/<uid>", methods=["GET"])
 def get_history(uid: str):
     """
-    Return all emotion detections for a user, sorted newest → oldest.
+    Return all emotion detections for a user directly from root emotion_history.
     """
     try:
     
         docs = (
-            _detections_ref(uid)
+            db.collection(ROOT_COLLECTION)
+            .where("userId", "==", uid)
             .order_by("timestamp", direction="DESCENDING")
             .stream()
         )
@@ -80,21 +82,7 @@ def get_history(uid: str):
 @history_bp.route("/<uid>", methods=["POST"])
 def save_history(uid: str):
     """
-    Save a new detection for a user.
-
-    Request body (JSON):
-      {
-        "emotion":    "happy",
-        "confidence": 92.5,
-        "tracks":     [ { videoId, title, artist, thumbnail }, ... ]
-      }
-
-    Success 201:
-      { "id": "<new_doc_id>" }
-
-    Errors:
-      400 — missing required fields
-      500 — Firestore write failed
+    Save a new detection directly in the root emotion_history collection.
     """
     body = request.get_json(silent=True)
 
@@ -109,6 +97,7 @@ def save_history(uid: str):
     emotion    = body["emotion"]
     confidence = body["confidence"]
     tracks     = body.get("tracks", [])
+    insight = body.get("insight", f"Detected mood: {emotion.capitalize()}")
 
     # Type checks 
     if not isinstance(emotion, str) or not emotion.strip():
@@ -123,14 +112,17 @@ def save_history(uid: str):
     # Write to Firestore 
     try:
         doc_data = {
+            "userId": uid,
             "emotion":    emotion.strip().lower(),
+            "insight": insight,
             "confidence": float(confidence),
             "tracks":     tracks,
+            "isDummy": False,
             "timestamp":  SERVER_TIMESTAMP,  # Firestore fills this in server-side
         }
 
         # add() auto generates a document ID
-        _, new_doc_ref = _detections_ref(uid).add(doc_data)
+        _, new_doc_ref = db.collection(ROOT_COLLECTION).add(doc_data)
 
         return jsonify({"id": new_doc_ref.id}), 201
 
@@ -145,20 +137,13 @@ def save_history(uid: str):
 @history_bp.route("/<uid>/<doc_id>", methods=["DELETE"])
 def delete_history(uid: str, doc_id: str):
     """
-    Delete a single detection document.
-
-    Success 200:
-      { "status": "deleted" }
-
-    Errors:
-      404 — document does not exist
-      500 — Firestore error
+    Delete a single detection document from the root collection.
     """
     try:
-        doc_ref = _detections_ref(uid).document(doc_id)
-
+        doc_ref = db.collection(ROOT_COLLECTION).document(doc_id)
         snapshot = doc_ref.get()
-        if not snapshot.exists:
+
+        if not snapshot.exists or snapshot.to_dict().get("userId") != uid:
             return jsonify({
                 "error": f"Detection '{doc_id}' not found for user '{uid}'"
             }), 404
@@ -181,7 +166,12 @@ def get_mood_analytics(uid: str):
     """
     try:
         # 1. Fetch all records from Firestore
-        docs = _detections_ref(uid).stream()
+        docs = (
+            db.collection(ROOT_COLLECTION)
+            .where("userId", "==", uid)
+            .order_by("timestamp", direction="ASCENDING")
+            .stream()
+        )
         history = [_format_doc(doc) for doc in docs]
 
         total_scans = len(history)
@@ -192,12 +182,14 @@ def get_mood_analytics(uid: str):
                 "daily_average": "0.0",
                 "mood_distribution": {
                     "Happy": "0%", "Sad": "0%", "Neutral": "0%",
-                    "Fear": "0%", "Angry": "0%", "Surprised": "0%"
+                    "Fear": "0%", "Angry": "0%", "Surprise": "0%"
                 },
                 "happy_tracks_count": 0,
                 "sad_tracks_count": 0,
                 "primary_peak": "None",
-                "total_scans": 0
+                "total_scans": 0,
+                "history_points": [5.0, 5.0],
+                "weekly_trend_arrow": "→ 0%"
             }), 200
 
         # 2. Setup counters for Mood Distribution mapping
@@ -232,10 +224,10 @@ def get_mood_analytics(uid: str):
         # 4. Final Math Formatting Calculations
         daily_avg = round(total_weight_score / total_scans, 1)
         
-        distribution_percentages = {}
-        for mood, count in counts.items():
-            percentage = round((count / total_scans) * 100)
-            distribution_percentages[mood] = f"{percentage}%"
+        distribution_percentages = {
+            mood: f"{round((count / total_scans) * 100)}%"
+            for mood, count in counts.items()
+        }
 
         # Identify which mood was recorded the most
         primary_peak = max(counts, key=counts.get) if any(counts.values()) else "Neutral"
@@ -243,12 +235,7 @@ def get_mood_analytics(uid: str):
         # We grab up to the last 10 entries so it forms a smooth running timeline graph
         recent_records = history[-10:] if len(history) >= 10 else history
 
-        history_points = []
-        for record in recent_records:
-            mood = record.get("emotion", "Neutral")
-            # Pull numerical weight value mapping 
-            weight_value = weights.get(mood, 6)
-            history_points.append(float(weight_value))
+        history_points = [float(weights.get(r.get("emotion", "Neutral"), 6)) for r in recent_records]
 
         # Handle empty fallback list just in case
         if not history_points:

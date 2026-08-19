@@ -16,7 +16,6 @@ import 'package:frontend/screens/music/search_mood_screen.dart';
 import 'package:frontend/screens/music/player_screen.dart';
 import 'package:frontend/screens/profile/profile_screen.dart';
 import 'package:frontend/screens/profile/account_setting.dart';
-import 'package:frontend/screens/profile/insights_screen.dart';
 import 'package:frontend/screens/profile/mood_analysis_screen.dart';
 import 'package:frontend/screens/profile/monthly_analysis_screen.dart';
 import 'package:frontend/screens/history_screen.dart';
@@ -237,10 +236,6 @@ final appRouter = GoRouter(
             GoRoute(
               path: '/account-settings',
               builder: (context, state) => const AccountSettingScreen(),
-            ),
-            GoRoute(
-              path: '/insights',
-              builder: (context, state) => const InsightsScreen(),
             ),
             GoRoute(
               path: '/mood-analytics',

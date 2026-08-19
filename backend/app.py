@@ -8,6 +8,8 @@ from youtube import youtube_bp
 from explore import explore_bp
 from library import library_bp
 from favorites import favorites_bp
+from admin import admin_bp
+from profile import profile_bp
 
 load_dotenv()
 
@@ -19,6 +21,8 @@ app.register_blueprint(youtube_bp)
 app.register_blueprint(explore_bp)
 app.register_blueprint(library_bp)
 app.register_blueprint(favorites_bp, url_prefix="/favorites")
+app.register_blueprint(admin_bp)
+app.register_blueprint(profile_bp, url_prefix="/profile")
 
 ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "webp"}
 

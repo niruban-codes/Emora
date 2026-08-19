@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:frontend/screens/music/player_screen.dart';
+import 'dart:math';
 
 class PlaylistDetailsScreen extends StatefulWidget {
   final MoodModel mood;
@@ -403,6 +404,15 @@ void _openPlayer(int index) {
           ),
           const SizedBox(width: 14),
           Expanded(
+            child: GestureDetector(
+              onTap: () {
+                if (_songs.isNotEmpty) {
+                  setState(() {
+                    _songs.shuffle(Random());
+                    _playingIndex = 0; // Resets playing index to top track of shuffled list
+                  });
+                }
+              },
             child: Container(
               height: 50,
               decoration: BoxDecoration(
@@ -430,6 +440,7 @@ void _openPlayer(int index) {
                 ],
               ),
             ),
+          ),
           ),
         ],
       ),
