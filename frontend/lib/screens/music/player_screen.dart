@@ -161,7 +161,7 @@ void _onPlayerControllerUpdate() {
       setState(() {
         _currentIndex++;
         _currentPosition = Duration.zero;
-        //_isPlaying = true;
+        _isPlaying = true;
       });
     } else {
       return;
@@ -409,7 +409,14 @@ void _onPlayerControllerUpdate() {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           GestureDetector(
-            onTap: () => setState(() => _isShuffle = !_isShuffle),
+            onTap: () {
+              setState(() {
+                _isShuffle = !_isShuffle;
+              });
+              if (_isShuffle && widget.playlist.length > 1) {
+                _playNext();
+              }
+            },
             child: Icon(
               Icons.shuffle_rounded,
               color: _isShuffle ? Colors.white : Colors.white38,
