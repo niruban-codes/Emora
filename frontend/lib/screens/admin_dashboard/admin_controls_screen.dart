@@ -84,6 +84,95 @@ class _AdminControlScreenState extends State<AdminControlScreen> {
     );
   }
 
+  void _showManageUsersSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF1B1B36),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => FutureBuilder<List<dynamic>?>(
+        future: ApiService().getAdminUsers(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const SizedBox(
+              height: 250,
+              child: Center(child: CircularProgressIndicator(color: Color(0xFF6C5CE7))),
+            );
+          }
+          final users = snapshot.data ?? [];
+          return Container(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text("Registered Users (${users.length})", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                const SizedBox(height: 10),
+                Flexible(
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: users.length,
+                    separatorBuilder: (_, __) => const Divider(color: Colors.white10),
+                    itemBuilder: (context, idx) {
+                      final u = users[idx] as Map<String, dynamic>;
+                      return ListTile(
+                        title: Text(u['name'] ?? 'User', style: const TextStyle(color: Colors.white, fontSize: 14)),
+                        subtitle: Text(u['email'] ?? '', style: const TextStyle(color: Colors.white54, fontSize: 12)),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _showRolesAndPermissionsSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF1B1B36),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: const [
+            Text("Roles & Permissions", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+            SizedBox(height: 15),
+            ListTile(title: Text("Super Admin", style: TextStyle(color: Colors.white)), subtitle: Text("Full read & write access to admin portal", style: TextStyle(color: Colors.white54))),
+            ListTile(title: Text("Standard User", style: TextStyle(color: Colors.white)), subtitle: Text("Mobile mood detection & playlist generation", style: TextStyle(color: Colors.white54))),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showNotificationSettingsSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF1B1B36),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: const [
+            Text("Notification Settings", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+            SizedBox(height: 15),
+            SwitchListTile(value: true, onChanged: null, title: Text("Anomaly Detection Alerts", style: TextStyle(color: Colors.white))),
+            SwitchListTile(value: true, onChanged: null, title: Text("Daily Analytics Email", style: TextStyle(color: Colors.white))),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -141,8 +230,8 @@ class _AdminControlScreenState extends State<AdminControlScreen> {
 
                 final totalUsers = "${stats['total_users'] ?? '--'}";
                 final totalDetections = "${stats['total_detections'] ?? '--'}";
-                final totalLogs = "${logs.length}";
-                final topTracks = "${mostPlayed.length}";
+                final totalLogs = "${stats['admin_actions'] ?? logs.length}";
+                final topTracks = "${music['tracks_in_charts'] ?? (music['most_played'] as List?)?.length ?? 0}";
 
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,12 +290,14 @@ class _AdminControlScreenState extends State<AdminControlScreen> {
                 Colors.purpleAccent,
                 "Manage Users",
                 "View, edit or remove user accounts",
+                onTap: _showManageUsersSheet,
               ),
               _buildMenuTile(
                 Icons.vpn_key_rounded,
                 Colors.pinkAccent,
                 "Roles & Permissions",
                 "Set user roles and access levels",
+                onTap: _showRolesAndPermissionsSheet,
               ),
             ]),
 
@@ -224,6 +315,7 @@ class _AdminControlScreenState extends State<AdminControlScreen> {
                 Colors.purple,
                 "Notification Settings",
                 "Manage admin notifications",
+                onTap: _showNotificationSettingsSheet,
               ),
             ]),
             const SizedBox(height: 30),

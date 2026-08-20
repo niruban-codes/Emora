@@ -175,10 +175,10 @@ class ApiService {
     return null;
   }
 
-  Future<Map<String, dynamic>?> getAdminEmotionStats() async {
+  Future<Map<String, dynamic>?> getAdminEmotionStats({String timeframe = 'weekly'}) async {
     try {
       final response = await _dio.get(
-        "$baseUrl/admin/emotion-stats",
+        "$baseUrl/admin/emotion-stats?timeframe=${timeframe.toLowerCase()}",
         options: _adminOptions,
       );
       if (response.statusCode == 200)

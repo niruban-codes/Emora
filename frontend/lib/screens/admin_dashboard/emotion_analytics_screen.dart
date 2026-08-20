@@ -20,13 +20,17 @@ class _EmotionAnalyticsScreenState extends State<EmotionAnalyticsScreen> {
     'surprise': Colors.green,
     'fear': Colors.purple,
     'angry': Colors.orange,
-    'disgust': Colors.tealAccent,
   };
 
   @override
   void initState() {
     super.initState();
-    _emotionFuture = ApiService().getAdminEmotionStats().then((val) => val ?? {});
+    _fetchEmotionData();
+  }
+  void _fetchEmotionData() {
+    _emotionFuture = ApiService()
+        .getAdminEmotionStats(timeframe: _selectedTimeFrame)
+        .then((val) => val ?? {});
   }
 
   Color _getColor(String emotion) => _emotionColors[emotion.toLowerCase()] ?? Colors.pinkAccent;
@@ -67,7 +71,12 @@ class _EmotionAnalyticsScreenState extends State<EmotionAnalyticsScreen> {
                 icon: const Icon(Icons.keyboard_arrow_down, size: 18, color: Colors.cyanAccent),
                 style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
                 onChanged: (String? newValue) {
-                  setState(() => _selectedTimeFrame = newValue!);
+                  if (newValue != null && newValue != _selectedTimeFrame) {
+                    setState(() {
+                      _selectedTimeFrame = newValue;
+                      _fetchEmotionData();
+                    });
+                  }
                 },
                 items: <String>['Daily', 'Weekly', 'Monthly']
                     .map<DropdownMenuItem<String>>((String value) {
@@ -89,7 +98,7 @@ class _EmotionAnalyticsScreenState extends State<EmotionAnalyticsScreen> {
 
           return RefreshIndicator(
             onRefresh: () async => setState(() {
-              _emotionFuture = ApiService().getAdminEmotionStats().then((val) => val ?? {});
+              _fetchEmotionData();
             }),
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
