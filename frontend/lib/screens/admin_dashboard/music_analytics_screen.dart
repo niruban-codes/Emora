@@ -1,9 +1,23 @@
 import 'package:flutter/material.dart';
+import '../../api_service.dart';
 //import 'package:fl_chart/fl_chart.dart';
 
-class MusicAnalyticsScreen extends StatelessWidget {
+class MusicAnalyticsScreen extends StatefulWidget {
   final VoidCallback? onBackToDashboard; 
   const MusicAnalyticsScreen({super.key, this.onBackToDashboard});
+
+  @override
+  State<MusicAnalyticsScreen> createState() => _MusicAnalyticsScreenState();
+}
+
+  class _MusicAnalyticsScreenState extends State<MusicAnalyticsScreen> {
+  late Future<Map<String, dynamic>> _musicFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _musicFuture = ApiService().getAdminMusicStats().then((val) => val ?? {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,54 +32,75 @@ class MusicAnalyticsScreen extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            if (onBackToDashboard != null) {
-              onBackToDashboard!(); // Navigates back to the Dashboard index
+            if (widget.onBackToDashboard != null) {
+              widget.onBackToDashboard!(); // Navigates back to the Dashboard index
             } else {
               Navigator.pop(context);
             }
           },
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 1. LISTENING STATS 
-            _header("Listening Stats"),
-              GridView.count(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: 2,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                childAspectRatio: 1.6,
+      body: FutureBuilder<Map<String, dynamic>>(
+        future: _musicFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator(color: Color(0xFF6C5CE7)));
+          }
+
+          final data = snapshot.data ?? {};
+          final mostPlayed = (data['most_played'] as List?) ?? [];
+          final popularEmotions = (data['popular_emotions'] as List?) ?? [];
+
+          final topTrackName = mostPlayed.isNotEmpty ? mostPlayed.first['title'] : 'N/A';
+          final topTrackFavs = mostPlayed.isNotEmpty ? "${mostPlayed.first['playCount']} favs" : '0';
+          final topEmotion = popularEmotions.isNotEmpty ? popularEmotions.first.toString().toUpperCase() : 'N/A';
+
+          return RefreshIndicator(
+            onRefresh: () async => setState(() {
+              _musicFuture = ApiService().getAdminMusicStats().then((val) => val ?? {});
+            }),
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _statCard("Time Listened", "12h 30m", null, const Color(0xFF2E3B62)),
-                  _statCard("Top Genre", "POP", Icons.change_history_rounded, const Color(0xFF2E3B62)),
-                  _statCard("Top Artist", "The Weeknd", Icons.person, const Color(0xFF2E3B62)),
-                  _statCard("Top Song", "STARBOY", Icons.album, const Color(0xFF2E3B62)),
+                  _header("Listening Stats"),
+                  GridView.count(
+                    shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
+                    crossAxisCount: 2, mainAxisSpacing: 12, crossAxisSpacing: 12, childAspectRatio: 1.6,
+                    children: [
+                      _statCard("Top Emotion", topEmotion, Icons.psychology_rounded, const Color(0xFF2E3B62)),
+                      _statCard("Tracks In Charts", "${mostPlayed.length}", Icons.queue_music_rounded, const Color(0xFF2E3B62)),
+                      _statCard("Top Favorite Count", topTrackFavs, Icons.favorite_rounded, const Color(0xFF2E3B62)),
+                      _statCard("Top Song", topTrackName, Icons.album, const Color(0xFF2E3B62)),
+                    ],
+                  ),
+                  const SizedBox(height: 25),
+
+                  _buildListSection(
+                    "Top Favorited Tracks",
+                    mostPlayed.isEmpty 
+                        ? [const Text("No favorited tracks yet", style: TextStyle(color: Colors.white54, fontSize: 12))]
+                        : mostPlayed.map((song) => _listItem("${song['title']}", "${song['playCount']} user favorites", Icons.music_note)).toList(),
+                  ),
+                  const SizedBox(height: 20),
+                  
+                  _buildListSection(
+                    "Top Detection Moods",
+                    popularEmotions.isEmpty 
+                        ? [const Text("No detections yet", style: TextStyle(color: Colors.white54, fontSize: 12))]
+                        : popularEmotions.map((emotion) {
+                            final label = emotion.toString()[0].toUpperCase() + emotion.toString().substring(1);
+                            return _listItem(label, "Popular search mood", Icons.emoji_emotions_rounded);
+                          }).toList(),
+                  ),
+                  const SizedBox(height: 30),
                 ],
               ),
-            
-            const SizedBox(height: 25),
-
-            // 2. TWO-COLUMN LIST 
-            _buildListSection("Top Songs", [
-              _listItem("Star Boy", "4B plays", Icons.music_note),
-              _listItem("Dynamite", "2.5B plays", Icons.music_note),
-              _listItem("Cruel Summer", "1B plays", Icons.music_note),
-            ]),
-            const SizedBox(height: 20),
-            
-            _buildListSection("Top Artists", [
-              _listItem("The Weeknd", "116.2M", Icons.person),
-              _listItem("Taylor Swift", "104.6M", Icons.person),
-              _listItem("BTS", "60.2M", Icons.person),
-            ]),
-            const SizedBox(height: 30),
-          ],
-        ),
+            ),
+          );
+        }
       ),
     );
   }

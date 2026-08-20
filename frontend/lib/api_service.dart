@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ApiService {
   final Dio _dio = Dio();
@@ -104,7 +105,7 @@ class ApiService {
     }
     return null;
   }
-  
+
   // Fetch calculation metrics for the analytics dashboard
   Future<Map<String, dynamic>?> getMoodAnalyticsFromAzure(String uid) async {
     try {
@@ -113,7 +114,9 @@ class ApiService {
         return response.data as Map<String, dynamic>;
       }
     } on DioException catch (e) {
-      print(" Azure Analytics bridge failure: ${e.response?.data ?? e.message}");
+      print(
+        " Azure Analytics bridge failure: ${e.response?.data ?? e.message}",
+      );
     }
     return null;
   }
@@ -131,5 +134,99 @@ class ApiService {
       print("Search Error: ${e.response?.data ?? e.message}");
     }
     return null;
+  }
+
+  Options get _adminOptions {
+    final currentEmail =
+        FirebaseAuth.instance.currentUser?.email ??
+        'geethmapiyaratne285@gmail.com';
+    return Options(
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-Email': currentEmail,
+      },
+    );
+  }
+
+  Future<Map<String, dynamic>?> getAdminStats() async {
+    try {
+      final response = await _dio.get(
+        "$baseUrl/admin/stats",
+        options: _adminOptions,
+      );
+      if (response.statusCode == 200)
+        return response.data as Map<String, dynamic>;
+    } on DioException catch (e) {
+      print("Admin Stats Error: ${e.response?.data ?? e.message}");
+    }
+    return null;
+  }
+
+  Future<List<dynamic>?> getAdminUsers() async {
+    try {
+      final response = await _dio.get(
+        "$baseUrl/admin/users",
+        options: _adminOptions,
+      );
+      if (response.statusCode == 200) return response.data as List<dynamic>;
+    } on DioException catch (e) {
+      print("Admin Users Error: ${e.response?.data ?? e.message}");
+    }
+    return null;
+  }
+
+  Future<Map<String, dynamic>?> getAdminEmotionStats({String timeframe = 'weekly'}) async {
+    try {
+      final response = await _dio.get(
+        "$baseUrl/admin/emotion-stats?timeframe=${timeframe.toLowerCase()}",
+        options: _adminOptions,
+      );
+      if (response.statusCode == 200)
+        return response.data as Map<String, dynamic>;
+    } on DioException catch (e) {
+      print("Admin Emotion Stats Error: ${e.response?.data ?? e.message}");
+    }
+    return null;
+  }
+
+  Future<Map<String, dynamic>?> getAdminMusicStats() async {
+    try {
+      final response = await _dio.get(
+        "$baseUrl/admin/music-stats",
+        options: _adminOptions,
+      );
+      if (response.statusCode == 200)
+        return response.data as Map<String, dynamic>;
+    } on DioException catch (e) {
+      print("Admin Music Stats Error: ${e.response?.data ?? e.message}");
+    }
+    return null;
+  }
+
+  Future<List<dynamic>?> getAdminLogs() async {
+    try {
+      final response = await _dio.get(
+        "$baseUrl/admin/logs",
+        options: _adminOptions,
+      );
+      if (response.statusCode == 200) return response.data as List<dynamic>;
+    } on DioException catch (e) {
+      print("Admin Logs Error: ${e.response?.data ?? e.message}");
+    }
+    return null;
+  }
+
+  Future<bool> createAdminLog(String action) async {
+    try {
+      final response = await _dio.post(
+        "$baseUrl/admin/logs",
+        data: {"action": action},
+        options: _adminOptions,
+      );
+      return response.statusCode == 200;
+    } on DioException catch (e) {
+      print("Create Log Error: ${e.response?.data ?? e.message}");
+      return false;
+    }
   }
 }
